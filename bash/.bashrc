@@ -16,4 +16,8 @@ GIT_PS1_SHOWUPSTREAM="auto"
 PS1='\[\e[32m\]\u@\h \[\e[34m\]\w$(__git_ps1 " (%s)") $\[\e[m\] '
 
 export RANGER_LOAD_DEFAULT_RC=false
+export EDITOR=code
+export HISTCONTROL=ignoreboth
 
+alias mv='mv -i'
+alias rm='rm -i'
