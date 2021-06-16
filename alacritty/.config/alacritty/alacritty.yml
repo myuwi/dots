@@ -1,2 +1,3 @@
 import:
-  - ~/.config/alacritty/theme.yml
+  - ~/.config/alacritty/font.yml
+  - ~/.config/alacritty/nord.yml

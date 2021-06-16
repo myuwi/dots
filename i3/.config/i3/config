@@ -35,7 +35,7 @@ for_window [class="Blueman-manager"] floating enable
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10%
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
-bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
+# bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
 # Screen brightness
 # bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -time 50 -inc 5
@@ -206,15 +206,14 @@ client.background       $base07
 
 gaps inner 8
 
-
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
-exec_always --no-startup-id feh --bg-scale $HOME/Pictures/wallpaper.jpg
+# exec_always --no-startup-id feh --bg-scale $HOME/Pictures/wallpaper.jpg
 
 
 new_window normal
 hide_edge_borders vertical
 bindsym Control+Shift+x [class="^.*"] border toggle
-for_window [class="^.*"] border pixel 1
+for_window [class="^.*"] border pixel 0
 for_window [class="URxvt"] border normal
 for_window [class="Leafpad"] border normal
 for_window [class="Lxappearance"] border normal
@@ -226,7 +225,7 @@ for_window [class="Lmms"] border pixel 0
 for_window [class="Feh"] border pixel 0
 
 exec --no-startup-id flameshot &
-exec --no-startup-id dunst
+exec --no-startup-id dunst &
 exec --no-startup-id picom --experimental-backends &
 
 

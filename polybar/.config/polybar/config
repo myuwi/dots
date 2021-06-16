@@ -1,13 +1,13 @@
 [colors]
-background = #21252b
-background-alt = #353b45
-foreground = #c8ccd4
-foreground-alt = #545862
-primary = #61afef
-secondary = #e06c75
-alert = #be5046
+background = ${xrdb:background:#222}
+background-alt = ${xrdb:color0:#222}
+foreground = ${xrdb:foreground:#222}
+foreground-alt = ${xrdb:color8:#222}
+primary = ${xrdb:color4:#222}
+alert = ${xrdb:color1:#222}
 
-[bar/bar]
+
+[bar/i3-bar]
 width = 100%
 height = 27
 radius = 0.0
@@ -39,6 +39,68 @@ modules-right = brightnessctl pulseaudio battery bluetooth wlan
 
 cursor-click = pointer
 cursor-scroll = ns-resize
+
+
+[bar/bspwm-bar]
+width = 100%
+height = 27
+radius = 0.0
+fixed-center = true
+enable-ipc = true
+override-redirect = true
+
+wm-restack = bspwm
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+
+line-size = 2
+
+border-size = 0
+
+padding-left = 0
+padding-right = 2
+
+module-margin-left = 1
+module-margin-right = 2
+
+
+font-0 = Droid Sans:style=Regular:size=10;3
+font-1 = Noto Sans CJK JP:style=Regular:size=10;2
+font-2 = FontAwesome5Free:style=Solid:size=8;2
+font-3 = FontAwesome5Free:style=Regular:size=9;2
+font-4 = FontAwesome5Brands:style=Regular:size=9;2
+
+modules-left = bspwm xwindow
+modules-center = date
+modules-right = brightness pulseaudio battery bluetooth wlan
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+
+[module/bspwm]
+type = internal/bspwm
+
+label-focused = %index%
+label-focused-background = ${colors.primary}
+; label-focused-underline = ${colors.primary}
+label-focused-foreground = ${colors.foreground}
+label-focused-padding = 2
+
+label-occupied = %index%
+label-occupied-foreground = ${colors.foreground}
+label-occupied-padding = 2
+
+label-urgent = %index%
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 2
+
+label-empty = 
+label-empty-foreground = ${colors.foreground-alt}
+label-empty-padding = 2
+
 
 [module/xwindow]
 type = internal/xwindow
@@ -79,24 +141,21 @@ label-urgent-background = ${colors.alert}
 label-urgent-padding = 2
 
 
-[module/brightnessctl]
-type = custom/script
-exec = ~/.config/polybar/scripts/brightnessctl.sh
-interval = 1
+[module/brightness]
+type = custom/ipc
+hook-0 = backlightctl -g 
+initial = 1
 
-label = Brightness %output%
+format-prefix = "Brightness "
 
 [module/wlan]
 type = internal/network
 interface = wlp1s0
 interval = 3.0
 
-;format-connected = <ramp-signal> <label-connected>
 format-connected = <ramp-signal>  <label-connected>
 
 ramp-signal-0 = 
-
-;format-connected-underline = #9f78e1
 label-connected = %essid%
 
 format-disconnected = not connected
@@ -106,14 +165,8 @@ type = internal/date
 interval = 5
 
 date = " %Y-%m-%d"
-;date-alt = " %Y-%m-%d"
 
 time = %H:%M
-;time-alt = %H:%M:%S
-
-;format-prefix = 
-;format-prefix-foreground = ${colors.foreground-alt}
-;format-underline = #0a6cf5
 
 label = %date% %time%
 
@@ -126,7 +179,7 @@ label-volume = %percentage%%
 label-volume-foreground = ${root.foreground}
 
 label-muted = sound muted
-label-muted-foreground = #666
+; label-muted-foreground = ${colors.background-alt}
 
 ramp-volume-0 = 
 ramp-volume-1 = 
@@ -163,7 +216,7 @@ exec = ~/.config/polybar/scripts/bluetooth.sh
 interval = 5
 click-left = blueman-manager &
 format-prefix = " "
-format-underline = #2193ff
+format-underline = ${colors.primary}
 
 
 [module/nordvpn]

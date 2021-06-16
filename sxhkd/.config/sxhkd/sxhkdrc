@@ -1,0 +1,145 @@
+#
+# wm independent hotkeys
+#
+
+# terminal emulator
+super + Return
+	alacritty
+
+# program launcher
+super + d
+	rofi -show run
+
+# make sxhkd reload its configuration files
+super + Escape
+	pkill -USR1 -x sxhkd
+
+#
+# bspwm hotkeys
+#
+
+# quit/restart bspwm
+super + alt + {q,r}
+	bspc {quit,wm -r}
+
+# close and kill
+# super + {_,shift + }w
+# 	bspc node -{c,k}
+
+super + shift + q
+	bspc node -c
+
+
+# alternate between the tiled and monocle layout
+# super + m
+# 	bspc desktop -l next
+
+# send the newest marked node to the newest preselected node
+# super + y
+# 	bspc node newest.marked.local -n newest.!automatic.local
+
+# swap the current node and the biggest window
+# super + g
+# 	bspc node -s biggest.window
+
+
+#
+# state/flags
+#
+
+# set the window state
+# super + {t,shift + t,s,f}
+# 	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+# set the node flags
+# super + ctrl + {m,x,y,z}
+# 	bspc node -g {marked,locked,sticky,private}
+
+
+#
+# focus/swap
+#
+
+# focus the next/previous window in the current desktop
+super + {_,shift + }Tab
+	bspc node -f {next,prev}.local.!hidden.window
+
+# focus the given desktop
+super + {1-9,0}
+	bspwm_focus_friendly_move '^{1-9,10}'
+
+# send to the given desktop
+super + shift + {1-9,0}
+	bspwm_focus_friendly_move '^{1-9,10}' move
+
+#
+# move/resize
+#
+
+# resize selected window
+super + ctrl + {Left, Down, Up, Right}
+	bspwm_resize {west,south,north,east} 50
+
+# focus the node in the given direction
+super + {Left, Down, Up, Right}
+	bspc node -f {west, south, north, east}
+
+# move a tiled window
+super + shift + {Left, Down, Up, Right}
+	bspwm_smart_move {west, south, north, east}
+
+
+# resize selected window
+super + ctrl + {h, j, k, l}
+	bspwm_resize {west,south,north,east} 50
+
+# focus the node in the given direction
+super + {h, j, k, l}
+	bspc node -f {west, south, north, east}
+
+# move a tiled window
+super + shift + {h, j, k, l}
+	bspwm_smart_move {west, south, north, east}
+
+
+#
+# brightness, media and volume controls
+#
+
+# brightness up/down
+XF86MonBrightness{Up,Down}
+	backlightctl {-i,-d} 5
+
+# media play/next/prev
+XF86Audio{Play,Next,Prev}
+	playerctl {play-pause,next,previous}
+
+# volume up/down
+XF86Audio{Raise,Lower}Volume
+	volumectl {increase,decrease} 10
+
+# volume mute
+XF86AudioMute
+	volumectl toggle-mute
+
+
+#
+# screenshot
+#
+
+# fullscreen screenshot
+Print
+	flameshot full -c -p $HOME/Pictures/Screenshots
+
+# area screenshot
+ctrl + Print
+	flameshot gui -p $HOME/Pictures/Screenshots
+
+
+#
+# programs
+#
+
+# firefox
+super + shift + f
+	firefox

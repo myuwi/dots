@@ -1,0 +1,7 @@
+#! /bin/bash
+
+bspc subscribe node_add | while read -a msg; do
+    bspc query -D -d "${msg[2]}.!focused" > /dev/null \
+        && xdotool set_window --urgency 1 "${msg[4]}"
+done
+

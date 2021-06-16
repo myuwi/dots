@@ -1,0 +1,59 @@
+#!/bin/sh
+
+increase() {
+    pactl set-sink-volume @DEFAULT_SINK@ +"$1"%
+}
+
+decrease() {
+    pactl set-sink-volume @DEFAULT_SINK@ -"$1"%
+}
+
+toggle_mute() {
+    pactl set-sink-mute @DEFAULT_SINK@ toggle
+}
+
+getdefaultsinkname() {
+    pacmd stat | awk -F": " '/^Default sink name: /{print $2}'
+}
+
+getdefaultsinkvol() {
+    pacmd list-sinks |
+        awk '/^\s+name: /{indefault = $2 == "<'$(getdefaultsinkname)'>"}
+            /^\s+volume: / && indefault {print $5; exit}'
+}
+
+getdefaultsinkmute() {
+    pacmd list-sinks |
+        awk '/^\s+name: /{indefault = $2 == "<'$(getdefaultsinkname)'>"}
+            /^\s+muted: / && indefault {print $2; exit}'
+}
+
+send_volume_notification() {
+    volume=$(getdefaultsinkvol)
+    dunstify -t 1000 -h string:x-dunst-stack-tag:volume "Volume" "$volume"
+}
+
+send_mute_notification() {
+    muted=$(getdefaultsinkmute)
+
+    if [[ $muted = "yes" ]]; then
+        dunstify -t 1000 -h string:x-dunst-stack-tag:volume "Volume" "Muted"
+    else
+        send_volume_notification
+    fi
+}
+
+case "$1" in
+"increase")
+    increase $2
+    send_volume_notification
+    ;;
+"decrease")
+    decrease $2
+    send_volume_notification
+    ;;
+"toggle-mute")
+    toggle_mute
+    send_mute_notification
+    ;;
+esac
