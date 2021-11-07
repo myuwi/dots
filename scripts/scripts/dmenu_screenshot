@@ -1,0 +1,15 @@
+#!/bin/bash
+
+options=$'Fullscreen (to clipboard)
+Region (to clipboard)'
+
+action=$(dmenu -l 10 -p 'Take a screenshot:' <<< "$options")
+
+case "$action" in
+    "Fullscreen (to clipboard)")
+        scrot -d 1 -e 'xclip -sel clip -t image/png $f && rm $f'
+        ;; 
+    "Region (to clipboard)")
+        scrot -s -d 5 -e 'xclip -sel clip -t image/png $f && rm $f'
+        ;;
+esac

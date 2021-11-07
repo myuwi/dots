@@ -1,0 +1,19 @@
+#!/bin/bash
+
+connect() {
+    selected=$(nordvpn countries | sed -E -e 's/\s+/\n/g' -e 's/,//g' | sed -E '/^[ -]*$/ d' | sort | dmenu -l 10 -p 'Select a server:')
+    [[ "$selected" = "" ]] && exit 1
+    city=$(nordvpn cities $selected | sed -E -e 's/\s+/\n/g' -e 's/,//g' | sed -E '/^[ -]*$/ d' | sort | dmenu -l 10 -p 'Select a city:')
+    [[ "$city" = "" ]] && exit 1
+
+    nordvpn connect $selected $city
+}
+
+disconnect() {
+    options=$'No\nYes'
+    disconnect=$(dmenu -l 2 -p 'Disconnect from the VPN?' <<< "$options")
+    [[ "$disconnect" = "Yes" ]] && nordvpn d
+}
+
+[[ "$(nordvpn status | grep 'Connected' | wc -l)" -eq 0 ]] && connect || disconnect
+
