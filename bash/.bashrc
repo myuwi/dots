@@ -15,7 +15,6 @@ GIT_PS1_SHOWUPSTREAM='auto'
 
 PS1='\[$(tput setaf 4)\]\w$(__git_ps1 " \[$(tput setaf 7)\]on \[$(tput setaf 2)\]%s") \[$(tput setaf 4)\]>\[$(tput sgr0)\] '
 
-export RANGER_LOAD_DEFAULT_RC=false
 export EDITOR=nvim
 export HISTCONTROL=ignoreboth
 
