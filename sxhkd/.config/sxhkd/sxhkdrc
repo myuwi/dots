@@ -43,11 +43,11 @@ super + {_,shift + }Tab
 
 # focus the given desktop
 super + {1-9,0}
-	bspwm_focus_friendly_move '^{1-9,10}'
+	bspwm_focus_friendly_move {1-9,10}
 
 # send to the given desktop
 super + shift + {1-9,0}
-	bspwm_focus_friendly_move '^{1-9,10}' move
+	bspwm_focus_friendly_move {1-9,10} move
 
 #
 # move/resize

@@ -1,3 +1,9 @@
 import:
-  - ~/.config/alacritty/font.yml
-  - ~/.config/alacritty/nord.yml
+    - ~/.config/alacritty/font.yml
+    - ~/.config/alacritty/catppuccin.yml
+
+window:
+    padding:
+        x: 16
+        y: 16
+    dynamic_padding: true

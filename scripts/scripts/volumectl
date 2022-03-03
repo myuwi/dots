@@ -12,25 +12,32 @@ toggle_mute() {
     pactl set-sink-mute @DEFAULT_SINK@ toggle
 }
 
-getdefaultsinkname() {
-    pacmd stat | awk -F": " '/^Default sink name: /{print $2}'
-}
+# getdefaultsinkname() {
+#     pactl get-default-sink
+#     # pacmd stat | awk -F": " '/^Default sink name: /{print $2}'
+# }
 
 getdefaultsinkvol() {
-    pacmd list-sinks |
-        awk '/^\s+name: /{indefault = $2 == "<'$(getdefaultsinkname)'>"}
-            /^\s+volume: / && indefault {print $5; exit}' | sed 's/,//g'
+    amixer sget Master | grep 'Right:' | awk -F '[][]' '{print $2}' | sed 's/[^0-9]//g'
+    # pactl get-sink-volume @DEFAULT_SINK@ |
+    #     grep 'Volume: ' |
+    #     cut -d' ' -f6
+    # pacmd list-sinks |
+    #     awk '/^\s+name: /{indefault = $2 == "<'$(getdefaultsinkname)'>"}
+    #         /^\s+volume: / && indefault {print $5; exit}' | sed 's/,//g'
 }
 
 getdefaultsinkmute() {
-    pacmd list-sinks |
-        awk '/^\s+name: /{indefault = $2 == "<'$(getdefaultsinkname)'>"}
-            /^\s+muted: / && indefault {print $2; exit}'
+    pactl get-sink-mute @DEFAULT_SINK@ |
+        sed 's/Mute: //g'
+    # pacmd list-sinks |
+    #     awk '/^\s+name: /{indefault = $2 == "<'$(getdefaultsinkname)'>"}
+    #         /^\s+muted: / && indefault {print $2; exit}'
 }
 
 send_volume_notification() {
     volume=$(getdefaultsinkvol)
-    dunstify -t 1000 -h string:x-dunst-stack-tag:volume "Volume" "$volume"
+    dunstify -t 1000 -h string:x-dunst-stack-tag:volume "Volume" "$volume%"
 }
 
 send_mute_notification() {
@@ -44,6 +51,9 @@ send_mute_notification() {
 }
 
 case "$1" in
+"get")
+    echo $(getdefaultsinkvol)
+    ;;
 "increase")
     increase $2
     send_volume_notification

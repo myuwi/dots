@@ -4,4 +4,4 @@
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
-export PATH=$HOME/scripts:$PATH
+export PATH=$HOME/scripts:$PATH:$HOME/.local/bin

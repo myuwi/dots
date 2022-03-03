@@ -1,23 +1,14 @@
-# Copyright (c) 2017-present Arctic Ice Studio <development@arcticicestudio.com>
-# Copyright (c) 2017-present Sven Greb <code@svengreb.de>
-
-# Project:    Nord Alacritty
-# Version:    0.1.0
-# Repository: https://github.com/arcticicestudio/nord-alacritty
-# License:    MIT
-# References:
-#   https://github.com/alacritty/alacritty
-
+# mwi color scheme
 colors:
     primary:
-        background: '#24272e'
+        background: '#111116'
         foreground: '#d8dee9'
         dim_foreground: '#a5abb6'
     cursor:
-        text: '#24272e'
+        text: '#111116'
         cursor: '#d8dee9'
     vi_mode_cursor:
-        text: '#24272e'
+        text: '#111116'
         cursor: '#d8dee9'
     selection:
         text: CellForeground
