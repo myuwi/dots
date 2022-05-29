@@ -13,7 +13,7 @@ GIT_PS1_SHOWSTASHSTATE=1
 GIT_PS1_SHOWUNTRACKEDFILES=1
 GIT_PS1_SHOWUPSTREAM='auto'
 
-PS1='\[$(tput setaf 4)\]\w$(__git_ps1 " \[$(tput setaf 7)\]on \[$(tput setaf 2)\]%s") \[$(tput setaf 4)\]>\[$(tput sgr0)\] '
+PS1='\[$(tput setaf 4)\]\w$(__git_ps1 " \[$(tput setaf 7)\]\[$(tput setaf 2)\]%s") \[$(tput setaf 4)\]>\[$(tput sgr0)\] '
 
 export EDITOR=nvim
 export HISTCONTROL=ignoreboth
@@ -23,6 +23,8 @@ alias mv='mv -i'
 alias rm='rm -i'
 alias ..='cd ..'
 alias vim='nvim'
+alias vi='nvim'
+alias v='nvim'
 alias please='sudo $(history -p !!)'
 alias cal='cal -mw'
 

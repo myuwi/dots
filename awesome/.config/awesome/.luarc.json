@@ -1,0 +1,14 @@
+{
+  "diagnostics": {
+    "disable": [
+      "lowercase-global"
+    ],
+    "globals": [
+      "awesome",
+      "client",
+      "mouse",
+      "root",
+      "screen"
+    ]
+  }
+}

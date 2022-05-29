@@ -1,9 +1,13 @@
 import:
-    - ~/.config/alacritty/font.yml
-    - ~/.config/alacritty/catppuccin.yml
+  - ~/.config/alacritty/font.yml
+  - ~/.config/alacritty/rose-pine.yml
 
 window:
-    padding:
-        x: 16
-        y: 16
-    dynamic_padding: true
+  padding:
+    x: 16
+    y: 16
+  dynamic_padding: true
+
+key_bindings:
+  - { key: Tab, mods: Control, chars: "\x1b[9;5u" }
+  - { key: Tab, mods: Control|Shift, chars: "\x1b[1;5Z" }

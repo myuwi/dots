@@ -1,0 +1,4 @@
+{
+    "Lua.diagnostics.disable": ["lowercase-global"],
+    "Lua.diagnostics.globals": ["awesome", "client", "mouse", "root", "screen"]
+}
