@@ -2,14 +2,6 @@ return require("packer").startup(function(use)
   use("wbthomason/packer.nvim")
 
   -- Colorscheme
-  -- use({
-  --   "catppuccin/nvim",
-  --   as = "catppuccin",
-  --   commit = "f079dda",
-  --   config = function()
-  --     vim.cmd("colorscheme catppuccin")
-  --   end,
-  -- })
   use({
     "rose-pine/neovim",
     as = "rose-pine",
@@ -19,6 +11,7 @@ return require("packer").startup(function(use)
     end,
   })
 
+  -- UI
   use({
     "kyazdani42/nvim-tree.lua",
     requires = {
@@ -57,19 +50,20 @@ return require("packer").startup(function(use)
   -- LSP
   use("neovim/nvim-lspconfig")
   use("williamboman/nvim-lsp-installer")
-
-  use("hrsh7th/nvim-cmp")
-  use("hrsh7th/cmp-buffer")
-  use("hrsh7th/cmp-path")
-  use("hrsh7th/cmp-cmdline")
-  use("saadparwaiz1/cmp_luasnip")
-  use("hrsh7th/cmp-nvim-lsp")
   use({
     "jose-elias-alvarez/null-ls.nvim",
     config = function()
       require("user.plugins.null-ls")
     end,
   })
+
+  -- Completion
+  use("hrsh7th/nvim-cmp")
+  use("hrsh7th/cmp-buffer")
+  use("hrsh7th/cmp-path")
+  use("hrsh7th/cmp-cmdline")
+  use("saadparwaiz1/cmp_luasnip")
+  use("hrsh7th/cmp-nvim-lsp")
 
   use({
     "nvim-treesitter/nvim-treesitter",
@@ -80,7 +74,12 @@ return require("packer").startup(function(use)
   })
 
   -- snippets
-  use("L3MON4D3/LuaSnip")
+  use({
+    "L3MON4D3/LuaSnip",
+    config = function()
+      require("user.plugins.luasnip")
+    end,
+  })
   use("rafamadriz/friendly-snippets")
 
   -- Autopairs
@@ -121,7 +120,9 @@ return require("packer").startup(function(use)
   use({
     "ur4ltz/surround.nvim",
     config = function()
-      require("surround").setup({ mappings_style = "sandwich" })
+      require("surround").setup({
+        mappings_style = "sandwich",
+      })
     end,
   })
 
@@ -138,11 +139,7 @@ return require("packer").startup(function(use)
     "folke/trouble.nvim",
     requires = "kyazdani42/nvim-web-devicons",
     config = function()
-      require("trouble").setup({
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
-      })
+      require("trouble").setup()
     end,
   })
 end)

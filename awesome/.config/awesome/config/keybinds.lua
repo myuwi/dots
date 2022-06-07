@@ -1,9 +1,7 @@
-local gears = require("gears")
 local awful = require("awful")
 
-local keys = {}
-
-keys.globalkeys = gears.table.join(
+-- Global keybindings
+awful.keyboard.append_global_keybindings({
   awful.key({ modkey }, "Left", awful.tag.viewprev, {
     description = "view previous",
     group = "tag",
@@ -210,120 +208,128 @@ keys.globalkeys = gears.table.join(
   end, {
     description = "brightness down",
     group = "brightness",
-  })
-)
+  }),
+})
 
-keys.clientkeys = gears.table.join(
-  awful.key({ modkey }, "f", function(c)
-    c.fullscreen = not c.fullscreen
-    c:raise()
-  end, {
-    description = "toggle fullscreen",
-    group = "client",
-  }),
-  awful.key({ modkey, "Shift" }, "q", function(c)
-    c:kill()
-  end, {
-    description = "close",
-    group = "client",
-  }),
-  awful.key({ modkey, "Shift" }, "f", awful.client.floating.toggle, {
-    description = "toggle floating",
-    group = "client",
-  }),
-  awful.key({ modkey, "Control" }, "Return", function(c)
-    c:swap(awful.client.getmaster())
-  end, {
-    description = "move to master",
-    group = "client",
-  }),
-  awful.key({ modkey }, "o", function(c)
-    c:move_to_screen()
-  end, {
-    description = "move to screen",
-    group = "client",
-  }),
-  awful.key({ modkey }, "t", function(c)
-    c.ontop = not c.ontop
-  end, {
-    description = "toggle keep on top",
-    group = "client",
-  }),
-  awful.key({ modkey }, "m", function(c)
-    c.maximized = not c.maximized
-    c:raise()
-  end, {
-    description = "(un)maximize",
-    group = "client",
-  }),
-  awful.key({ modkey }, "c", function(c)
-    if c.floating then
-      awful.placement.centered(c)
-    end
-  end, {
-    description = "center a client",
-    group = "client",
-  })
-)
-
-keys.clientbuttons = gears.table.join(
-  awful.button({}, 1, function(c)
-    c:emit_signal("request::activate", "mouse_click", {
-      raise = true,
-    })
-  end),
-  awful.button({ modkey }, 1, function(c)
-    c:emit_signal("request::activate", "mouse_click", {
-      raise = true,
-    })
-    awful.mouse.client.move(c)
-  end),
-  awful.button({ modkey }, 3, function(c)
-    c:emit_signal("request::activate", "mouse_click", {
-      raise = true,
-    })
-    awful.mouse.client.resize(c)
-  end)
-)
-
-for i = 1, 9 do
-  keys.globalkeys = gears.table.join(
-    keys.globalkeys,
-    -- View tag only.
-    awful.key({ modkey }, "#" .. i + 9, function()
+-- Tag navigation keybindings
+awful.keyboard.append_global_keybindings({
+  awful.key({
+    modifiers = { modkey },
+    keygroup = "numrow",
+    description = "view tag",
+    group = "tag",
+    on_press = function(index)
       local screen = awful.screen.focused()
-      local tag = screen.tags[i]
+      local tag = screen.tags[index]
       if tag then
         tag:view_only()
       end
-    end, {
-      description = "view tag #" .. i,
-      group = "tag",
-    }),
-    -- Toggle tag display.
-    awful.key({ modkey, "Control" }, "#" .. i + 9, function()
+    end,
+  }),
+  awful.key({
+    modifiers = { modkey, "Control" },
+    keygroup = "numrow",
+    description = "toggle tag",
+    group = "tag",
+    on_press = function(index)
       local screen = awful.screen.focused()
-      local tag = screen.tags[i]
+      local tag = screen.tags[index]
       if tag then
         awful.tag.viewtoggle(tag)
       end
-    end, {
-      description = "toggle tag #" .. i,
-      group = "tag",
-    }),
-    -- Move client to tag.
-    awful.key({ modkey, "Shift" }, "#" .. i + 9, function()
+    end,
+  }),
+  awful.key({
+    modifiers = { modkey, "Shift" },
+    keygroup = "numrow",
+    description = "move focused client to tag",
+    group = "tag",
+    on_press = function(index)
       if client.focus then
-        local tag = client.focus.screen.tags[i]
+        local tag = client.focus.screen.tags[index]
         if tag then
           client.focus:move_to_tag(tag)
         end
       end
-    end, {
-      description = "move focused client to tag #" .. i,
-      group = "tag",
-    })
-  )
-end
+    end,
+  }),
+})
 
-return keys
+-- Client keybindings
+client.connect_signal("request::default_keybindings", function()
+  awful.keyboard.append_client_keybindings({
+    awful.key({ modkey }, "f", function(c)
+      c.fullscreen = not c.fullscreen
+      c:raise()
+    end, {
+      description = "toggle fullscreen",
+      group = "client",
+    }),
+    awful.key({ modkey, "Shift" }, "q", function(c)
+      c:kill()
+    end, {
+      description = "close",
+      group = "client",
+    }),
+    awful.key({ modkey, "Shift" }, "f", awful.client.floating.toggle, {
+      description = "toggle floating",
+      group = "client",
+    }),
+    awful.key({ modkey, "Control" }, "Return", function(c)
+      c:swap(awful.client.getmaster())
+    end, {
+      description = "move to master",
+      group = "client",
+    }),
+    awful.key({ modkey }, "o", function(c)
+      c:move_to_screen()
+    end, {
+      description = "move to screen",
+      group = "client",
+    }),
+    awful.key({ modkey }, "t", function(c)
+      c.ontop = not c.ontop
+    end, {
+      description = "toggle keep on top",
+      group = "client",
+    }),
+    awful.key({ modkey }, "m", function(c)
+      c.maximized = not c.maximized
+      c:raise()
+    end, {
+      description = "(un)maximize",
+      group = "client",
+    }),
+    awful.key({ modkey }, "c", function(c)
+      if c.floating then
+        awful.placement.centered(c)
+      end
+    end, {
+      description = "center a client",
+      group = "client",
+    }),
+  })
+end)
+
+-- Client mousebindings
+client.connect_signal("request::default_mousebindings", function()
+  awful.mouse.append_client_mousebindings({
+    awful.button({}, 1, function(c)
+      c:emit_signal("request::activate", "mouse_click", {
+        raise = true,
+      })
+    end),
+    awful.button({ modkey }, 1, function(c)
+      c:emit_signal("request::activate", "mouse_click", {
+        raise = true,
+      })
+      awful.mouse.client.move(c)
+    end),
+    awful.button({ modkey }, 3, function(c)
+      c:emit_signal("request::activate", "mouse_click", {
+        raise = true,
+      })
+      awful.mouse.client.resize(c)
+    end),
+  })
+end)

@@ -18,7 +18,6 @@ keymap("n", "<Leader>bd", "<cmd>Bdelete<CR>", opts)
 keymap("n", "<C-Tab>", "<cmd>BufferLineCycleNext<CR>", opts)
 keymap("n", "<C-S-Tab>", "<cmd>BufferLineCyclePrev<CR>", opts)
 
-
 -- Toggle NvimTree
 keymap("n", "<C-b>", ":NvimTreeToggle<CR>", silent_opts)
 

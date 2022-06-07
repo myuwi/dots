@@ -1,3 +1,5 @@
+local Set = require("user.helpers").Set
+
 local M = {}
 
 -- TODO: backfill this to template
@@ -84,8 +86,14 @@ local function lsp_keymaps(bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 end
 
+local disabled_formatters = Set({
+  "jsonls",
+  "sumneko_lua",
+  "tsserver",
+})
+
 M.on_attach = function(client, bufnr)
-  if client.name == "tsserver" or client.name == "sumneko_lua" or client.name == "jsonls" then
+  if disabled_formatters[client.name] then
     client.resolved_capabilities.document_formatting = false
   end
   lsp_keymaps(bufnr)

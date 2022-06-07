@@ -1,7 +1,7 @@
 require("telescope").setup({
   defaults = {
     file_ignore_patterns = {
-      ".git",
+      "^.git/",
       "node_modules",
     },
     vimgrep_arguments = {
@@ -18,6 +18,7 @@ require("telescope").setup({
   pickers = {
     find_files = {
       hidden = true,
+      no_ignore = true,
     },
     live_grep = {
       hidden = true,

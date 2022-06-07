@@ -4,9 +4,7 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local rounded_rect_4 = function(cr, width, height)
-  gears.shape.rounded_rect(cr, width, height, 4)
-end
+local rounded_rect = require("helpers").rounded_rect
 
 local taglist = function(s)
   local taglist_buttons = gears.table.join(
@@ -42,7 +40,7 @@ local taglist = function(s)
       },
       buttons = taglist_buttons,
       style = {
-        shape = rounded_rect_4,
+        shape = rounded_rect(4),
       },
       widget_template = {
         {
