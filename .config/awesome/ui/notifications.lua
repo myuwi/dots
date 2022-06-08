@@ -26,7 +26,7 @@ naughty.connect_signal("request::display", function(n)
               {
                 {
                   text = n.title,
-                  font = beautiful.font_name .. " Bold 9",
+                  font = beautiful.font_name .. " Bold " .. beautiful.font_size,
                   forced_height = dpi(16),
                   widget = wibox.widget.textbox,
                 },

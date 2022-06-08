@@ -7,7 +7,8 @@ local themes_path = config_dir .. "theme"
 local theme = {}
 
 theme.font_name = "Droid Sans"
-theme.font = theme.font_name .. " 9"
+theme.font_size = 9
+theme.font = theme.font_name .. " " .. theme.font_size
 
 theme.wallpaper = os.getenv("HOME") .. "/Pictures/97177742_p0.jpg"
 

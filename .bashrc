@@ -18,7 +18,8 @@ PS1='\[$(tput setaf 4)\]\w$(__git_ps1 " \[$(tput setaf 7)\]\[$(tput setaf 2)\]%s
 export EDITOR=nvim
 export HISTCONTROL=ignoreboth
 
-alias ls='ls -lha --color=auto'
+alias ls='ls -A --color=auto'
+alias ll='\ls -lhA --color=auto --group-directories-first'
 alias mv='mv -i'
 alias rm='rm -i'
 alias ..='cd ..'
