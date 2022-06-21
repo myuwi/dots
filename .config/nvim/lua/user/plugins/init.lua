@@ -57,6 +57,11 @@ return require("packer").startup(function(use)
     end,
   })
 
+  use({
+    "Fymyte/rasi.vim",
+    ft = "rasi",
+  })
+
   -- Completion
   use("hrsh7th/nvim-cmp")
   use("hrsh7th/cmp-buffer")

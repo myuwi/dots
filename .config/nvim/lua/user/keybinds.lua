@@ -23,12 +23,14 @@ keymap("n", "<C-b>", ":NvimTreeToggle<CR>", silent_opts)
 
 -- LSP
 keymap("n", "<Leader>e", "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
--- keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
--- keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
 keymap("n", "<Leader>q", "<cmd>lua vim.diagnostic.setloclist()<CR>", opts)
 
 -- Telescope
+keymap("n", "<C-p>", "<cmd>Telescope find_files<CR>", opts)
 keymap("n", "<Leader>pf", "<cmd>Telescope find_files<CR>", opts)
 keymap("n", "<Leader>pg", "<cmd>Telescope live_grep<CR>", opts)
 keymap("n", "<Leader>pb", "<cmd>Telescope buffers<CR>", opts)
 keymap("n", "<Leader>ph", "<cmd>Telescope help_tags<CR>", opts)
+
+-- Put in Visual Mode should not replace register
+keymap("x", "p", "pgvy", opts)
