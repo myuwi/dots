@@ -4,7 +4,7 @@ local gears = require("gears")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local rounded_rect = require("helpers").rounded_rect
+local helpers = require("helpers")
 
 local offsetx = dpi(56)
 local offsety = offsetx + dpi(32)
@@ -20,7 +20,7 @@ local volume_widget = wibox({
   y = screen.geometry.y + offsety,
   width = width,
   height = bar_height + dpi(70),
-  shape = rounded_rect(8),
+  shape = helpers.shape.rounded_rect(8),
   visible = false,
   ontop = true,
 })
@@ -51,8 +51,8 @@ local hide_volume_widget = gears.timer({
   end,
 })
 
-local buttons = {
-  awful.button({}, 3, function(t)
+local volume_widget_buttons = {
+  awful.button({}, 3, function()
     volume_widget.visible = false
     hide_volume_widget:stop()
   end),
@@ -61,35 +61,25 @@ local buttons = {
 volume_widget:setup({
   {
     {
-      {
-        volume_bar,
-        direction = "east",
-        layout = wibox.container.rotate,
-      },
-      top = dpi(20),
-      right = dpi(23),
-      left = dpi(23),
-      bottom = dpi(0),
-      forced_height = bar_height + dpi(20),
-      layout = wibox.container.margin,
+      volume_bar,
+      direction = "east",
+      layout = wibox.container.rotate,
     },
-    volume_text,
-    buttons = buttons,
-    layout = wibox.layout.align.vertical,
+    top = dpi(20),
+    right = dpi(23),
+    left = dpi(23),
+    bottom = dpi(0),
+    forced_height = bar_height + dpi(20),
+    layout = wibox.container.margin,
   },
-  layout = wibox.layout.margin,
+  volume_text,
+  buttons = volume_widget_buttons,
+  layout = wibox.layout.align.vertical,
 })
 
-awesome.connect_signal("volume_change", function()
-  awful.spawn.easy_async_with_shell(
-    "amixer sget Master | grep 'Right:' | awk -F '[][]' '{print $2}'| sed 's/[^0-9]//g'",
-    function(stdout)
-      local volume_level = tonumber(stdout)
-      volume_bar.value = volume_level
-      volume_text.text = tostring(volume_level)
-    end,
-    false
-  )
+awesome.connect_signal("volume_change", function(volume, muted)
+  volume_bar.value = volume
+  volume_text.text = muted and "Off" or tostring(volume)
 
   screen = mouse.screen
   volume_widget.screen = screen

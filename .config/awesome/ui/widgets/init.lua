@@ -1,1 +1,1 @@
-require("ui.widgets.volume")
+require(... .. ".volume")

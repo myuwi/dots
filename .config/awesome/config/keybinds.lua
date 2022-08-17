@@ -1,4 +1,7 @@
 local awful = require("awful")
+local naughty = require("naughty")
+local helpers = require("helpers")
+local gears = require("gears")
 
 -- Global keybindings
 awful.keyboard.append_global_keybindings({
@@ -10,10 +13,10 @@ awful.keyboard.append_global_keybindings({
     description = "view next",
     group = "tag",
   }),
-  awful.key({ modkey }, "Escape", awful.tag.history.restore, {
-    description = "go back",
-    group = "tag",
-  }),
+  -- awful.key({ modkey }, "Escape", awful.tag.history.restore, {
+  --   description = "go back",
+  --   group = "tag",
+  -- }),
   awful.key({ modkey }, "j", function()
     awful.client.focus.byidx(1)
   end, {
@@ -27,13 +30,13 @@ awful.keyboard.append_global_keybindings({
     group = "client",
   }),
   -- Layout manipulation
-  awful.key({ modkey }, "space", function()
+  awful.key({ modkey }, "s", function()
     awful.layout.inc(1)
   end, {
     description = "select next layout",
     group = "layout",
   }),
-  awful.key({ modkey, "Shift" }, "space", function()
+  awful.key({ modkey, "Shift" }, "s", function()
     awful.layout.inc(-1)
   end, {
     description = "select previous layout",
@@ -68,10 +71,13 @@ awful.keyboard.append_global_keybindings({
     group = "client",
   }),
   awful.key({ modkey }, "Tab", function()
-    awful.client.focus.history.previous()
-    if client.focus then
-      client.focus:raise()
-    end
+    awesome.emit_signal("window_switcher::open", 1)
+  end, {
+    description = "go back",
+    group = "client",
+  }),
+  awful.key({ modkey, "Shift" }, "Tab", function()
+    awesome.emit_signal("window_switcher::open", -1)
   end, {
     description = "go back",
     group = "client",
@@ -83,11 +89,11 @@ awful.keyboard.append_global_keybindings({
     description = "open a terminal",
     group = "launcher",
   }),
-  -- dmenu
+  -- rofi
   awful.key({ modkey }, "d", function()
-    awful.spawn("dmenu_run -c -p 'run'", false)
+    awful.spawn("rofi -show drun", false)
   end, {
-    description = "run dmenu",
+    description = "run rofi",
     group = "launcher",
   }),
   -- Toggle picom
@@ -144,26 +150,40 @@ awful.keyboard.append_global_keybindings({
     description = "take an area screenshot",
     group = "screen",
   }),
+  awful.key({}, "Print", function()
+    helpers.misc.take_screenshot(0)
+  end, {
+    description = "take a screenshot of a specific window",
+    group = "screen",
+  }),
+  awful.key({ "Shift" }, "Print", function()
+    helpers.misc.take_screenshot(32)
+  end, {
+    description = "take a screenshot of a specific window",
+    group = "screen",
+  }),
+})
+
+-- Volume, Media and Brightness keys
+awful.keyboard.append_global_keybindings({
   -- Volume keys
   awful.key({}, "XF86AudioRaiseVolume", function()
     awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%", false)
-    awesome.emit_signal("volume_change")
   end, {
     description = "volume up",
-    group = "media controls",
+    group = "volume controls",
   }),
   awful.key({}, "XF86AudioLowerVolume", function()
     awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%", false)
-    awesome.emit_signal("volume_change")
   end, {
     description = "volume down",
-    group = "media controls",
+    group = "volume controls",
   }),
   awful.key({}, "XF86AudioMute", function()
     awful.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle", false)
   end, {
     description = "volume mute",
-    group = "media controls",
+    group = "volume controls",
   }),
   -- Media controls
   awful.key({}, "XF86AudioPlay", function()
@@ -195,12 +215,6 @@ awful.keyboard.append_global_keybindings({
     awful.spawn("backlightctl -i 5", false)
   end, {
     description = "brightness up",
-    group = "brightness",
-  }),
-  awful.key({}, "XF86MonBrightnessDown", function()
-    awful.spawn("backlightctl -d 5", false)
-  end, {
-    description = "brightness down",
     group = "brightness",
   }),
   awful.key({}, "XF86MonBrightnessDown", function()
@@ -281,35 +295,60 @@ client.connect_signal("request::default_keybindings", function()
       description = "move to master",
       group = "client",
     }),
-    awful.key({ modkey }, "o", function(c)
-      c:move_to_screen()
-    end, {
-      description = "move to screen",
-      group = "client",
-    }),
-    awful.key({ modkey }, "t", function(c)
-      c.ontop = not c.ontop
-    end, {
-      description = "toggle keep on top",
-      group = "client",
-    }),
-    awful.key({ modkey }, "m", function(c)
-      c.maximized = not c.maximized
-      c:raise()
-    end, {
-      description = "(un)maximize",
-      group = "client",
-    }),
     awful.key({ modkey }, "c", function(c)
       if c.floating then
-        awful.placement.centered(c)
+        helpers.placement.centered(c)
       end
     end, {
       description = "center a client",
       group = "client",
     }),
   })
+
+  local Control_L = 37
+  local Shift_L = 50
+  -- local Alt_L = 64
+  local Super_L = 133
+
+  -- Input method bindings
+  awful.keyboard.append_client_keybindings({
+    awful.key({ modkey }, "space", function()
+      helpers.input.fcitx_toggle()
+    end, {
+      description = "toggle input method",
+      group = "input",
+    }),
+    awful.key({ modkey, "Control" }, "space", function()
+      helpers.input.fcitx_status(function(mode)
+        if mode == 2 then
+          helpers.input.key_up("space")
+          helpers.input.key("Hiragana", { Super_L, Control_L })
+        end
+      end)
+    end, {
+      description = "set mozc mode to hiragana",
+      group = "input",
+    }),
+    awful.key({ modkey, "Shift" }, "space", function()
+      helpers.input.fcitx_status(function(mode)
+        if mode == 2 then
+          helpers.input.key_up("space")
+          helpers.input.key("Katakana", { Super_L, Shift_L })
+        end
+      end)
+    end, {
+      description = "set mozc mode to katakana",
+      group = "input",
+    }),
+  })
 end)
+
+-- Desktop mousebindings
+awful.mouse.append_global_mousebindings({
+  awful.button({}, 1, function()
+    client.focus = nil
+  end),
+})
 
 -- Client mousebindings
 client.connect_signal("request::default_mousebindings", function()

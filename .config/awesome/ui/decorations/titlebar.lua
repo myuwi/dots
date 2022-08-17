@@ -18,7 +18,7 @@ local function create_button(shape, color, command, c)
   end)
 
   button:connect_signal("mouse::leave", function()
-    button.bg = color
+    button.bg = color .. "cc"
   end)
 
   button:connect_signal("button::press", function()
@@ -32,7 +32,7 @@ local function create_button(shape, color, command, c)
 
   local function dyna()
     if client.focus == c then
-      button.bg = color
+      button.bg = color .. "cc"
     else
       button.bg = beautiful.fg_normal .. "1A"
     end
@@ -63,16 +63,18 @@ client.connect_signal("request::titlebars", function(c)
       {
         nil,
         {
-          widget = awful.titlebar.widget.titlewidget(c),
+          {
+            widget = awful.titlebar.widget.titlewidget(c),
+          },
           buttons = buttons,
+          layout = wibox.container.place,
         },
         {
           create_button(gears.shape.circle, beautiful.colors.gold, function()
-            awful.client.floating.toggle(c)
+            c.minimized = true
           end, c),
-          create_button(gears.shape.circle, beautiful.colors.pine, function()
-            c.maximized = not c.maximized
-            c:raise()
+          create_button(gears.shape.circle, beautiful.colors.iris, function()
+            awful.client.floating.toggle(c)
           end, c),
           create_button(gears.shape.circle, beautiful.colors.love, function()
             c:kill()

@@ -1,3 +1,5 @@
-require("ui.notifications")
-require("ui.panel")
-require("ui.widgets")
+require(... .. ".notifications")
+require(... .. ".panel")
+require(... .. ".decorations")
+require(... .. ".widgets")
+require(... .. ".window_switcher")

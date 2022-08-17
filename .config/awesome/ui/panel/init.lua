@@ -4,28 +4,27 @@ local beautiful = require("beautiful")
 local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
 
-screen.connect_signal("request::desktop_decoration", function(s)
-  -- Each screen has its own tag table.
-  awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[1])
-
-  -- Create the panel
+awful.screen.connect_for_each_screen(function(s)
   local panel = awful.wibar({
     position = "top",
     screen = s,
-    height = dpi(40),
+    height = dpi(42),
     bg = beautiful.bg_panel,
-  })
-
-  -- Add widgets to the panel
-  panel:setup({
-    require("ui.panel.taglist")(s),
-    require("ui.panel.tasklist")(s),
-    {
-      require("ui.panel.systray")(),
-      require("ui.panel.clock")(),
-      require("ui.panel.layoutbox")(s),
-      layout = wibox.layout.fixed.horizontal,
+    widget = {
+      require("ui.panel.taglist")(s),
+      require("ui.panel.tasklist")(s),
+      {
+        {
+          require("ui.panel.systray")(s),
+          require("ui.panel.clock")(),
+          require("ui.panel.layoutbox")(s),
+          spacing = dpi(8),
+          layout = wibox.layout.fixed.horizontal,
+        },
+        left = dpi(16),
+        widget = wibox.container.margin,
+      },
+      layout = wibox.layout.align.horizontal,
     },
-    layout = wibox.layout.align.horizontal,
   })
 end)

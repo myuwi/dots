@@ -1,27 +1,16 @@
 local awful = require("awful")
-local beautiful = require("beautiful")
-local gears = require("gears")
 
-tag.connect_signal("request::default_layouts", function()
-  awful.layout.append_default_layouts({
-    awful.layout.suit.tile,
-    awful.layout.suit.max,
-  })
-end)
-
-screen.connect_signal("request::wallpaper", function(s)
-  if beautiful.wallpaper then
-    gears.wallpaper.maximized(beautiful.wallpaper, s)
-  end
-end)
-
-client.connect_signal("manage", function(c, context)
+-- Spawn new clients as slaves
+client.connect_signal("manage", function(c)
   if not awesome.startup then
     awful.client.setslave(c)
 
-    -- Center floating windows when they are spawned
+    -- Center windows when they are spawned
     if c.floating then
-      awful.placement.centered(c)
+      awful.placement.centered(c, {
+        -- Let fullscreen windows spawn at the true center of the screen
+        honor_workarea = not c.fullscreen,
+      })
     end
   end
 
@@ -31,7 +20,13 @@ client.connect_signal("manage", function(c, context)
   end
 end)
 
-require("config.autostart")
-require("config.keybinds")
-require("config.monitors")
-require("config.rules")
+-- Send clients to bottom of the z-order when they are minimized
+client.connect_signal("property::minimized", function(c)
+  c:lower()
+end)
+
+require(... .. ".autostart")
+require(... .. ".keybinds")
+require(... .. ".monitors")
+require(... .. ".rules")
+require(... .. ".screens")

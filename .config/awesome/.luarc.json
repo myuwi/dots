@@ -1,6 +1,15 @@
 {
   "diagnostics": {
     "disable": ["lowercase-global"],
-    "globals": ["awesome", "client", "mouse", "root", "screen", "tag"]
-  }
+    "globals": [
+      "awesome",
+      "client",
+      "mouse",
+      "mousegrabber",
+      "root",
+      "screen",
+      "tag"
+    ]
+  },
+  "workspace.library": ["/usr/share/awesome/lib"]
 }
