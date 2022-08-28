@@ -16,22 +16,22 @@ end
 --- @param keys string
 --- @param modifiers integer[]? Modifier keys to release and restore before and after pressing keys
 _M.key = function(keys, modifiers)
-  if not modifiers then
+  if not modifiers or #modifiers == 0 then
     awful.spawn("xdotool key " .. keys)
     return
   end
 
   local keyboard_id = 18
 
-  local _mods = table.concat(modifiers, " ")
-  local _mods_grep = _mods:gsub(" ", "|")
+  local mods = table.concat(modifiers, " ")
+  local mods_regex = mods:gsub(" ", "|")
 
   local script = [[
-    xdotool keyup ]] .. _mods .. [[ &&
+    xdotool keyup ]] .. mods .. [[ &&
     xdotool key ]] .. keys .. [[ &&
-    xdotool keydown ]] .. _mods .. [[ &&
+    xdotool keydown ]] .. mods .. [[ &&
     xinput query-state ]] .. keyboard_id .. [[ |
-    grep -E 'key\[(]] .. _mods_grep .. [[)\]=up' |
+    grep -E 'key\[(]] .. mods_regex .. [[)\]=up' |
     sed -rze 's/[^0-9]+/ /g' |
     xargs -r xdotool keyup
   ]]

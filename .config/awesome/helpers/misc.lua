@@ -12,4 +12,14 @@ _M.take_screenshot = function(padding)
   awful.spawn.with_shell(script)
 end
 
+_M.command_exists = function(command, callback)
+  awful.spawn.easy_async_with_shell("command -v " .. command, function(_, _, _, exitcode)
+    if exitcode == 1 then
+      return
+    end
+
+    callback()
+  end)
+end
+
 return _M

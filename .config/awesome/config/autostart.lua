@@ -38,7 +38,7 @@ local spawn_once = function(cmd)
   local process_name = get_process_name(cmd)
 
   awful.spawn.easy_async(string.format("pgrep -U %s -ix %s", os.getenv("USER"), process_name), function(out)
-    if out:len() ~= 0 then
+    if out ~= "" then
       return
     end
 

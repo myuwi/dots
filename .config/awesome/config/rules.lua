@@ -63,7 +63,7 @@ ruled.client.connect_signal("request::rules", function()
   ruled.client.append_rule({
     id = "discord",
     rule = {
-      name = "Discord",
+      class = "discord",
     },
     properties = {
       floating = true,
@@ -96,6 +96,17 @@ ruled.client.connect_signal("request::rules", function()
       placement = helpers.placement.centered,
       width = 1600,
       height = 900,
+    },
+  })
+
+  ruled.client.append_rule({
+    id = "anime-game-launcher",
+    rule = {
+      class = "An Anime Game Launcher",
+    },
+    properties = {
+      floating = true,
+      placement = helpers.placement.centered,
     },
   })
 

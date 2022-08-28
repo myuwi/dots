@@ -13,10 +13,6 @@ awful.keyboard.append_global_keybindings({
     description = "view next",
     group = "tag",
   }),
-  -- awful.key({ modkey }, "Escape", awful.tag.history.restore, {
-  --   description = "go back",
-  --   group = "tag",
-  -- }),
   awful.key({ modkey }, "j", function()
     awful.client.focus.byidx(1)
   end, {
@@ -305,42 +301,43 @@ client.connect_signal("request::default_keybindings", function()
     }),
   })
 
-  local Control_L = 37
-  local Shift_L = 50
-  -- local Alt_L = 64
-  local Super_L = 133
+  helpers.misc.command_exists("fcitx5", function()
+    local Control_L = 37
+    local Shift_L = 50
+    local Super_L = 133
 
-  -- Input method bindings
-  awful.keyboard.append_client_keybindings({
-    awful.key({ modkey }, "space", function()
-      helpers.input.fcitx_toggle()
-    end, {
-      description = "toggle input method",
-      group = "input",
-    }),
-    awful.key({ modkey, "Control" }, "space", function()
-      helpers.input.fcitx_status(function(mode)
-        if mode == 2 then
-          helpers.input.key_up("space")
-          helpers.input.key("Hiragana", { Super_L, Control_L })
-        end
-      end)
-    end, {
-      description = "set mozc mode to hiragana",
-      group = "input",
-    }),
-    awful.key({ modkey, "Shift" }, "space", function()
-      helpers.input.fcitx_status(function(mode)
-        if mode == 2 then
-          helpers.input.key_up("space")
-          helpers.input.key("Katakana", { Super_L, Shift_L })
-        end
-      end)
-    end, {
-      description = "set mozc mode to katakana",
-      group = "input",
-    }),
-  })
+    -- Input method bindings
+    awful.keyboard.append_client_keybindings({
+      awful.key({ modkey }, "space", function()
+        helpers.input.fcitx_toggle()
+      end, {
+        description = "toggle input method",
+        group = "input",
+      }),
+      awful.key({ modkey, "Control" }, "space", function()
+        helpers.input.fcitx_status(function(mode)
+          if mode == 2 then
+            helpers.input.key_up("space")
+            helpers.input.key("Hiragana", { Super_L, Control_L })
+          end
+        end)
+      end, {
+        description = "set mozc mode to hiragana",
+        group = "input",
+      }),
+      awful.key({ modkey, "Shift" }, "space", function()
+        helpers.input.fcitx_status(function(mode)
+          if mode == 2 then
+            helpers.input.key_up("space")
+            helpers.input.key("Katakana", { Super_L, Shift_L })
+          end
+        end)
+      end, {
+        description = "set mozc mode to katakana",
+        group = "input",
+      }),
+    })
+  end)
 end)
 
 -- Desktop mousebindings
