@@ -1,3 +1,13 @@
+-- Autocommand that reloads neovim whenever you save the plugins.lua file
+-- vim.api.nvim_create_autocmd("BufWritePost", {
+--   group = vim.api.nvim_create_augroup("packer_user_config", { clear = true }),
+--   pattern = "lua/user/plugins/init.lua",
+--   desc = "Reload neovim when neovim plugins file is saved",
+--   callback = function()
+--     vim.cmd("so <afile> | PackerSync")
+--   end,
+-- })
+
 return require("packer").startup(function(use)
   use("wbthomason/packer.nvim")
 
@@ -7,7 +17,32 @@ return require("packer").startup(function(use)
     as = "rose-pine",
     tag = "v1.*",
     config = function()
+      require("rose-pine").setup({
+        highlight_groups = {
+          -- NormalFloat = { fg = "text", bg = "surface" },
+          FloatBorder = { fg = "highlight_high", bg = "surface" },
+        },
+      })
+
       vim.cmd("colorscheme rose-pine")
+    end,
+  })
+
+  use({
+    "NvChad/nvim-colorizer.lua",
+    config = function()
+      require("colorizer").setup(nil, {
+        RGB = true, -- #RGB hex codes
+        RRGGBB = true, -- #RRGGBB hex codes
+        names = false, -- "Name" codes like Blue
+        RRGGBBAA = true, -- #RRGGBBAA hex codes
+        rgb_fn = true, -- CSS rgb() and rgba() functions
+        hsl_fn = true, -- CSS hsl() and hsla() functions
+        css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+        css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
+        mode = "virtualtext",
+        virtualtext = "■", -- the virtual text block
+      })
     end,
   })
 
@@ -49,13 +84,18 @@ return require("packer").startup(function(use)
 
   -- LSP
   use("neovim/nvim-lspconfig")
-  use("williamboman/nvim-lsp-installer")
+  -- use("williamboman/nvim-lsp-installer")
+  use({ "williamboman/mason.nvim" })
+  use({ "williamboman/mason-lspconfig.nvim" })
+
   use({
     "jose-elias-alvarez/null-ls.nvim",
     config = function()
       require("user.plugins.null-ls")
     end,
   })
+
+  use("folke/lua-dev.nvim")
 
   use({
     "Fymyte/rasi.vim",
@@ -123,11 +163,9 @@ return require("packer").startup(function(use)
   })
 
   use({
-    "ur4ltz/surround.nvim",
+    "kylechui/nvim-surround",
     config = function()
-      require("surround").setup({
-        mappings_style = "sandwich",
-      })
+      require("nvim-surround").setup()
     end,
   })
 

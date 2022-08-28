@@ -1,4 +1,4 @@
-local status_ok, lsp_installer = pcall(require, "nvim-lsp-installer")
+local status_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
 if not status_ok then
   return
 end
@@ -6,9 +6,11 @@ end
 local lspconfig = require("lspconfig")
 
 local servers = {
+  "efm",
   "eslint",
   "emmet_ls",
   "jsonls",
+  "marksman",
   "prismals",
   "pyright",
   "rust_analyzer",
@@ -18,8 +20,10 @@ local servers = {
   "yamlls",
 }
 
-lsp_installer.setup({
+require("mason").setup()
+mason_lspconfig.setup({
   ensure_installed = servers,
+  automatic_installation = true,
 })
 
 for _, server in pairs(servers) do
