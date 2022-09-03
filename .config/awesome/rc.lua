@@ -17,12 +17,16 @@ apps = {
   terminal = "alacritty",
 }
 
+local ok, vars = pcall(require, "user_variables")
+if not ok then
+  vars = {}
+end
+user_variables = vars
+
 -- Theme
 require("theme")
 
 require("daemon")
-
--- require("module")
 
 -- Config
 require("config")

@@ -21,7 +21,7 @@ _M.key = function(keys, modifiers)
     return
   end
 
-  local keyboard_id = 18
+  local keyboard_id = user_variables.keyboard_id or 18
 
   local mods = table.concat(modifiers, " ")
   local mods_regex = mods:gsub(" ", "|")
