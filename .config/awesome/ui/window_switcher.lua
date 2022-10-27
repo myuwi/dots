@@ -21,7 +21,7 @@ local window_switcher_box
 local app_icons
 
 local function activate(index)
-  c = visible_clients[index]
+  local c = visible_clients[index]
 
   c:emit_signal("request::activate", "window_switcher", {
     raise = true,
@@ -60,6 +60,7 @@ local function draw_widget()
         {
           {
             {
+              -- TODO: Use a fallback if a client doesn't have an icon
               awful.widget.clienticon(c),
               forced_height = icon_size,
               forced_width = icon_size,
@@ -119,7 +120,6 @@ local function draw_widget()
     ontop = true,
     screen = awful.screen.focused(),
     bg = "#00000000",
-    shape = helpers.shape.rounded_rect(beautiful.border_radius * 2),
     widget = {
       {
         {
@@ -131,6 +131,9 @@ local function draw_widget()
         widget = wibox.container.margin,
       },
       bg = beautiful.bg_normal,
+      shape_border_width = beautiful.widget_border_width,
+      shape_border_color = beautiful.border_color,
+      shape = helpers.shape.rounded_rect(beautiful.border_radius),
       widget = wibox.container.background,
     },
   })

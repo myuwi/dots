@@ -20,7 +20,7 @@ local volume_widget = wibox({
   y = screen.geometry.y + offsety,
   width = width,
   height = bar_height + dpi(70),
-  shape = helpers.shape.rounded_rect(8),
+  -- shape = helpers.shape.rounded_rect(8),
   visible = false,
   ontop = true,
 })
@@ -61,20 +61,27 @@ local volume_widget_buttons = {
 volume_widget:setup({
   {
     {
-      volume_bar,
-      direction = "east",
-      layout = wibox.container.rotate,
+      {
+        volume_bar,
+        direction = "east",
+        layout = wibox.container.rotate,
+      },
+      top = dpi(20),
+      right = dpi(23),
+      left = dpi(23),
+      bottom = dpi(0),
+      forced_height = bar_height + dpi(20),
+      layout = wibox.container.margin,
     },
-    top = dpi(20),
-    right = dpi(23),
-    left = dpi(23),
-    bottom = dpi(0),
-    forced_height = bar_height + dpi(20),
-    layout = wibox.container.margin,
+    volume_text,
+    buttons = volume_widget_buttons,
+    layout = wibox.layout.align.vertical,
   },
-  volume_text,
-  buttons = volume_widget_buttons,
-  layout = wibox.layout.align.vertical,
+  bg = beautiful.bg_normal,
+  shape_border_width = beautiful.widget_border_width,
+  shape_border_color = beautiful.border_color,
+  shape = helpers.shape.rounded_rect(beautiful.border_radius),
+  widget = wibox.container.background,
 })
 
 awesome.connect_signal("volume_change", function(volume, muted)

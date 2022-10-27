@@ -1,4 +1,3 @@
-local gears = require("gears")
 local naughty = require("naughty")
 require("awful.autofocus")
 
@@ -11,7 +10,6 @@ naughty.connect_signal("request::display_error", function(message, startup)
 end)
 
 -- Globals
-config_dir = gears.filesystem.get_configuration_dir()
 modkey = "Mod4"
 apps = {
   terminal = "alacritty",

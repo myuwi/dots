@@ -33,9 +33,7 @@ ruled.client.connect_signal("request::rules", function()
         "Blueman-manager",
         "Nm-connection-editor",
         "qjoypad",
-        "Steam",
         "Thunar",
-        "zoom",
       },
       instance = {
         "Devtools",
@@ -52,8 +50,11 @@ ruled.client.connect_signal("request::rules", function()
   -- Apps with titlebars enabled
   ruled.client.append_rule({
     id = "titlebars_enabled",
-    rule = {
-      class = "holocure.exe",
+    rule_any = {
+      class = {
+        -- "holocure.exe",
+        -- "holocurelauncher.exe",
+      },
     },
     properties = {
       titlebars_enabled = true,
@@ -76,11 +77,23 @@ ruled.client.connect_signal("request::rules", function()
 
   ruled.client.append_rule({
     id = "steam",
-    rule = {
-      name = "Steam",
+    rule_any = {
+      class = {
+        "Steam",
+      },
     },
     properties = {
       floating = true,
+    },
+  })
+
+  ruled.client.append_rule({
+    id = "steam-main",
+    rule = {
+      class = "Steam",
+      name = "Steam",
+    },
+    properties = {
       width = 1600,
       height = 900,
     },
@@ -99,6 +112,28 @@ ruled.client.connect_signal("request::rules", function()
     },
   })
 
+  -- Zoom
+  ruled.client.append_rule({
+    id = "zoom",
+    rule = {
+      class = "zoom",
+    },
+    properties = {
+      floating = true,
+    },
+  })
+
+  ruled.client.append_rule({
+    id = "zoom-main",
+    rule = {
+      class = "zoom",
+      name = "Zoom Meeting",
+    },
+    properties = {
+      floating = false,
+    },
+  })
+
   ruled.client.append_rule({
     id = "anime-game-launcher",
     rule = {
@@ -106,7 +141,6 @@ ruled.client.connect_signal("request::rules", function()
     },
     properties = {
       floating = true,
-      placement = helpers.placement.centered,
     },
   })
 

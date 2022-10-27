@@ -1,4 +1,5 @@
 local awful = require("awful")
+local helpers = require("helpers")
 
 -- Spawn new clients as slaves
 client.connect_signal("manage", function(c)
@@ -7,10 +8,12 @@ client.connect_signal("manage", function(c)
 
     -- Center windows when they are spawned
     if c.floating then
-      awful.placement.centered(c, {
-        -- Let fullscreen windows spawn at the true center of the screen
-        honor_workarea = not c.fullscreen,
-      })
+      helpers.placement.centered(c)
+
+      -- awful.placement.centered(c, {
+      --   -- Let fullscreen windows spawn at the true center of the screen
+      --   honor_workarea = not c.fullscreen,
+      -- })
     end
   end
 

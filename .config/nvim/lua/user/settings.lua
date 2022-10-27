@@ -6,7 +6,7 @@ vim.opt.breakindent = true
 
 -- Line numbers
 vim.opt.number = true
-vim.opt.relativenumber = false
+vim.opt.relativenumber = true
 -- vim.opt.numberwidth = 4
 vim.opt.signcolumn = "yes"
 
@@ -16,6 +16,7 @@ vim.opt.scrolloff = 1
 
 -- Enable mouse
 vim.opt.mouse = "a"
+vim.opt.mousemodel = "extend"
 
 -- True colors
 vim.opt.termguicolors = true

@@ -1,6 +1,6 @@
 require("user.settings")
 
--- Disable config in VSCode NeoVim
+-- Disable config in VSCode Neovim
 if vim.g.vscode then
   return
 end

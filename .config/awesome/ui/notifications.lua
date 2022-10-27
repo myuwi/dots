@@ -13,6 +13,13 @@ naughty.config.defaults.timeout = 6
 naughty.config.defaults.title = "Notification"
 naughty.config.defaults.position = "bottom_right"
 
+-- naughty.connect_signal("destroyed", function(n, reason)
+--   -- Notification dismissed manually with the left mouse button
+--   -- TODO: Raise the client corresponding to the notification if it exists
+--   if reason == naughty.notification_closed_reason.dismissed_by_user and mouse.is_left_mouse_button_pressed then
+--   end
+-- end)
+
 naughty.connect_signal("request::display", function(n)
   local notification_body = wibox.widget.textbox(n.message, true)
   notification_body.ellipsize = "none"
@@ -83,7 +90,9 @@ naughty.connect_signal("request::display", function(n)
           margins = beautiful.notification_margin,
           widget = wibox.container.margin,
         },
-        bg = beautiful.colors.surface,
+        bg = beautiful.bg_normal,
+        shape_border_width = beautiful.widget_border_width,
+        shape_border_color = beautiful.border_color,
         shape = helpers.shape.rounded_rect(beautiful.border_radius),
         widget = wibox.container.background,
       },

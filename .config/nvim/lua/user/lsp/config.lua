@@ -6,15 +6,16 @@ end
 local lspconfig = require("lspconfig")
 
 local servers = {
-  "efm",
   "eslint",
   "emmet_ls",
   "jsonls",
+  "lemminx",
   "marksman",
   "prismals",
   "pyright",
   "rust_analyzer",
   "sumneko_lua",
+  "svelte",
   "tailwindcss",
   "tsserver",
   "yamlls",

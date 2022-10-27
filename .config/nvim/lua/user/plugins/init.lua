@@ -14,8 +14,10 @@ return require("packer").startup(function(use)
   -- Colorscheme
   use({
     "rose-pine/neovim",
+    -- "~/repos/rose-pine-neovim",
+    -- "myuwi/rose-pine-neovim",
+    -- branch = "fix-treesitter-highlight-groups",
     as = "rose-pine",
-    tag = "v1.*",
     config = function()
       require("rose-pine").setup({
         highlight_groups = {
@@ -24,24 +26,26 @@ return require("packer").startup(function(use)
         },
       })
 
-      vim.cmd("colorscheme rose-pine")
+      vim.cmd.colorscheme("rose-pine")
     end,
   })
 
   use({
     "NvChad/nvim-colorizer.lua",
     config = function()
-      require("colorizer").setup(nil, {
-        RGB = true, -- #RGB hex codes
-        RRGGBB = true, -- #RRGGBB hex codes
-        names = false, -- "Name" codes like Blue
-        RRGGBBAA = true, -- #RRGGBBAA hex codes
-        rgb_fn = true, -- CSS rgb() and rgba() functions
-        hsl_fn = true, -- CSS hsl() and hsla() functions
-        css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-        css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
-        mode = "virtualtext",
-        virtualtext = "■", -- the virtual text block
+      require("colorizer").setup({
+        user_default_options = {
+          RGB = true, -- #RGB hex codes
+          RRGGBB = true, -- #RRGGBB hex codes
+          names = false, -- "Name" codes like Blue
+          RRGGBBAA = true, -- #RRGGBBAA hex codes
+          rgb_fn = true, -- CSS rgb() and rgba() functions
+          hsl_fn = true, -- CSS hsl() and hsla() functions
+          css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+          css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
+          mode = "virtualtext",
+          virtualtext = "■", -- the virtual text block
+        },
       })
     end,
   })
@@ -95,7 +99,7 @@ return require("packer").startup(function(use)
     end,
   })
 
-  use("folke/lua-dev.nvim")
+  use("folke/neodev.nvim")
 
   use({
     "Fymyte/rasi.vim",
@@ -110,13 +114,16 @@ return require("packer").startup(function(use)
   use("saadparwaiz1/cmp_luasnip")
   use("hrsh7th/cmp-nvim-lsp")
 
+  -- Treesitter
   use({
     "nvim-treesitter/nvim-treesitter",
     run = ":TSUpdate",
+    -- commit = "4cccb6f494eb255b32a290d37c35ca12584c74d0",
     config = function()
       require("user.plugins.treesitter")
     end,
   })
+  use("nvim-treesitter/playground")
 
   -- snippets
   use({

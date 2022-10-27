@@ -30,44 +30,34 @@ local taglist = function(s)
     end)
   )
 
-  local widget_taglist = {
-    awful.widget.taglist({
-      screen = s,
-      filter = awful.widget.taglist.filter.noempty,
-      layout = {
-        spacing = dpi(4),
-        layout = wibox.layout.fixed.horizontal,
-      },
-      buttons = taglist_buttons,
-      style = {
-        shape = rounded_rect(4),
-      },
-      widget_template = {
+  local widget_taglist = awful.widget.taglist({
+    screen = s,
+    filter = awful.widget.taglist.filter.noempty,
+    layout = {
+      spacing = dpi(4),
+      layout = wibox.layout.fixed.horizontal,
+    },
+    buttons = taglist_buttons,
+    style = {
+      shape = rounded_rect(4),
+    },
+    widget_template = {
+      {
         {
-          {
-            {
-              id = "text_role",
-              widget = wibox.widget.textbox,
-              align = "center",
-              valign = "center",
-            },
-            margins = 2,
-            widget = wibox.container.margin,
-          },
-          id = "background_role",
-          bg = beautiful.bg_tasklist_active,
-          forced_width = dpi(20),
-          widget = wibox.container.background,
+          id = "text_role",
+          widget = wibox.widget.textbox,
+          align = "center",
+          valign = "center",
         },
-        top = dpi(4),
-        bottom = dpi(4),
-        widget = wibox.container.margin,
+        widget = wibox.container.place,
       },
-    }),
-    right = dpi(4),
-    left = dpi(4),
-    layout = wibox.container.margin,
-  }
+      id = "background_role",
+      bg = beautiful.bg_tasklist_active,
+      forced_width = dpi(20),
+      widget = wibox.container.background,
+    },
+  })
+
   return widget_taglist
 end
 

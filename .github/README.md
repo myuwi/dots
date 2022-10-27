@@ -1,8 +1,10 @@
-<h3 align="center">myuwi/dotfiles</h3>
+<h3 align="center">myuwi/dots</h3>
 
 - **OS:** Arch Linux
 - **WM:** Awesome
 - **Term:** Alacritty
 - **Editor:** Neovim
-- **Comp:** Picom (ibhagwan's fork)
-- **Font:** SF Pro & Mononoki
+- **Comp:** Picom
+- **Fonts:**
+  - Inter
+  - Mononoki

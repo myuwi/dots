@@ -1,2 +1,2 @@
-require(... .. ".corners")
-require(... .. ".titlebar")
+-- require(... .. ".corners")
+-- require(... .. ".titlebar")
