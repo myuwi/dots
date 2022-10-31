@@ -1,10 +1,8 @@
-local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local naughty = require("naughty")
 local wibox = require("wibox")
 local helpers = require("helpers")
-
 local button = require("ui.components.button")
 
 naughty.config.defaults.ontop = true
@@ -13,28 +11,38 @@ naughty.config.defaults.timeout = 6
 naughty.config.defaults.title = "Notification"
 naughty.config.defaults.position = "bottom_right"
 
--- naughty.connect_signal("destroyed", function(n, reason)
---   -- Notification dismissed manually with the left mouse button
---   -- TODO: Raise the client corresponding to the notification if it exists
---   if reason == naughty.notification_closed_reason.dismissed_by_user and mouse.is_left_mouse_button_pressed then
---   end
--- end)
-
 naughty.connect_signal("request::display", function(n)
   local notification_body = wibox.widget.textbox(n.message, true)
   notification_body.ellipsize = "none"
   notification_body.valign = "top"
   notification_body.forced_height = notification_body:get_height_for_width(
-    dpi(360 - beautiful.notification_margin * 2),
-    awful.screen.focused()
+    beautiful.notification_width - beautiful.notification_margin * 2,
+    screen.primary
   )
+
+  local action_button_hovered = false
+
+  -- TODO: Make this cleaner?
+  local action_button = function()
+    local btn = button()
+
+    btn:connect_signal("mouse::enter", function()
+      action_button_hovered = true
+    end)
+
+    btn:connect_signal("mouse::leave", function()
+      action_button_hovered = false
+    end)
+
+    return btn
+  end
 
   local actions = {
     base_layout = wibox.widget({
       spacing = dpi(8),
       layout = wibox.layout.flex.horizontal,
     }),
-    widget_template = button,
+    widget_template = action_button,
     style = {
       underline_normal = false,
       underline_selected = true,
@@ -42,7 +50,7 @@ naughty.connect_signal("request::display", function(n)
     widget = naughty.list.actions,
   }
 
-  naughty.layout.box({
+  local notification = naughty.layout.box({
     notification = n,
     type = "notification",
     bg = beautiful.colors.transparent,
@@ -63,7 +71,7 @@ naughty.connect_signal("request::display", function(n)
               {
                 {
                   text = n.title,
-                  font = beautiful.font_bold,
+                  font = beautiful.font_name .. " Bold " .. beautiful.font_size,
                   forced_height = dpi(16),
                   ellipsize = "end",
                   widget = wibox.widget.textbox,
@@ -96,8 +104,39 @@ naughty.connect_signal("request::display", function(n)
         shape = helpers.shape.rounded_rect(beautiful.border_radius),
         widget = wibox.container.background,
       },
-      forced_width = dpi(360),
+      forced_width = beautiful.notification_width,
       widget = wibox.layout.fixed.vertical,
     },
   })
+
+  -- Stop notification from disappearing if it is hovered
+  local notif_mouse_enter = function()
+    n:reset_timeout(86400) -- a long time
+  end
+
+  local notif_mouse_leave = function()
+    n:reset_timeout(naughty.config.defaults.timeout)
+  end
+
+  notification:connect_signal("mouse::enter", notif_mouse_enter)
+  notification:connect_signal("mouse::leave", notif_mouse_leave)
+
+  n:connect_signal("destroyed", function(n, reason)
+    notification:disconnect_signal("mouse::enter", notif_mouse_enter)
+    notification:disconnect_signal("mouse::leave", notif_mouse_leave)
+
+    local mouse_left_down = mouse.is_left_mouse_button_pressed
+
+    if
+      reason == naughty.notification_closed_reason.dismissed_by_user
+      and mouse_left_down
+      and not action_button_hovered
+    then
+      -- TODO: Improve
+      -- Jump to client when a notification is left clicked
+      if #n.clients then
+        n.clients[1]:jump_to()
+      end
+    end
+  end)
 end)

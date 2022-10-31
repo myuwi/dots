@@ -25,6 +25,7 @@ export HISTCONTROL=ignoreboth
 
 alias ls='exa -a --group-directories-first'
 alias ll='exa -la --group-directories-first'
+alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
 alias ..='cd ..'

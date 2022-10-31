@@ -22,6 +22,8 @@ awful.spawn.easy_async(string.format("pkill -f -U %s %s", os.getenv("USER"), "'^
       local muted = muted_str == "off"
 
       if volume ~= volume_last or muted ~= muted_last then
+        -- TODO: Improve this logic
+        -- Make volume widget not show up on startup
         if volume_last or muted_last then
           awesome.emit_signal("volume_change", volume, muted)
         end

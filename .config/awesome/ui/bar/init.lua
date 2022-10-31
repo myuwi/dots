@@ -1,23 +1,21 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-local xresources = require("beautiful.xresources")
-local dpi = xresources.apply_dpi
 
-local taglist = require("ui.panel.taglist")
-local tasklist = require("ui.panel.tasklist")
-local systray = require("ui.panel.systray")
-local clock = require("ui.panel.clock")
--- local layoutbox = require("ui.panel.layoutbox")
+local taglist = require("ui.bar.taglist")
+local tasklist = require("ui.bar.tasklist")
+local systray = require("ui.bar.systray")
+local clock = require("ui.bar.clock")
+-- local layoutbox = require("ui.bar.layoutbox")
 
 awful.screen.connect_for_each_screen(function(s)
   local is_primary = s == screen.primary
 
-  local panel = awful.wibar({
+  awful.wibar({
     position = "top",
     screen = s,
-    height = dpi(46),
-    bg = beautiful.bg_panel,
+    height = beautiful.bar_height,
+    bg = beautiful.bg_bar,
     widget = {
       {
         taglist(s),

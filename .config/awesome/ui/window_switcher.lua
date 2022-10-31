@@ -35,7 +35,7 @@ local function redraw_highlights()
     elseif alt_tab_index == i then
       c.bg = beautiful.colors.surface
     else
-      c.bg = "#00000000"
+      c.bg = beautiful.colors.transparent
     end
   end)
 end
@@ -89,7 +89,7 @@ local function draw_widget()
         widget = wibox.container.margin,
       },
       shape = helpers.shape.rounded_rect(beautiful.border_radius),
-      bg = alt_tab_index == i and beautiful.colors.surface or "#00000000",
+      bg = alt_tab_index == i and beautiful.colors.surface or beautiful.colors.transparent,
       widget = wibox.container.background,
     })
 
@@ -119,7 +119,7 @@ local function draw_widget()
     visible = false,
     ontop = true,
     screen = awful.screen.focused(),
-    bg = "#00000000",
+    bg = beautiful.colors.transparent,
     widget = {
       {
         {

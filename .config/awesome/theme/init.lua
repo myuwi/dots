@@ -8,14 +8,10 @@ local theme_path = gfs.get_configuration_dir() .. "theme/"
 local theme = {}
 
 theme.font_name = "Inter"
-theme.font_name_bold = "Inter Bold"
 theme.font_size = 9
-
 theme.font = theme.font_name .. " " .. theme.font_size
-theme.font_bold = theme.font_name_bold .. " " .. theme.font_size
 
--- theme.wallpaper = theme_path .. "wallpaper.jpg"
-theme.wallpaper = "~/Pictures/Anime/101540275_p0.jpg"
+theme.wallpaper = theme_path .. "assets/wallpaper.jpg"
 
 -- https://rosepinetheme.com/palette
 local colors = {
@@ -43,7 +39,7 @@ theme.bg_normal = colors.base
 theme.bg_focus = colors.overlay
 theme.bg_urgent = colors.love
 theme.bg_minimize = colors.transparent
-theme.bg_panel = colors.base
+theme.bg_bar = colors.base
 theme.bg_systray = theme.bg_focus
 
 theme.fg_normal = colors.text
@@ -51,21 +47,24 @@ theme.fg_focus = colors.text
 theme.fg_urgent = colors.text
 theme.fg_minimize = colors.text .. "66"
 
--- Gaps and Borders
+-- Gaps
 theme.useless_gap = dpi(4)
+
+-- Borders
+theme.border_radius = 6
 theme.border_width = dpi(0)
 theme.border_color = colors.surface
-theme.border_radius = 6
 
 theme.widget_border_width = dpi(1)
 
 -- Bar
+theme.bar_height = dpi(46)
 theme.bar_padding = dpi(6)
 theme.bar_spacing = dpi(6)
 
 -- Tasklist
-theme.tasklist_bg_focus = colors.overlay
 theme.bg_tasklist_active = colors.overlay
+theme.bg_tasklist_minimized = "#00000000"
 theme.bg_tasklist_inactive = "#00000000"
 
 theme.tasklist_plain_task_name = true
@@ -74,6 +73,7 @@ theme.tasklist_plain_task_name = true
 theme.systray_icon_spacing = dpi(6)
 
 -- Notifications
+theme.notification_width = dpi(320)
 theme.notification_margin = dpi(16)
 theme.notification_spacing = dpi(8)
 

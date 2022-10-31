@@ -10,7 +10,7 @@ local function update_task_background(w, c)
   if c.active then
     w.bg = beautiful.bg_tasklist_active
   elseif c.minimized then
-    w.bg = beautiful.bg_minimize
+    w.bg = beautiful.bg_tasklist_minimized
   else
     w.bg = beautiful.bg_tasklist_inactive
   end
@@ -42,6 +42,7 @@ local tasklist = function(s)
       {
         {
           {
+            -- TODO: Find a fix for missing icons. E.g. Spotify
             awful.widget.clienticon,
             left = dpi(4),
             widget = wibox.container.margin,

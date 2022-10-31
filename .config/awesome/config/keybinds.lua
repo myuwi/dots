@@ -1,7 +1,5 @@
 local awful = require("awful")
-local naughty = require("naughty")
 local helpers = require("helpers")
-local gears = require("gears")
 
 -- Global keybindings
 awful.keyboard.append_global_keybindings({
@@ -273,6 +271,12 @@ client.connect_signal("request::default_keybindings", function()
       c:raise()
     end, {
       description = "toggle fullscreen",
+      group = "client",
+    }),
+    awful.key({ modkey, "Control" }, "f", function(c)
+      c.maximized = not c.maximized
+    end, {
+      description = "(un)maximize",
       group = "client",
     }),
     awful.key({ modkey, "Shift" }, "q", function(c)

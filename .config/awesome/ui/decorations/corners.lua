@@ -1,6 +1,6 @@
 local beautiful = require("beautiful")
-local helpers = require("helpers")
 local gears = require("gears")
+local helpers = require("helpers")
 local rounded_shape = helpers.shape.rounded_rect(beautiful.border_radius)
 
 local function toggle_rounded_corners(c)

@@ -1,5 +1,5 @@
-require(... .. ".notifications")
-require(... .. ".panel")
+require(... .. ".bar")
 require(... .. ".decorations")
+require(... .. ".notifications")
 require(... .. ".widgets")
 require(... .. ".window_switcher")

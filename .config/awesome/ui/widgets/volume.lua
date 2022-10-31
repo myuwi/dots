@@ -3,6 +3,7 @@ local awful = require("awful")
 local gears = require("gears")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
+local naughty = require("naughty")
 
 local helpers = require("helpers")
 
@@ -84,6 +85,15 @@ volume_widget:setup({
   widget = wibox.container.background,
 })
 
+volume_widget:connect_signal("mouse::enter", function()
+  hide_volume_widget:stop()
+end)
+
+volume_widget:connect_signal("mouse::leave", function()
+  hide_volume_widget:again()
+end)
+
+-- TODO: Show volume widget when volume is lowered when already at 0
 awesome.connect_signal("volume_change", function(volume, muted)
   volume_bar.value = volume
   volume_text.text = muted and "Off" or tostring(volume)

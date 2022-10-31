@@ -1,12 +1,13 @@
 local beautiful = require("beautiful")
 local wibox = require("wibox")
-
 local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
-
 local helpers = require("helpers")
 
-local button = function()
+local button = function(args)
+  local args = args or {}
+  local text = args.text or ""
+
   local widget = wibox.widget({
     {
       {
@@ -14,6 +15,7 @@ local button = function()
         align = "center",
         valign = "center",
         font = beautiful.font,
+        text = text,
         widget = wibox.widget.textbox,
       },
       left = dpi(8),

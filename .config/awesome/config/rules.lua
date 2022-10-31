@@ -65,6 +65,7 @@ ruled.client.connect_signal("request::rules", function()
     id = "discord",
     rule = {
       class = "discord",
+      role = "browser-window",
     },
     properties = {
       floating = true,
@@ -106,7 +107,6 @@ ruled.client.connect_signal("request::rules", function()
     },
     properties = {
       floating = true,
-      placement = helpers.placement.centered,
       width = 1600,
       height = 900,
     },

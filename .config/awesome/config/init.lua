@@ -7,13 +7,8 @@ client.connect_signal("manage", function(c)
     awful.client.setslave(c)
 
     -- Center windows when they are spawned
-    if c.floating then
+    if c.floating and not c.size_hints.user_position and not c.size_hints.program_position then
       helpers.placement.centered(c)
-
-      -- awful.placement.centered(c, {
-      --   -- Let fullscreen windows spawn at the true center of the screen
-      --   honor_workarea = not c.fullscreen,
-      -- })
     end
   end
 
