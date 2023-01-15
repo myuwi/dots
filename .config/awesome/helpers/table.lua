@@ -23,12 +23,6 @@ _M.filter = function(tbl, callback)
   return t
 end
 
-_M.foreach = function(tbl, callback)
-  for i, element in ipairs(tbl) do
-    callback(element, i, tbl)
-  end
-end
-
 _M.map = function(tbl, callback)
   local t = {}
   for i, element in ipairs(tbl) do

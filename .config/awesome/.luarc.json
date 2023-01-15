@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json",
   "diagnostics": {
     "disable": ["lowercase-global"],
     "globals": [
@@ -11,5 +12,8 @@
       "tag"
     ]
   },
-  "workspace.library": ["/usr/share/awesome/lib"]
+  "workspace": {
+    "ignoreDir": [".vscode", "lib"],
+    "library": ["/usr/share/awesome/lib"]
+  }
 }

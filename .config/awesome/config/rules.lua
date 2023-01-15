@@ -1,9 +1,7 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
-local ruled = require("ruled")
-local naughty = require("naughty")
-
 local helpers = require("helpers")
+local ruled = require("ruled")
 
 ruled.client.connect_signal("request::rules", function()
   local screen_count = screen.count()
@@ -29,6 +27,7 @@ ruled.client.connect_signal("request::rules", function()
     id = "floating",
     rule_any = {
       class = {
+        "An Anime Game Launcher",
         "Arandr",
         "Blueman-manager",
         "Nm-connection-editor",
@@ -44,6 +43,19 @@ ruled.client.connect_signal("request::rules", function()
     },
     properties = {
       floating = true,
+    },
+  })
+
+  -- Floating clients.
+  ruled.client.append_rule({
+    id = "ontop",
+    rule_any = {
+      role = {
+        "gimp-toolbox-color-dialog",
+      },
+    },
+    properties = {
+      ontop = true,
     },
   })
 
@@ -73,6 +85,26 @@ ruled.client.connect_signal("request::rules", function()
       height = 900,
       screen = leftmost_screen,
       tag = screen_count > 1 and "1" or "9",
+    },
+  })
+
+  ruled.client.append_rule({
+    id = "megasync",
+    rule = {
+      class = "MEGAsync",
+    },
+    properties = {
+      floating = true,
+      placement = function(c)
+        awful.placement.top_right(c, {
+          offset = {
+            x = -8,
+            y = 8,
+          },
+          honor_workarea = true,
+        })
+      end,
+      screen = 1,
     },
   })
 
@@ -118,6 +150,9 @@ ruled.client.connect_signal("request::rules", function()
     rule = {
       class = "zoom",
     },
+    except = {
+      name = "Zoom Meeting",
+    },
     properties = {
       floating = true,
     },
@@ -135,16 +170,6 @@ ruled.client.connect_signal("request::rules", function()
   })
 
   ruled.client.append_rule({
-    id = "anime-game-launcher",
-    rule = {
-      class = "An Anime Game Launcher",
-    },
-    properties = {
-      floating = true,
-    },
-  })
-
-  ruled.client.append_rule({
     id = "minecraft",
     rule = {
       class = "Minecraft.*",
@@ -157,18 +182,4 @@ ruled.client.connect_signal("request::rules", function()
       height = 720,
     },
   })
-
-  local function late_apply_rules(c)
-    if c.class then
-      ruled.client.apply(c)
-      c:disconnect_signal("property::class", late_apply_rules)
-    end
-  end
-
-  -- A workaround for clients that spawn without a class but are assigned a class later
-  client.connect_signal("manage", function(c)
-    if not c.class then
-      c:connect_signal("property::class", late_apply_rules)
-    end
-  end)
 end)

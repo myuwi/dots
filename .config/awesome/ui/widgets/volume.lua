@@ -3,8 +3,6 @@ local awful = require("awful")
 local gears = require("gears")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
-local naughty = require("naughty")
-
 local helpers = require("helpers")
 
 local offsetx = dpi(56)
@@ -13,7 +11,8 @@ local offsety = offsetx + dpi(32)
 local width = dpi(56)
 local bar_height = dpi(90)
 
-local screen = mouse.screen
+-- local screen = mouse.screen
+local screen = screen.primary
 
 local volume_widget = wibox({
   screen = screen,
@@ -38,7 +37,7 @@ local volume_bar = wibox.widget({
 
 local volume_text = wibox.widget({
   text = "50",
-  align = "center",
+  halign = "center",
   valign = "center",
   widget = wibox.widget.textbox,
 })
@@ -52,6 +51,7 @@ local hide_volume_widget = gears.timer({
   end,
 })
 
+local hovered = false
 local volume_widget_buttons = {
   awful.button({}, 3, function()
     volume_widget.visible = false
@@ -86,25 +86,29 @@ volume_widget:setup({
 })
 
 volume_widget:connect_signal("mouse::enter", function()
+  hovered = true
   hide_volume_widget:stop()
 end)
 
 volume_widget:connect_signal("mouse::leave", function()
+  hovered = false
   hide_volume_widget:again()
 end)
 
 -- TODO: Show volume widget when volume is lowered when already at 0
-awesome.connect_signal("volume_change", function(volume, muted)
-  volume_bar.value = volume
-  volume_text.text = muted and "Off" or tostring(volume)
+awesome.connect_signal("volume_change", function(event)
+  volume_bar.value = event.volume
+  volume_text.text = event.muted and "Off" or tostring(event.volume)
 
-  screen = mouse.screen
-  volume_widget.screen = screen
-  volume_widget.x = screen.geometry.x + offsetx
-  volume_widget.y = screen.geometry.y + offsety
+  -- screen = mouse.screen
+  -- volume_widget.screen = screen
+  -- volume_widget.x = screen.geometry.x + offsetx
+  -- volume_widget.y = screen.geometry.y + offsety
 
   if volume_widget.visible then
-    hide_volume_widget:again()
+    if not hovered then
+      hide_volume_widget:again()
+    end
   else
     volume_widget.visible = true
     hide_volume_widget:start()

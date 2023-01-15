@@ -12,7 +12,7 @@ local button = function(args)
     {
       {
         id = "text_role",
-        align = "center",
+        halign = "center",
         valign = "center",
         font = beautiful.font,
         text = text,

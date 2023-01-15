@@ -34,6 +34,8 @@ _M.add_hover_background_fade = function(widget, normal_color, hover_color, trans
     intro = 0,
     duration = transition,
     subscribed = function(pos)
+      -- FIXME: There's a bug here somewhere
+      -- helpers/color.lua:24: bad argument #2 to 'format' (number has no integer representation)
       local col = color.gradient(normal_color, hover_color, pos)
       widget.bg = col
     end,

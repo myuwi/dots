@@ -1,15 +1,9 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
--- local history = require("module.history")
 local wibox = require("wibox")
-
-local helpers = require("helpers")
-local foreach = helpers.table.foreach
-local filter = helpers.table.filter
-local map = helpers.table.map
-
 local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
+local helpers = require("helpers")
 
 local alt_tab_index = 1
 local hover_index
@@ -29,15 +23,15 @@ local function activate(index)
 end
 
 local function redraw_highlights()
-  foreach(app_icons, function(c, i)
+  for i, c in ipairs(app_icons) do
     if hover_index == i then
-      c.bg = beautiful.colors.overlay
+      c.bg = beautiful.window_switcher_hover
     elseif alt_tab_index == i then
-      c.bg = beautiful.colors.surface
+      c.bg = beautiful.window_switcher_focus
     else
-      c.bg = beautiful.colors.transparent
+      c.bg = beautiful.window_switcher_inactive
     end
-  end)
+  end
 end
 
 local function draw_widget()
@@ -54,13 +48,12 @@ local function draw_widget()
   local icon_spacing = dpi(8)
   local container_padding = dpi(16)
 
-  app_icons = map(visible_clients, function(c, i)
+  app_icons = helpers.table.map(visible_clients, function(c, i)
     local widget = wibox.widget({
       {
         {
           {
             {
-              -- TODO: Use a fallback if a client doesn't have an icon
               awful.widget.clienticon(c),
               forced_height = icon_size,
               forced_width = icon_size,
@@ -71,7 +64,7 @@ local function draw_widget()
           },
           {
             text = c.name,
-            align = "center",
+            halign = "center",
             valign = "center",
             ellipsize = "end",
             forced_width = icon_size + icon_padding * 2,
@@ -89,7 +82,7 @@ local function draw_widget()
         widget = wibox.container.margin,
       },
       shape = helpers.shape.rounded_rect(beautiful.border_radius),
-      bg = alt_tab_index == i and beautiful.colors.surface or beautiful.colors.transparent,
+      bg = alt_tab_index == i and beautiful.window_switcher_focus or beautiful.window_switcher_inactive,
       widget = wibox.container.background,
     })
 
@@ -118,7 +111,8 @@ local function draw_widget()
   window_switcher_box = awful.popup({
     visible = false,
     ontop = true,
-    screen = awful.screen.focused(),
+    -- screen = awful.screen.focused(),
+    screen = screen.primary,
     bg = beautiful.colors.transparent,
     widget = {
       {
@@ -191,10 +185,11 @@ local function filter_function(c)
   return c.first_tag.selected
 end
 
+-- TODO: Add mousegrabber to stop the user from clicking outside the widget
 local function show(a)
   local cycle_amount = a or 1
   local h = client.get(nil, true)
-  visible_clients = filter(h, filter_function)
+  visible_clients = helpers.table.filter(h, filter_function)
 
   if #visible_clients == 0 then
     return
@@ -259,7 +254,8 @@ local function show(a)
   draw_widget()
 
   window_switcher_keygrabber:start()
-  window_switcher_box.screen = mouse.screen
+  window_switcher_box.screen = screen.primary
+  -- window_switcher_box.screen = mouse.screen
   window_switcher_box.visible = true
 end
 

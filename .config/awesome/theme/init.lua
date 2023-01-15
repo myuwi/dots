@@ -12,9 +12,10 @@ theme.font_size = 9
 theme.font = theme.font_name .. " " .. theme.font_size
 
 theme.wallpaper = theme_path .. "assets/wallpaper.jpg"
+theme.icon_path = theme_path .. "assets/icons/"
 
 -- https://rosepinetheme.com/palette
-local colors = {
+local rose_pine = {
   base = "#191724",
   text = "#e0def4",
   surface = "#1f1d2e",
@@ -33,11 +34,30 @@ local colors = {
   transparent = "#00000000",
 }
 
+-- local colors = {
+--   base = "#1D1A2B",
+--   text = "#ede8f7",
+--   surface = "#2C2841",
+--   overlay = "#3A3354",
+--   red = "#e47eb5",
+--   yellow = "#efbc98",
+--   transparent = "#00000000",
+-- }
+
+local colors = {
+  base = rose_pine.base,
+  text = rose_pine.text,
+  surface = rose_pine.surface,
+  overlay = rose_pine.overlay,
+  red = rose_pine.love,
+  transparent = "#00000000",
+}
+
 theme.colors = colors
 
 theme.bg_normal = colors.base
 theme.bg_focus = colors.overlay
-theme.bg_urgent = colors.love
+theme.bg_urgent = colors.red
 theme.bg_minimize = colors.transparent
 theme.bg_bar = colors.base
 theme.bg_systray = theme.bg_focus
@@ -72,8 +92,13 @@ theme.tasklist_plain_task_name = true
 -- Systray
 theme.systray_icon_spacing = dpi(6)
 
+-- Window Switcher
+theme.window_switcher_hover = colors.overlay
+theme.window_switcher_focus = colors.surface
+theme.window_switcher_inactive = colors.transparent
+
 -- Notifications
-theme.notification_width = dpi(320)
+theme.notification_width = dpi(360)
 theme.notification_margin = dpi(16)
 theme.notification_spacing = dpi(8)
 

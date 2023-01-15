@@ -1,5 +1,7 @@
 local awful = require("awful")
 local helpers = require("helpers")
+local naughty = require("naughty")
+local ruled = require("ruled")
 
 -- Global keybindings
 awful.keyboard.append_global_keybindings({
@@ -92,7 +94,7 @@ awful.keyboard.append_global_keybindings({
   }),
   -- Toggle picom
   awful.key({ modkey }, "p", function()
-    awful.spawn.with_shell("pgrep -ix picom > /dev/null && killall picom || picom &")
+    awful.spawn.with_shell("pgrep -ix picom > /dev/null && killall picom || picom --legacy-backends &")
   end, {
     description = "toggle picom",
     group = "misc",
@@ -303,6 +305,12 @@ client.connect_signal("request::default_keybindings", function()
       description = "center a client",
       group = "client",
     }),
+    awful.key({ modkey, "Control" }, "a", function(c)
+      ruled.client.apply(c)
+    end, {
+      description = "apply rules to client",
+      group = "client",
+    }),
   })
 
   helpers.misc.command_exists("fcitx5", function()
@@ -323,6 +331,12 @@ client.connect_signal("request::default_keybindings", function()
           if mode == 2 then
             helpers.input.key_up("space")
             helpers.input.key("Hiragana", { Super_L, Control_L })
+            -- TODO: Make custom indicator widget similar to the Window Switcher
+            naughty.notify({
+              app_name = "Mozc",
+              title = "Mozc",
+              text = "Input method changed to Hiragana",
+            })
           end
         end)
       end, {
@@ -334,6 +348,11 @@ client.connect_signal("request::default_keybindings", function()
           if mode == 2 then
             helpers.input.key_up("space")
             helpers.input.key("Katakana", { Super_L, Shift_L })
+            naughty.notify({
+              app_name = "Mozc",
+              title = "Mozc",
+              text = "Input method changed to Katakana",
+            })
           end
         end)
       end, {
@@ -346,7 +365,14 @@ end)
 
 -- Desktop mousebindings
 awful.mouse.append_global_mousebindings({
+  -- TODO: Helper function to add all three at once?
   awful.button({}, 1, function()
+    client.focus = nil
+  end),
+  awful.button({}, 2, function()
+    client.focus = nil
+  end),
+  awful.button({}, 3, function()
     client.focus = nil
   end),
 })
@@ -355,6 +381,16 @@ awful.mouse.append_global_mousebindings({
 client.connect_signal("request::default_mousebindings", function()
   awful.mouse.append_client_mousebindings({
     awful.button({}, 1, function(c)
+      c:emit_signal("request::activate", "mouse_click", {
+        raise = true,
+      })
+    end),
+    awful.button({}, 2, function(c)
+      c:emit_signal("request::activate", "mouse_click", {
+        raise = true,
+      })
+    end),
+    awful.button({}, 3, function(c)
       c:emit_signal("request::activate", "mouse_click", {
         raise = true,
       })

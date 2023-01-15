@@ -46,7 +46,7 @@ local taglist = function(s)
         {
           id = "text_role",
           widget = wibox.widget.textbox,
-          align = "center",
+          halign = "center",
           valign = "center",
         },
         widget = wibox.container.place,

@@ -42,7 +42,6 @@ local tasklist = function(s)
       {
         {
           {
-            -- TODO: Find a fix for missing icons. E.g. Spotify
             awful.widget.clienticon,
             left = dpi(4),
             widget = wibox.container.margin,

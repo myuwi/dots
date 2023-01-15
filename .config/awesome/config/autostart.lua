@@ -2,7 +2,7 @@ local awful = require("awful")
 
 -- Apps to run on startup
 local start_apps = {
-  "picom",
+  "picom --legacy-backends",
   "openrazer-daemon",
   "solaar -w hide",
   "fcitx5",
