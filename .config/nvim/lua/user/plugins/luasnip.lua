@@ -12,6 +12,8 @@ ls.config.setup({
   delete_check_events = "TextChanged,InsertEnter",
 })
 
+ls.filetype_extend("svelte", { "typescript" })
+
 ls.add_snippets("lua", {
   s(
     "rq",

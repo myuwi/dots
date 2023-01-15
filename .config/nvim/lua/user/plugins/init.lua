@@ -14,12 +14,10 @@ return require("packer").startup(function(use)
   -- Colorscheme
   use({
     "rose-pine/neovim",
-    -- "~/repos/rose-pine-neovim",
-    -- "myuwi/rose-pine-neovim",
-    -- branch = "fix-treesitter-highlight-groups",
     as = "rose-pine",
     config = function()
       require("rose-pine").setup({
+        disable_float_background = true,
         highlight_groups = {
           -- NormalFloat = { fg = "text", bg = "surface" },
           FloatBorder = { fg = "highlight_high", bg = "surface" },
@@ -29,6 +27,8 @@ return require("packer").startup(function(use)
       vim.cmd.colorscheme("rose-pine")
     end,
   })
+
+  -- use("rktjmp/lush.nvim")
 
   use({
     "NvChad/nvim-colorizer.lua",
@@ -178,6 +178,7 @@ return require("packer").startup(function(use)
 
   use("famiu/bufdelete.nvim")
 
+  vim.g.mkdp_auto_close = 0
   use({
     "iamcco/markdown-preview.nvim",
     run = function()
@@ -191,5 +192,10 @@ return require("packer").startup(function(use)
     config = function()
       require("trouble").setup()
     end,
+  })
+
+  use({
+    "sindrets/diffview.nvim",
+    requires = "nvim-lua/plenary.nvim",
   })
 end)

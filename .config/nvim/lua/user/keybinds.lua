@@ -27,17 +27,22 @@ keymap("v", "<Tab>", ">gv", opts)
 keymap("v", "<S-Tab>", "<gv", opts)
 
 -- Buffer navigation
+-- navigate splits
 keymap("n", "<C-h>", "<C-w>h", opts)
 keymap("n", "<C-j>", "<C-w>j", opts)
 keymap("n", "<C-k>", "<C-w>k", opts)
 keymap("n", "<C-l>", "<C-w>l", opts)
 
-keymap("n", "<Leader>bn", "<cmd>BufferLineCycleNext<CR>", opts)
-keymap("n", "<Leader>bp", "<cmd>BufferLineCyclePrev<CR>", opts)
-keymap("n", "<Leader>bd", "<cmd>Bdelete<CR>", opts)
-
+-- cycle buffer
 keymap("n", "<C-Tab>", "<cmd>BufferLineCycleNext<CR>", opts)
 keymap("n", "<C-S-Tab>", "<cmd>BufferLineCyclePrev<CR>", opts)
+
+-- move buffer
+keymap("n", "<Leader>bn", "<cmd>BufferLineMoveNext<CR>", opts)
+keymap("n", "<Leader>bp", "<cmd>BufferLineMovePrev<CR>", opts)
+
+-- delete buffer
+keymap("n", "<Leader>bd", "<cmd>Bdelete<CR>", opts)
 
 -- Toggle NvimTree
 keymap("n", "<C-b>", "<cmd>NvimTreeToggle<CR>", opts)

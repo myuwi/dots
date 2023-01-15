@@ -2,7 +2,10 @@ require("telescope").setup({
   defaults = {
     file_ignore_patterns = {
       "^.git/",
+      ".svelte%-kit/",
+      ".netlify/",
       "node_modules",
+      "target",
     },
     vimgrep_arguments = {
       "rg",

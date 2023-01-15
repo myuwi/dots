@@ -4,6 +4,17 @@ require("nvim-tree").setup({
       resize_window = true,
     },
   },
+  diagnostics = {
+    enable = true,
+    show_on_dirs = true,
+    show_on_open_dirs = false,
+    icons = {
+      hint = "H",
+      info = "I",
+      warning = "W",
+      error = "E",
+    },
+  },
   git = {
     enable = true,
     ignore = false,
