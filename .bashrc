@@ -28,14 +28,14 @@ alias ll='exa -la --group-directories-first'
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
-alias ..='cd ..'
 alias vim='nvim'
 alias vi='nvim'
 alias v='nvim'
-alias please='sudo $(history -p !!)'
 alias cal='cal -mw'
 alias yt-dl='yt-dlp'
+alias pn='pnpm'
 
-export BFETCH_INFO="mfetch"
-export BFETCH_ART="mfetch art"
-export BFETCH_CLASSIC_MODE=true
+[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
+source /usr/share/nvm/nvm.sh
+source /usr/share/nvm/bash_completion
+source /usr/share/nvm/install-nvm-exec
