@@ -165,18 +165,21 @@ awful.keyboard.append_global_keybindings({
   -- Volume keys
   awful.key({}, "XF86AudioRaiseVolume", function()
     awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%", false)
+    awesome.emit_signal("widgets::show_volume")
   end, {
     description = "volume up",
     group = "volume controls",
   }),
   awful.key({}, "XF86AudioLowerVolume", function()
     awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%", false)
+    awesome.emit_signal("widgets::show_volume")
   end, {
     description = "volume down",
     group = "volume controls",
   }),
   awful.key({}, "XF86AudioMute", function()
     awful.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle", false)
+    awesome.emit_signal("widgets::show_volume")
   end, {
     description = "volume mute",
     group = "volume controls",
@@ -287,7 +290,9 @@ client.connect_signal("request::default_keybindings", function()
       description = "close",
       group = "client",
     }),
-    awful.key({ modkey, "Shift" }, "f", awful.client.floating.toggle, {
+    awful.key({ modkey, "Shift" }, "f", function(c)
+      c.floating = not c.floating
+    end, {
       description = "toggle floating",
       group = "client",
     }),

@@ -9,6 +9,14 @@ naughty.connect_signal("request::display_error", function(message, startup)
   })
 end)
 
+awesome.connect_signal("debug::deprecation", function(msg)
+  naughty.notification({
+    urgency = "critical",
+    title = "Deprecation notice",
+    message = msg,
+  })
+end)
+
 -- Globals
 modkey = "Mod4"
 apps = {
@@ -24,7 +32,7 @@ user_variables = vars
 -- Theme
 require("theme")
 
-require("daemon")
+-- require("signals")
 
 -- Config
 require("config")

@@ -14,44 +14,7 @@ theme.font = theme.font_name .. " " .. theme.font_size
 theme.wallpaper = theme_path .. "assets/wallpaper.jpg"
 theme.icon_path = theme_path .. "assets/icons/"
 
--- https://rosepinetheme.com/palette
-local rose_pine = {
-  base = "#191724",
-  text = "#e0def4",
-  surface = "#1f1d2e",
-  overlay = "#26233a",
-  muted = "#6e6a86",
-  subtle = "#908caa",
-  love = "#eb6f92",
-  gold = "#f6c177",
-  rose = "#ebbcba",
-  pine = "#31748f",
-  foam = "#9ccfd8",
-  iris = "#c4a7e7",
-  highlight_high = "#524f67",
-  highlight_med = "#403d52",
-  highlight_low = "#21202e",
-  transparent = "#00000000",
-}
-
--- local colors = {
---   base = "#1D1A2B",
---   text = "#ede8f7",
---   surface = "#2C2841",
---   overlay = "#3A3354",
---   red = "#e47eb5",
---   yellow = "#efbc98",
---   transparent = "#00000000",
--- }
-
-local colors = {
-  base = rose_pine.base,
-  text = rose_pine.text,
-  surface = rose_pine.surface,
-  overlay = rose_pine.overlay,
-  red = rose_pine.love,
-  transparent = "#00000000",
-}
+local colors = require("theme.colors")
 
 theme.colors = colors
 
@@ -71,11 +34,11 @@ theme.fg_minimize = colors.text .. "66"
 theme.useless_gap = dpi(4)
 
 -- Borders
-theme.border_radius = 6
-theme.border_width = dpi(0)
+theme.border_radius = 8
 theme.border_color = colors.surface
 
-theme.widget_border_width = dpi(1)
+theme.client_border_width = dpi(0)
+theme.widget_border_width = dpi(0)
 
 -- Bar
 theme.bar_height = dpi(46)
@@ -103,13 +66,13 @@ theme.notification_margin = dpi(16)
 theme.notification_spacing = dpi(8)
 
 -- Menu
-theme.menu_submenu_icon = theme_path .. "submenu.png"
+theme.menu_submenu_icon = theme_path .. "assets/submenu.png"
 theme.menu_height = dpi(32)
 theme.menu_width = dpi(100)
 
 -- Layouts
-theme.layout_max = theme_path .. "layouts/maxw.png"
-theme.layout_tile = theme_path .. "layouts/tilew.png"
+theme.layout_max = theme_path .. "assets/layouts/maxw.png"
+theme.layout_tile = theme_path .. "assets/layouts/tilew.png"
 
 -- Icon theme
 theme.icon_theme = "Papirus"

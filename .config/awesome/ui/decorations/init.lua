@@ -1,2 +1,0 @@
--- require(... .. ".corners")
--- require(... .. ".titlebar")

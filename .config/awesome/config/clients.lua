@@ -1,4 +1,5 @@
 local awful = require("awful")
+local beautiful = require("beautiful")
 local cairo = require("lgi").cairo
 local gears = require("gears")
 local helpers = require("helpers")
@@ -54,6 +55,19 @@ local function late_apply_rules(c)
   end
 end
 
+local function intercept_floating_geometry_change(c)
+  if not c.floating then
+    c.floating_geometry = nil
+  end
+end
+
+-- Don't set floating geometry on clients that aren't floating.
+-- This fixes an inconsistency in when floating_geometry is set for clients with and without borders.
+-- https://github.com/awesomeWM/awesome/blob/b54e50ad6cfdcd864a21970b31378f7c64adf3f4/lib/awful/client.lua#L864
+-- TODO: make sure this doesn't have unintented side effects
+-- TODO: disconnect this signal when it is not needed anymore
+client.connect_signal("property::floating_geometry", intercept_floating_geometry_change)
+
 client.connect_signal("manage", function(c)
   if not awesome.startup then
     -- Spawn new clients as slaves
@@ -90,3 +104,19 @@ end)
 client.connect_signal("property::minimized", function(c)
   c:lower()
 end)
+
+local rounded_shape = helpers.shape.rounded_rect(beautiful.border_radius)
+local function toggle_rounded_corners(c)
+  if c.fullscreen or c.maximized then
+    c.shape = gears.shape.rectangle
+  else
+    c.shape = rounded_shape
+  end
+end
+
+-- Use a rounded shape for client if clients have borders and rounded corners
+if (beautiful.client_border_width or 0) > 0 and (beautiful.border_radius or 0) > 0 then
+  client.connect_signal("manage", toggle_rounded_corners)
+  client.connect_signal("property::fullscreen", toggle_rounded_corners)
+  client.connect_signal("property::maximized", toggle_rounded_corners)
+end

@@ -45,4 +45,34 @@ _M.gradient = function(color1, color2, phase)
   return _M.rgb_to_hex({ r, g, b })
 end
 
+-- Lightens a given hex color by the specified amount
+_M.lighten = function(color, amount)
+  local rgb = _M.hex_to_rgb(color)
+  local r = rgb.r
+  local g = rgb.g
+  local b = rgb.b
+
+  r = r + math.floor(2.55 * amount)
+  g = g + math.floor(2.55 * amount)
+  b = b + math.floor(2.55 * amount)
+  r = r > 255 and 255 or r
+  g = g > 255 and 255 or g
+  b = b > 255 and 255 or b
+
+  return _M.rgb_to_hex({ r, g, b })
+end
+
+-- Darkens a given hex color by the specified amount
+_M.darken = function(color, amount)
+  local rgb = _M.hex_to_rgb(color)
+  local r = rgb.r
+  local g = rgb.g
+  local b = rgb.b
+
+  r = math.max(0, r - math.floor(r * (amount / 100)))
+  g = math.max(0, g - math.floor(g * (amount / 100)))
+  b = math.max(0, b - math.floor(b * (amount / 100)))
+  return _M.rgb_to_hex({ r, g, b })
+end
+
 return _M

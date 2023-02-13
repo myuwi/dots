@@ -1,14 +1,8 @@
 local _M = {}
 
---- Creates a shallow copy of a portion of a given table,
+--- Creates a shallow copy of a portion of a given table
 --- filtered down to just the elements from the given table
 --- that pass the test implemented by the provided function.
----
---- ```
---- local visible_clients = filter(client.get(), function filter_function(c)
----   return c.first_tag.selected
---- end)
---- ```
 ---
 --- @param tbl table Table to filter
 --- @param callback fun(element: any, i: number, tbl: table): boolean A test function
@@ -37,6 +31,22 @@ _M.reduce = function(tbl, callback, initial)
     acc = callback(acc, element, i, tbl)
   end
   return acc
+end
+
+--- @param tbl table Table to stringify
+_M.stringify = function(tbl)
+  if type(tbl) ~= "table" then
+    return tostring(tbl)
+  end
+
+  local s = "{ "
+  for k, v in pairs(tbl) do
+    if type(k) ~= "number" then
+      k = '"' .. k .. '"'
+    end
+    s = s .. "[" .. k .. "] = " .. _M.stringify(v) .. ","
+  end
+  return s .. "}"
 end
 
 return _M
