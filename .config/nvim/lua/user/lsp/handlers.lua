@@ -104,7 +104,7 @@ end
 
 local disabled_formatters = Set({
   "jsonls",
-  "sumneko_lua",
+  "lua_ls",
   "tsserver",
 })
 

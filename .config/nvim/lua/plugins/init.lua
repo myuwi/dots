@@ -9,7 +9,7 @@ return {
         disable_float_background = true,
         highlight_groups = {
           -- NormalFloat = { fg = "text", bg = "surface" },
-          FloatBorder = { fg = "highlight_high", bg = "surface" },
+          -- FloatBorder = { fg = "highlight_high", bg = "surface" },
         },
       })
 
@@ -37,31 +37,31 @@ return {
 
   -- LSP
   "neovim/nvim-lspconfig",
-  -- "williamboman/nvim-lsp-installer"
-  { "williamboman/mason.nvim" },
-  { "williamboman/mason-lspconfig.nvim" },
-
+  "williamboman/mason.nvim",
+  "williamboman/mason-lspconfig.nvim",
   {
     "jose-elias-alvarez/null-ls.nvim",
     config = function()
       require("user.plugins.null-ls")
     end,
   },
+  "b0o/schemastore.nvim",
 
   "folke/neodev.nvim",
 
-  {
-    "Fymyte/rasi.vim",
-    ft = "rasi",
-  },
+  { "Fymyte/rasi.vim", ft = "rasi" },
+  { "elkowar/yuck.vim", ft = "yuck" },
 
   -- Completion
-  "hrsh7th/nvim-cmp",
-  "hrsh7th/cmp-buffer",
-  "hrsh7th/cmp-path",
-  "hrsh7th/cmp-cmdline",
-  "saadparwaiz1/cmp_luasnip",
-  "hrsh7th/cmp-nvim-lsp",
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+      "hrsh7th/cmp-cmdline",
+      "hrsh7th/cmp-nvim-lsp",
+    },
+  },
 
   -- Treesitter
   {
@@ -76,11 +76,14 @@ return {
   -- snippets
   {
     "L3MON4D3/LuaSnip",
+    dependencies = {
+      "saadparwaiz1/cmp_luasnip",
+      "rafamadriz/friendly-snippets",
+    },
     config = function()
       require("user.plugins.luasnip")
     end,
   },
-  "rafamadriz/friendly-snippets",
 
   -- Autopairs
   {
@@ -99,8 +102,6 @@ return {
     "folke/which-key.nvim",
     config = true,
   },
-
-  "b0o/schemastore.nvim",
 
   "nvim-lua/plenary.nvim",
 

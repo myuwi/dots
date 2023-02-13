@@ -38,8 +38,8 @@ keymap("n", "<C-Tab>", "<cmd>BufferLineCycleNext<CR>", opts)
 keymap("n", "<C-S-Tab>", "<cmd>BufferLineCyclePrev<CR>", opts)
 
 -- move buffer
-keymap("n", "<Leader>bn", "<cmd>BufferLineMoveNext<CR>", opts)
-keymap("n", "<Leader>bp", "<cmd>BufferLineMovePrev<CR>", opts)
+keymap("n", "<C-A-j>", "<cmd>BufferLineMoveNext<CR>", opts)
+keymap("n", "<C-A-k>", "<cmd>BufferLineMovePrev<CR>", opts)
 
 -- delete buffer
 keymap("n", "<Leader>bd", "<cmd>Bdelete<CR>", opts)
