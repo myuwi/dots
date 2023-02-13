@@ -1,0 +1,2 @@
+#!/bin/sh
+strings "$(find "$HOME/.local/share" / -path "*_Data/webCaches/Cache/Cache_Data/data_2" -print -quit 2>/dev/null)" | grep -o "https://.*/e20190909gacha-v2/.*" | tail -n1 | xclip -sel clip && echo "History link copied to clipboard!"
