@@ -22,7 +22,10 @@ local colors = {
   text = rose_pine.text,
   surface = rose_pine.surface,
   overlay = rose_pine.overlay,
-  red = rose_pine.love,
+  urgent = rose_pine.love,
+  highlight_high = rose_pine.highlight_high,
+  highlight_med = rose_pine.highlight_med,
+  highlight_low = rose_pine.highlight_low,
   transparent = "#00000000",
 }
 

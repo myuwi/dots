@@ -20,7 +20,7 @@ theme.colors = colors
 
 theme.bg_normal = colors.base
 theme.bg_focus = colors.overlay
-theme.bg_urgent = colors.red
+theme.bg_urgent = colors.urgent
 theme.bg_minimize = colors.transparent
 theme.bg_bar = colors.base
 theme.bg_systray = theme.bg_focus
