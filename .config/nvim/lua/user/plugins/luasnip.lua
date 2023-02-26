@@ -4,15 +4,13 @@ local snippet = luasnip.snippet
 local function_node = luasnip.function_node
 local insert_node = luasnip.insert_node
 
-luasnip.config.setup({
+luasnip.setup({
   history = false,
-  update_events = "InsertLeave,TextChanged,TextChangedI",
+  update_events = { "InsertLeave", "TextChanged", "TextChangedI" },
   enable_autosnippets = true,
-  region_check_events = "CursorMoved,InsertEnter,InsertLeave",
-  delete_check_events = "TextChanged,InsertEnter,InsertLeave",
+  region_check_events = { "CursorMoved", "InsertEnter", "InsertLeave" },
+  delete_check_events = { "TextChanged", "InsertEnter", "InsertLeave" },
 })
-
-luasnip.filetype_extend("svelte", { "typescript" })
 
 luasnip.add_snippets("lua", {
   snippet(

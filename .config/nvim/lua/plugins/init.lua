@@ -70,6 +70,11 @@ return {
     config = function()
       require("user.plugins.treesitter")
     end,
+    dependencies = {
+      {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+      },
+    },
   },
   "nvim-treesitter/playground",
 
