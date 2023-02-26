@@ -1,0 +1,43 @@
+#!/bin/bash
+# Terminate previous instances of the script
+pgrep -f "${BASH_SOURCE[0]}" | grep -v $$ | xargs -r -L1 kill
+
+device_name=$1
+# L_Ctrl, L_Shift, L_Alt, Super (Win)
+mods="37|50|64|133"
+
+get_state() {
+	get-keyboard-state "$1" |
+		grep -E "key\[($mods)\]=down" |
+		sed -E 's/[^0-9]+//g'
+}
+
+stuck_keys=$(get_state "Virtual core XTEST keyboard")
+
+if [ -z "$stuck_keys" ]; then
+	exit
+fi
+
+declare -A stuck_keys_arr
+
+while read -r id; do
+	stuck_keys_arr["$id"]=true
+done <<<"$stuck_keys"
+
+while true; do
+	keys=$(get_state "$device_name")
+
+	for stuck_key in "${!stuck_keys_arr[@]}"; do
+		if ! echo "$keys" | grep -q "$stuck_key"; then
+			# echo $stuck_key is not pressed
+			xdotool keyup "$stuck_key"
+			unset stuck_keys_arr["$stuck_key"]
+		fi
+	done
+
+	if [[ "${#stuck_keys_arr[@]}" -eq 0 ]]; then
+		exit
+	fi
+
+	sleep 0.1
+done
