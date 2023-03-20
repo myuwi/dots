@@ -1,9 +1,10 @@
+local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
 local clock = function()
-  local widget_clock = wibox.widget({
+  local clock_widget = wibox.widget({
     {
       {
         format = "%a %d %b %H:%M",
@@ -15,7 +16,7 @@ local clock = function()
     widget = wibox.container.margin,
   })
 
-  return widget_clock
+  return clock_widget
 end
 
 return clock

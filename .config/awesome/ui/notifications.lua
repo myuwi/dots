@@ -1,6 +1,5 @@
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
-local menubar_utils = require("menubar.utils")
 local naughty = require("naughty")
 local wibox = require("wibox")
 local helpers = require("helpers")
@@ -13,11 +12,21 @@ naughty.config.defaults.timeout = 6
 naughty.config.defaults.title = "Notification"
 naughty.config.defaults.position = "bottom_right"
 
--- TODO: Mark the client that owns the notification as urgent when a notification arrives?
+naughty.config.notify_callback = function(args)
+  if not args.icon and args.app_name then
+    local app_icon = helpers.client.find_icon(args.app_name)
+    if app_icon then
+      args.app_icon = app_icon
+    end
+  end
+
+  return args
+end
+
 naughty.connect_signal("request::display", function(n)
   local notification_body_width = beautiful.notification_width - beautiful.notification_margin * 2
   -- Adjust for icon width and spacing
-  if n.icon ~= nil then
+  if n.image ~= nil then
     notification_body_width = notification_body_width - dpi(64) - dpi(16)
   end
 
@@ -56,8 +65,6 @@ naughty.connect_signal("request::display", function(n)
     widget = naughty.list.actions,
   }
 
-  local app_icon = menubar_utils.lookup_icon(string.lower(n.app_name))
-
   local notification = naughty.layout.box({
     notification = n,
     type = "notification",
@@ -73,10 +80,10 @@ naughty.connect_signal("request::display", function(n)
                   {
                     forced_width = 16,
                     forced_height = 16,
-                    image = app_icon,
+                    image = n.app_icon,
                     widget = wibox.widget.imagebox,
                   },
-                  visible = app_icon ~= nil,
+                  visible = n.app_icon ~= nil,
                   right = dpi(6),
                   widget = wibox.container.margin,
                 },
@@ -93,7 +100,7 @@ naughty.connect_signal("request::display", function(n)
                 {
                   forced_width = 16,
                   forced_height = 16,
-                  image = beautiful.icon_path .. "x.svg",
+                  image = beautiful.icon_path .. "close.svg",
                   widget = wibox.widget.imagebox,
                 },
                 layout = wibox.layout.align.horizontal,
@@ -103,11 +110,11 @@ naughty.connect_signal("request::display", function(n)
             },
             {
               {
-                visible = n.icon ~= nil,
+                visible = n.image ~= nil,
                 clip_shape = helpers.shape.rounded_rect(dpi(4)),
                 forced_width = dpi(64),
                 forced_height = dpi(64),
-                image = n.icon,
+                image = n.image,
                 widget = wibox.widget.imagebox,
               },
               {
@@ -152,13 +159,15 @@ naughty.connect_signal("request::display", function(n)
     },
   })
 
-  -- Stop notification from disappearing if it is hovered
+  local timeout = n.timeout
+
+  -- Stop notification from disappearing when it is hovered
   local notif_mouse_enter = function()
     n:reset_timeout(86400) -- a long time
   end
 
   local notif_mouse_leave = function()
-    n:reset_timeout(naughty.config.defaults.timeout)
+    n:reset_timeout(timeout)
   end
 
   -- Remove default click events

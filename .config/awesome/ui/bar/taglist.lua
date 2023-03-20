@@ -1,13 +1,12 @@
 local awful = require("awful")
-local gears = require("gears")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local rounded_rect = require("helpers").shape.rounded_rect
+local helpers = require("helpers")
 
 local taglist = function(s)
-  local taglist_buttons = gears.table.join(
+  local taglist_buttons = {
     awful.button({}, 1, function(t)
       t:view_only()
     end),
@@ -27,10 +26,10 @@ local taglist = function(s)
     end),
     awful.button({}, 5, function(t)
       awful.tag.viewprev(t.screen)
-    end)
-  )
+    end),
+  }
 
-  local widget_taglist = awful.widget.taglist({
+  local taglist_widget = awful.widget.taglist({
     screen = s,
     filter = awful.widget.taglist.filter.noempty,
     layout = {
@@ -39,7 +38,7 @@ local taglist = function(s)
     },
     buttons = taglist_buttons,
     style = {
-      shape = rounded_rect(4),
+      shape = helpers.shape.rounded_rect(4),
     },
     widget_template = {
       {
@@ -58,7 +57,7 @@ local taglist = function(s)
     },
   })
 
-  return widget_taglist
+  return taglist_widget
 end
 
 return taglist

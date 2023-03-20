@@ -3,27 +3,13 @@ local beautiful = require("beautiful")
 local cairo = require("lgi").cairo
 local gears = require("gears")
 local helpers = require("helpers")
-local menubar_utils = require("menubar.utils")
 local ruled = require("ruled")
 
 -- TODO: Use a fallback if a client doesn't have an icon
-local function find_client_icon(c)
-  local icon = menubar_utils.lookup_icon(c.class)
-
-  -- Try to "correct" the class to find the icon
-  if not icon and c.class:find("[%s%u]") then
-    -- Make lowercase and replace spaces with "-"
-    local name = string.lower(c.class):gsub("%s+", "-")
-    icon = menubar_utils.lookup_icon(name)
-  end
-
-  return icon
-end
-
 -- Try to find missing client icon
 local function set_fallback_icon(c)
   if c and c.valid and c.class and not c.icon then
-    local app_icon = find_client_icon(c)
+    local app_icon = helpers.client.find_icon(c.class)
 
     -- Set client icon
     if app_icon then

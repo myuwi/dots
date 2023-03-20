@@ -10,12 +10,21 @@ local clock = require("ui.bar.clock")
 
 awful.screen.connect_for_each_screen(function(s)
   local is_primary = s == screen.primary
+  local bar_margin = beautiful.useless_gap * 2
+  local bar_position = beautiful.bar_position
 
   awful.wibar({
-    position = "top",
+    position = bar_position,
     screen = s,
     height = beautiful.bar_height,
+    width = beautiful.bar_width,
     bg = beautiful.bg_bar,
+    margins = {
+      top = bar_position == "top" and bar_margin or 0,
+      left = bar_margin,
+      right = bar_margin,
+      bottom = bar_position == "bottom" and bar_margin or 0,
+    },
     widget = {
       {
         taglist(s),

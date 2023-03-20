@@ -4,14 +4,14 @@ local dpi = beautiful.xresources.apply_dpi
 local gears = require("gears")
 
 local systray = function()
-  local widget_systray = wibox.widget({
+  local systray_widget = wibox.widget({
     {
       {
         {
           screen = screen.primary,
           widget = wibox.widget.systray,
         },
-        margins = dpi(8),
+        margins = dpi(6),
         widget = wibox.container.margin,
       },
       widget = wibox.container.place,
@@ -21,7 +21,7 @@ local systray = function()
     widget = wibox.container.background,
   })
 
-  return widget_systray
+  return systray_widget
 end
 
 return systray

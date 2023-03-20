@@ -1,9 +1,13 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
-local wibox = require("wibox")
-local xresources = require("beautiful.xresources")
-local dpi = xresources.apply_dpi
+local dpi = beautiful.xresources.apply_dpi
 local helpers = require("helpers")
+local wibox = require("wibox")
+
+local backdrop = require("ui.widgets.backdrop")
+
+-- Somewhat replicates the Windows behavior
+-- https://en.wikipedia.org/wiki/Alt-Tab#Behavior
 
 local alt_tab_index = 1
 local hover_index
@@ -178,6 +182,7 @@ local function hide()
   last_focused_client = nil
   window_switcher_keygrabber = nil
   window_switcher_box.visible = false
+  backdrop:hide()
   window_switcher_box = nil
 end
 
@@ -185,7 +190,6 @@ local function filter_function(c)
   return c.first_tag.selected
 end
 
--- TODO: Add mousegrabber to stop the user from clicking outside the widget
 local function show(a)
   local cycle_amount = a or 1
   local h = client.get(nil, true)
@@ -253,14 +257,19 @@ local function show(a)
 
   draw_widget()
 
+  backdrop:show()
+
   window_switcher_keygrabber:start()
   window_switcher_box.screen = screen.primary
   -- window_switcher_box.screen = mouse.screen
   window_switcher_box.visible = true
 end
 
-awesome.connect_signal("window_switcher::open", show)
+awesome.connect_signal("widgets::window_switcher::show", show)
 
-return {
-  show = show,
-}
+backdrop:connect_signal("click", function()
+  if window_switcher_keygrabber ~= nil then
+    client.focus = last_focused_client
+    window_switcher_keygrabber:stop()
+  end
+end)

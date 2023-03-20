@@ -23,11 +23,11 @@ apps = {
   terminal = "alacritty",
 }
 
-local ok, vars = pcall(require, "user_variables")
+local ok, vars = pcall(require, "user_vars")
 if not ok then
   vars = {}
 end
-user_variables = vars
+user_vars = vars
 
 -- Theme
 require("theme")

@@ -1,11 +1,10 @@
 local awful = require("awful")
 local wibox = require("wibox")
-local gears = require("gears")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
 local layoutbox = function(s)
-  local layoutbox_wrapped = wibox.widget({
+  local layoutbox_widget = wibox.widget({
     {
       {
         widget = awful.widget.layoutbox(s),
@@ -18,7 +17,7 @@ local layoutbox = function(s)
     widget = wibox.container.place,
   })
 
-  layoutbox_wrapped:buttons(gears.table.join(
+  layoutbox_widget:buttons({
     awful.button({}, 1, function()
       awful.layout.inc(1)
     end),
@@ -30,10 +29,10 @@ local layoutbox = function(s)
     end),
     awful.button({}, 5, function()
       awful.layout.inc(-1)
-    end)
-  ))
+    end),
+  })
 
-  return layoutbox_wrapped
+  return layoutbox_widget
 end
 
 return layoutbox

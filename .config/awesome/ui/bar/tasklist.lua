@@ -4,7 +4,7 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
 local fit = require("ui.layout.fit")
-local rounded_rect = require("helpers").shape.rounded_rect
+local helpers = require("helpers")
 
 local function update_task_background(w, c)
   if c.active then
@@ -29,7 +29,7 @@ local tasklist = function(s)
     end),
   }
 
-  local widget_tasklist = awful.widget.tasklist({
+  local tasklist_widget = awful.widget.tasklist({
     screen = s,
     filter = awful.widget.tasklist.filter.currenttags,
     buttons = tasklist_buttons,
@@ -60,14 +60,14 @@ local tasklist = function(s)
         margins = dpi(4),
         widget = wibox.container.margin,
       },
-      shape = rounded_rect(4),
+      shape = helpers.shape.rounded_rect(4),
       widget = wibox.container.background,
       create_callback = update_task_background,
       update_callback = update_task_background,
     },
   })
 
-  return widget_tasklist
+  return tasklist_widget
 end
 
 return tasklist

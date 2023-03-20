@@ -1,9 +1,9 @@
-local wibox = require("wibox")
 local awful = require("awful")
 local gears = require("gears")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local helpers = require("helpers")
+local wibox = require("wibox")
 
 local offsetx = dpi(56)
 local offsety = offsetx + dpi(32)
@@ -110,7 +110,7 @@ local function get_audio_status(callback)
   end)
 end
 
-awesome.connect_signal("widgets::show_volume", function()
+awesome.connect_signal("widgets::volume::show", function()
   get_audio_status(function(volume, muted)
     volume_bar.value = volume
     volume_text.text = muted and "xx" or tostring(volume)

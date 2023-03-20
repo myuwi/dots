@@ -67,13 +67,13 @@ awful.keyboard.append_global_keybindings({
     group = "client",
   }),
   awful.key({ modkey }, "Tab", function()
-    awesome.emit_signal("window_switcher::open", 1)
+    awesome.emit_signal("widgets::window_switcher::show", 1)
   end, {
     description = "go back",
     group = "client",
   }),
   awful.key({ modkey, "Shift" }, "Tab", function()
-    awesome.emit_signal("window_switcher::open", -1)
+    awesome.emit_signal("widgets::window_switcher::show", -1)
   end, {
     description = "go back",
     group = "client",
@@ -140,22 +140,31 @@ awful.keyboard.append_global_keybindings({
     group = "layout",
   }),
   -- Screenshot
+  awful.key({}, "Print", function()
+    local active_screen = mouse.screen
+    local geo = active_screen.geometry
+    local script = ("flameshot full --region %dx%d+%d+%d -c"):format(geo.width, geo.height, geo.x, geo.y)
+    awful.spawn(script, false)
+  end, {
+    description = "take a screenshot of the active screen",
+    group = "screen",
+  }),
   awful.key({ "Control" }, "Print", function()
     awful.spawn("flameshot gui", false)
   end, {
     description = "take an area screenshot",
     group = "screen",
   }),
-  awful.key({}, "Print", function()
+  awful.key({ "Shift" }, "Print", function()
     helpers.misc.take_screenshot(0)
   end, {
     description = "take a screenshot of a specific window",
     group = "screen",
   }),
-  awful.key({ "Shift" }, "Print", function()
+  awful.key({ "Control", "Shift" }, "Print", function()
     helpers.misc.take_screenshot(32)
   end, {
-    description = "take a screenshot of a specific window",
+    description = "take a screenshot of a specific window with padding",
     group = "screen",
   }),
 })
@@ -165,21 +174,21 @@ awful.keyboard.append_global_keybindings({
   -- Volume keys
   awful.key({}, "XF86AudioRaiseVolume", function()
     awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%", false)
-    awesome.emit_signal("widgets::show_volume")
+    awesome.emit_signal("widgets::volume::show")
   end, {
     description = "volume up",
     group = "volume controls",
   }),
   awful.key({}, "XF86AudioLowerVolume", function()
     awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%", false)
-    awesome.emit_signal("widgets::show_volume")
+    awesome.emit_signal("widgets::volume::show")
   end, {
     description = "volume down",
     group = "volume controls",
   }),
   awful.key({}, "XF86AudioMute", function()
     awful.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle", false)
-    awesome.emit_signal("widgets::show_volume")
+    awesome.emit_signal("widgets::volume::show")
   end, {
     description = "volume mute",
     group = "volume controls",
@@ -318,7 +327,11 @@ client.connect_signal("request::default_keybindings", function()
     }),
   })
 
-  helpers.misc.command_exists("fcitx5", function()
+  helpers.misc.command_exists("fcitx5", function(fcitx5_installed)
+    if not fcitx5_installed then
+      return
+    end
+
     local Control_L = 37
     local Shift_L = 50
     local Super_L = 133
@@ -337,10 +350,10 @@ client.connect_signal("request::default_keybindings", function()
             helpers.input.key_up("space")
             helpers.input.key("Hiragana", { Super_L, Control_L })
             -- TODO: Make custom indicator widget similar to the Window Switcher
-            naughty.notify({
+            naughty.notification({
               app_name = "Mozc",
               title = "Mozc",
-              text = "Input method changed to Hiragana",
+              message = "Input method changed to Hiragana",
             })
           end
         end)
@@ -353,10 +366,10 @@ client.connect_signal("request::default_keybindings", function()
           if mode == 2 then
             helpers.input.key_up("space")
             helpers.input.key("Katakana", { Super_L, Shift_L })
-            naughty.notify({
+            naughty.notification({
               app_name = "Mozc",
               title = "Mozc",
-              text = "Input method changed to Katakana",
+              message = "Input method changed to Katakana",
             })
           end
         end)
@@ -369,18 +382,13 @@ client.connect_signal("request::default_keybindings", function()
 end)
 
 -- Desktop mousebindings
-awful.mouse.append_global_mousebindings({
-  -- TODO: Helper function to add all three at once?
-  awful.button({}, 1, function()
-    client.focus = nil
-  end),
-  awful.button({}, 2, function()
-    client.focus = nil
-  end),
-  awful.button({}, 3, function()
-    client.focus = nil
-  end),
-})
+awful.mouse.append_global_mousebindings( --
+  helpers.table.map({ 1, 2, 3 }, function(n)
+    return awful.button({ "Any" }, n, function()
+      client.focus = nil
+    end)
+  end)
+)
 
 -- Client mousebindings
 client.connect_signal("request::default_mousebindings", function()

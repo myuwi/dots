@@ -11,7 +11,8 @@ theme.font_name = "Inter"
 theme.font_size = 9
 theme.font = theme.font_name .. " " .. theme.font_size
 
-theme.wallpaper = theme_path .. "assets/wallpaper.jpg"
+theme.wallpaper = "~/Pictures/wallhaven-o59gvl.jpg"
+-- theme.wallpaper = theme_path .. "assets/wallpaper.jpg"
 theme.icon_path = theme_path .. "assets/icons/"
 
 local colors = require("theme.colors")
@@ -23,7 +24,7 @@ theme.bg_focus = colors.overlay
 theme.bg_urgent = colors.urgent
 theme.bg_minimize = colors.transparent
 theme.bg_bar = colors.base
-theme.bg_systray = theme.bg_focus
+theme.bg_systray = theme.bg_bar
 
 theme.fg_normal = colors.text
 theme.fg_focus = colors.text
@@ -41,7 +42,11 @@ theme.client_border_width = dpi(0)
 theme.widget_border_width = dpi(0)
 
 -- Bar
-theme.bar_height = dpi(46)
+--- @type "top" | "bottom"
+theme.bar_position = "top"
+--- @type number | nil
+theme.bar_width = nil
+theme.bar_height = 42
 theme.bar_padding = dpi(6)
 theme.bar_spacing = dpi(6)
 

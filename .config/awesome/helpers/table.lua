@@ -11,7 +11,7 @@ _M.filter = function(tbl, callback)
   local t = {}
   for i, element in ipairs(tbl) do
     if callback(element, i, tbl) then
-      table.insert(t, element)
+      t[#t + 1] = element
     end
   end
   return t
@@ -20,7 +20,7 @@ end
 _M.map = function(tbl, callback)
   local t = {}
   for i, element in ipairs(tbl) do
-    table.insert(t, callback(element, i, tbl))
+    t[#t + 1] = callback(element, i, tbl)
   end
   return t
 end
@@ -44,7 +44,7 @@ _M.stringify = function(tbl)
     if type(k) ~= "number" then
       k = '"' .. k .. '"'
     end
-    s = s .. "[" .. k .. "] = " .. _M.stringify(v) .. ","
+    s = s .. "[" .. k .. "] = " .. _M.stringify(v) .. ", "
   end
   return s .. "}"
 end

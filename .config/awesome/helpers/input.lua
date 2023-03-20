@@ -1,6 +1,47 @@
 local awful = require("awful")
+local naughty = require("naughty")
 
 local _M = {}
+
+--- @param device_name string Device Name in `xinput list`.
+--- @param device_index? number Index of the device in `xinput list`. Devices are sorted in ascending order based on their id. Index can be negative to count back from the end of the device list.
+--- @return number|nil
+_M.get_device_id = function(device_name, device_index)
+  if not device_index or device_index == 0 then
+    device_index = 1
+  end
+
+  local out_stream = io.popen([[xinput list | grep ']] .. device_name .. [[' | sed -e 's/^.*id=\([0-9]*\).*$/\1/g']])
+
+  if not out_stream then
+    return nil
+  end
+
+  local ids = {}
+  local i = 0
+  for line in out_stream:lines() do
+    local id = tonumber(line)
+    if id then
+      i = i + 1
+      ids[i] = id
+    end
+  end
+  out_stream:close()
+
+  table.sort(ids)
+
+  if math.abs(device_index) > #ids then
+    return nil
+  end
+
+  if device_index > 0 then
+    return ids[device_index]
+  elseif device_index < 0 then
+    return ids[#ids + 1 + device_index]
+  end
+
+  return nil
+end
 
 --- Fake key down events
 _M.key_down = function(keys)
@@ -21,19 +62,23 @@ _M.key = function(keys, modifiers)
     return
   end
 
-  local keyboard_id = user_variables.keyboard_id or 18
+  local keyboard_name = user_vars.keyboard_name or ""
+
+  if keyboard_name == nil then
+    naughty.notification({
+      urgency = "critical",
+      message = "keyboard_name is not set in user_vars.lua",
+    })
+  end
 
   local mods = table.concat(modifiers, " ")
-  local mods_regex = mods:gsub(" ", "|")
 
+  -- TODO: convert this to a standalone shell script?
   local script = [[
     xdotool keyup ]] .. mods .. [[ &&
     xdotool key ]] .. keys .. [[ &&
     xdotool keydown ]] .. mods .. [[ &&
-    xinput query-state ]] .. keyboard_id .. [[ |
-    grep -E 'key\[(]] .. mods_regex .. [[)\]=up' |
-    sed -rze 's/[^0-9]+/ /g' |
-    xargs -r xdotool keyup
+    restore-mods ']] .. keyboard_name .. [['
   ]]
 
   awful.spawn.with_shell(script)
