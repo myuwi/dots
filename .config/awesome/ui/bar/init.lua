@@ -10,7 +10,7 @@ local clock = require("ui.bar.clock")
 
 awful.screen.connect_for_each_screen(function(s)
   local is_primary = s == screen.primary
-  local bar_margin = beautiful.useless_gap * 2
+  local bar_margin = beautiful.bar_gap
   local bar_position = beautiful.bar_position
 
   awful.wibar({
