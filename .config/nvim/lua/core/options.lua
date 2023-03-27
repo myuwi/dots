@@ -2,6 +2,11 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- Set leader
+vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>")
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
 -- Indentation
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 2
@@ -44,7 +49,7 @@ vim.opt.fileencoding = "utf-8"
 vim.opt.clipboard = "unnamedplus"
 
 -- Command timeout
-vim.opt.timeoutlen = 500
+vim.opt.timeoutlen = 300
 
 -- Status line
 vim.opt.laststatus = 3

@@ -1,8 +1,4 @@
-local status_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
-if not status_ok then
-  return
-end
-
+local mason_lspconfig = require("mason-lspconfig")
 local lspconfig = require("lspconfig")
 
 local servers = {
@@ -29,10 +25,10 @@ mason_lspconfig.setup({
 
 for _, server in pairs(servers) do
   local opts = {
-    on_attach = require("user.lsp.handlers").on_attach,
-    capabilities = require("user.lsp.handlers").capabilities,
+    on_attach = require("core.plugins.lsp.handlers").on_attach,
+    capabilities = require("core.plugins.lsp.handlers").capabilities,
   }
-  local has_custom_opts, server_custom_opts = pcall(require, "user.lsp.settings." .. server)
+  local has_custom_opts, server_custom_opts = pcall(require, "core.plugins.lsp.settings." .. server)
   if has_custom_opts then
     opts = vim.tbl_deep_extend("force", server_custom_opts, opts)
   end

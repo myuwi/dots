@@ -35,61 +35,6 @@ return {
     },
   },
 
-  -- LSP
-  "neovim/nvim-lspconfig",
-  "williamboman/mason.nvim",
-  "williamboman/mason-lspconfig.nvim",
-  {
-    "jose-elias-alvarez/null-ls.nvim",
-    config = function()
-      require("user.plugins.null-ls")
-    end,
-  },
-  "b0o/schemastore.nvim",
-
-  "folke/neodev.nvim",
-
-  { "Fymyte/rasi.vim", ft = "rasi" },
-  { "elkowar/yuck.vim", ft = "yuck" },
-
-  -- Completion
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-cmdline",
-      "hrsh7th/cmp-nvim-lsp",
-    },
-  },
-
-  -- Treesitter
-  {
-    "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
-    config = function()
-      require("user.plugins.treesitter")
-    end,
-    dependencies = {
-      {
-        "nvim-treesitter/nvim-treesitter-textobjects",
-      },
-    },
-  },
-  "nvim-treesitter/playground",
-
-  -- snippets
-  {
-    "L3MON4D3/LuaSnip",
-    dependencies = {
-      "saadparwaiz1/cmp_luasnip",
-      "rafamadriz/friendly-snippets",
-    },
-    config = function()
-      require("user.plugins.luasnip")
-    end,
-  },
-
   -- Autopairs
   {
     "windwp/nvim-autopairs",
@@ -108,8 +53,6 @@ return {
     config = true,
   },
 
-  "nvim-lua/plenary.nvim",
-
   {
     "lewis6991/gitsigns.nvim",
     config = true,
@@ -121,16 +64,6 @@ return {
   },
 
   "famiu/bufdelete.nvim",
-
-  {
-    "iamcco/markdown-preview.nvim",
-    init = function()
-      vim.g.mkdp_auto_close = 0
-    end,
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
-  },
 
   {
     "folke/trouble.nvim",
