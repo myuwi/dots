@@ -7,12 +7,12 @@ device_name=$1
 mods="37|50|64|133"
 
 get_state() {
-	get-keyboard-state "$1" |
+	get-keyboard-state "$@" |
 		grep -E "key\[($mods)\]=down" |
 		sed -E 's/[^0-9]+//g'
 }
 
-stuck_keys=$(get_state "Virtual core XTEST keyboard")
+stuck_keys=$(get_state -x "Virtual core XTEST keyboard")
 
 if [ -z "$stuck_keys" ]; then
 	exit
@@ -24,7 +24,7 @@ while read -r id; do
 	stuck_keys_arr["$id"]=true
 done <<<"$stuck_keys"
 
-while true; do
+while [[ "${#stuck_keys_arr[@]}" -ne 0 ]]; do
 	keys=$(get_state "$device_name")
 
 	for stuck_key in "${!stuck_keys_arr[@]}"; do
@@ -34,10 +34,6 @@ while true; do
 			unset stuck_keys_arr["$stuck_key"]
 		fi
 	done
-
-	if [[ "${#stuck_keys_arr[@]}" -eq 0 ]]; then
-		exit
-	fi
 
 	sleep 0.1
 done
