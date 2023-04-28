@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "# Official Packages"
+
+pacman -Qqen
+
+echo
+echo "# AUR Packages"
+
+pacman -Qqem

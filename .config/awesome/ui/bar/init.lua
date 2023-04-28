@@ -13,7 +13,7 @@ awful.screen.connect_for_each_screen(function(s)
   local bar_margin = beautiful.bar_gap
   local bar_position = beautiful.bar_position
 
-  awful.wibar({
+  s.bar = awful.wibar({
     position = bar_position,
     screen = s,
     height = beautiful.bar_height,

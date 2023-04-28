@@ -21,7 +21,6 @@ function backdrop:hide()
   end
 end
 
--- TODO: use one backdrop widget that covers all screens?
 awful.screen.connect_for_each_screen(function(s)
   s.backdrop_widget = wibox({
     screen = s,

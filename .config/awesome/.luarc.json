@@ -13,7 +13,7 @@
     ]
   },
   "workspace": {
-    "ignoreDir": [".vscode", "lib"],
+    "ignoreDir": ["lib"],
     "library": ["/usr/share/awesome/lib"]
   }
 }

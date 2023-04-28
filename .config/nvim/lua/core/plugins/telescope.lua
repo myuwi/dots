@@ -1,12 +1,22 @@
 return {
   "nvim-telescope/telescope.nvim",
   dependencies = { "nvim-lua/plenary.nvim" },
+  keys = function()
+    local builtin = require("telescope.builtin")
+    return {
+      { "<C-p>", builtin.find_files, desc = "Telescope: Find Files" },
+      { "<Leader>pf", builtin.find_files, desc = "Telescope: Find Files" },
+      { "<Leader>pg", builtin.live_grep, desc = "Telescope: Live Grep" },
+      { "<Leader>ph", builtin.help_tags, desc = "Telescope: Help Tags" },
+      { "<Leader>pb", builtin.buffers, desc = "Telescope: Buffers" },
+    }
+  end,
   opts = {
     defaults = {
       file_ignore_patterns = {
         "^.git/",
-        ".svelte%-kit/",
         ".netlify/",
+        ".svelte%-kit/",
         "node_modules",
         "target",
       },
@@ -23,21 +33,13 @@ return {
     },
     pickers = {
       find_files = {
-        hidden = true,
         no_ignore = true,
+        hidden = true,
       },
       live_grep = {
+        no_ignore = true,
         hidden = true,
       },
     },
   },
-  config = function()
-    local set_keymap = require("core.helpers").set_keymap
-    local builtin = require("telescope.builtin")
-    set_keymap("n", "<C-p>", builtin.find_files, { desc = "Telescope: Find Files" })
-    set_keymap("n", "<Leader>pf", builtin.find_files, { desc = "Telescope: Find Files" })
-    set_keymap("n", "<Leader>pg", builtin.live_grep, { desc = "Telescope: Live Grep" })
-    set_keymap("n", "<Leader>ph", builtin.help_tags, { desc = "Telescope: Help Tags" })
-    set_keymap("n", "<Leader>pb", builtin.buffers, { desc = "Telescope: Buffers" })
-  end,
 }

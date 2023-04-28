@@ -2,30 +2,44 @@ local awful = require("awful")
 local helpers = require("helpers")
 local naughty = require("naughty")
 local ruled = require("ruled")
+local start_resize_mode = require("config.resize_mode")
 
 -- Global keybindings
 awful.keyboard.append_global_keybindings({
-  awful.key({ modkey }, "Left", awful.tag.viewprev, {
-    description = "view previous",
-    group = "tag",
-  }),
-  awful.key({ modkey }, "Right", awful.tag.viewnext, {
-    description = "view next",
-    group = "tag",
+  -- Client navigation
+  awful.key({ modkey }, "h", function()
+    awful.client.focus.bydirection("left")
+  end, {
+    description = "focus client on left",
+    group = "client",
   }),
   awful.key({ modkey }, "j", function()
-    awful.client.focus.byidx(1)
+    awful.client.focus.bydirection("down")
   end, {
-    description = "focus next by index",
+    description = "focus client below",
     group = "client",
   }),
   awful.key({ modkey }, "k", function()
-    awful.client.focus.byidx(-1)
+    awful.client.focus.bydirection("up")
   end, {
-    description = "focus previous by index",
+    description = "focus client above",
     group = "client",
   }),
+  awful.key({ modkey }, "l", function()
+    awful.client.focus.bydirection("right")
+  end, {
+    description = "focus client on right",
+    group = "client",
+  }),
+
   -- Layout manipulation
+  awful.key({ modkey }, "r", function()
+    start_resize_mode()
+  end, {
+    description = "enter resize mode",
+    group = "client",
+  }),
+
   awful.key({ modkey }, "s", function()
     awful.layout.inc(1)
   end, {
@@ -36,6 +50,13 @@ awful.keyboard.append_global_keybindings({
     awful.layout.inc(-1)
   end, {
     description = "select previous layout",
+    group = "layout",
+  }),
+  awful.key({ modkey }, "b", function()
+    local s = mouse.screen
+    s.bar.visible = not s.bar.visible
+  end, {
+    description = "toggle bar visibility",
     group = "layout",
   }),
   awful.key({ modkey, "Shift" }, "j", function()
@@ -102,18 +123,6 @@ awful.keyboard.append_global_keybindings({
   awful.key({ modkey, "Control" }, "r", awesome.restart, {
     description = "reload awesome",
     group = "awesome",
-  }),
-  awful.key({ modkey }, "l", function()
-    awful.tag.incmwfact(0.05)
-  end, {
-    description = "increase master width factor",
-    group = "layout",
-  }),
-  awful.key({ modkey }, "h", function()
-    awful.tag.incmwfact(-0.05)
-  end, {
-    description = "decrease master width factor",
-    group = "layout",
   }),
   awful.key({ modkey, "Shift" }, "h", function()
     awful.tag.incnmaster(1, nil, true)

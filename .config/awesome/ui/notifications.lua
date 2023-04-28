@@ -1,3 +1,4 @@
+-- local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local naughty = require("naughty")
@@ -12,15 +13,41 @@ naughty.config.defaults.timeout = 6
 naughty.config.defaults.title = "Notification"
 naughty.config.defaults.position = "bottom_right"
 
-naughty.config.notify_callback = function(args)
+-- ---@param link string
+-- local function match_url(link)
+--   local url_pattern = "https?://[^ >,;]*"
+--   local matched = link:match(url_pattern)
+--   return matched
+-- end
+--
+-- local function add_link_button(args)
+--   if args.message then
+--     local msg_url = match_url(args.message)
+--     if msg_url then
+--       local action = naughty.action({
+--         name = "Open link in Browser",
+--       })
+--       action:connect_signal("invoked", function()
+--         awful.spawn("xdg-open " .. msg_url)
+--       end)
+--       args.actions[#args.actions + 1] = action
+--     end
+--   end
+-- end
+
+---@param args table
+local function add_notification_icon(args)
   if not args.icon and args.app_name then
     local app_icon = helpers.client.find_icon(args.app_name)
     if app_icon then
       args.app_icon = app_icon
     end
   end
-
   return args
+end
+
+naughty.config.notify_callback = function(args)
+  return add_notification_icon(args)
 end
 
 naughty.connect_signal("request::display", function(n)
@@ -176,7 +203,7 @@ naughty.connect_signal("request::display", function(n)
   notification:connect_signal("mouse::enter", notif_mouse_enter)
   notification:connect_signal("mouse::leave", notif_mouse_leave)
 
-  n:connect_signal("destroyed", function(n, reason)
+  n:connect_signal("destroyed", function(destroyed_notif, reason)
     notification:disconnect_signal("mouse::enter", notif_mouse_enter)
     notification:disconnect_signal("mouse::leave", notif_mouse_leave)
 
@@ -189,8 +216,8 @@ naughty.connect_signal("request::display", function(n)
     then
       -- TODO: Improve?
       -- Jump to client when a notification is left clicked
-      if #n.clients > 0 then
-        local c = n.clients[1]
+      if #destroyed_notif.clients > 0 then
+        local c = destroyed_notif.clients[1]
         c:jump_to()
         local geometry = c:geometry()
         local x = geometry.x + geometry.width / 2

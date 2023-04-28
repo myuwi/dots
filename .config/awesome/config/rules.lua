@@ -32,6 +32,7 @@ ruled.client.connect_signal("request::rules", function()
         "Blueman-manager",
         "Nm-connection-editor",
         "qjoypad",
+        "leagueclientux.exe",
         "Thunar",
       },
       instance = {
@@ -132,6 +133,7 @@ ruled.client.connect_signal("request::rules", function()
     },
   })
 
+  -- FIXME: Spotify appears in top left corner momentarily
   ruled.client.append_rule({
     id = "spotify",
     rule = {

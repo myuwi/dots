@@ -73,7 +73,6 @@ _M.key = function(keys, modifiers)
 
   local mods = table.concat(modifiers, " ")
 
-  -- TODO: convert this to a standalone shell script?
   local script = [[
     xdotool keyup ]] .. mods .. [[ &&
     xdotool key ]] .. keys .. [[ &&

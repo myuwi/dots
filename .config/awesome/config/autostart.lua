@@ -1,11 +1,12 @@
 local helpers = require("helpers")
 
+local home_dir = os.getenv("HOME")
+
 -- Apps to run on startup
 local start_cmds = {
   "/usr/lib/xfce-polkit/xfce-polkit",
-  os.getenv("HOME") .. "/.screenlayout/default.sh",
+  home_dir .. "/.screenlayout/default.sh",
   "picom --legacy-backends",
-  "openrazer-daemon",
   "solaar -w hide",
   "fcitx5",
   "flameshot",
