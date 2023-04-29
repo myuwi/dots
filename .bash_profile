@@ -10,5 +10,5 @@ export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
-export DOTFILES=$HOME/.dotfiles
+export DOTFILES=$HOME/.dots
 [[ -d $DOTFILES/bin ]] && export PATH=$DOTFILES/bin:$PATH
