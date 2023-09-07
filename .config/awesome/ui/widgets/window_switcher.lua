@@ -18,7 +18,7 @@ local last_focused_client
 local window_switcher_box
 local app_icons
 
-local function activate(index)
+local function activate_client_at_index(index)
   local c = visible_clients[index]
 
   c:emit_signal("request::activate", "window_switcher", {
@@ -104,7 +104,7 @@ local function draw_widget()
 
     widget:connect_signal("button::press", function(_, _, _, button)
       if button == 1 then
-        activate(i)
+        activate_client_at_index(i)
         window_switcher_keygrabber:stop()
       end
     end)
@@ -161,7 +161,7 @@ local function draw_widget()
   })
 end
 
-local function cycle(amount)
+local function cycle_selection(amount)
   if amount == 0 then
     return
   end
@@ -210,7 +210,7 @@ local function show(a)
         modifiers = { modkey },
         key = "Tab",
         on_press = function()
-          cycle(1)
+          cycle_selection(1)
           redraw_highlights()
         end,
       }),
@@ -218,7 +218,7 @@ local function show(a)
         modifiers = { modkey, "Shift" },
         key = "Tab",
         on_press = function()
-          cycle(-1)
+          cycle_selection(-1)
           redraw_highlights()
         end,
       }),
@@ -235,7 +235,7 @@ local function show(a)
     stop_event = "release",
     stop_callback = function(_, stop_key)
       if stop_key == "Super_L" then
-        activate(alt_tab_index)
+        activate_client_at_index(alt_tab_index)
       end
 
       hide()
@@ -249,7 +249,7 @@ local function show(a)
   end
 
   if cycle_amount ~= 0 then
-    cycle(cycle_amount)
+    cycle_selection(cycle_amount)
   end
 
   last_focused_client = client.focus
