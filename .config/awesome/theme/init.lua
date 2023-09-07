@@ -71,11 +71,6 @@ theme.notification_width = dpi(360)
 theme.notification_margin = dpi(16)
 theme.notification_spacing = theme.useless_gap * 2
 
--- Menu
-theme.menu_submenu_icon = theme_path .. "assets/submenu.png"
-theme.menu_height = dpi(32)
-theme.menu_width = dpi(100)
-
 -- Layouts
 theme.layout_max = theme_path .. "assets/layouts/maxw.png"
 theme.layout_tile = theme_path .. "assets/layouts/tilew.png"
