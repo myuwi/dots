@@ -9,7 +9,6 @@ local start_cmds = {
   "picom --legacy-backends",
   "solaar -w hide",
   "fcitx5",
-  "flameshot",
   "discord",
 }
 
