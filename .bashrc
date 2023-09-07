@@ -18,11 +18,6 @@ alias rm='rm -i'
 alias cal='cal -mw'
 alias yt-dl='yt-dlp'
 alias pn='pnpm'
-
-# Git aliases
-alias ga='git commit'
-alias gc='git commit'
-alias gst='git status'
 alias lg='lazygit'
 
 if command -v starship &>/dev/null; then
