@@ -106,3 +106,20 @@ if (beautiful.client_border_width or 0) > 0 and (beautiful.border_radius or 0) >
   client.connect_signal("property::fullscreen", toggle_rounded_corners)
   client.connect_signal("property::maximized", toggle_rounded_corners)
 end
+
+-- Disable stacked shadows in max layout
+screen.connect_signal("arrange", function(s)
+  local visible_clients = helpers.table.filter(client.get(s, true), function(c)
+    return c.first_tag.selected
+  end)
+
+  for i, c in ipairs(visible_clients) do
+    local disable_shadow = (s.selected_tag and s.selected_tag.layout.name == "max") and i > 1
+    if disable_shadow then
+      awful.spawn("xprop -id " .. c.window .. " -f _SHADOW_DISABLE 32c -set _SHADOW_DISABLE 1", false)
+    else
+      topmost_found = true
+      awful.spawn("xprop -id " .. c.window .. " -f _SHADOW_DISABLE 32c -set _SHADOW_DISABLE 0", false)
+    end
+  end
+end)
