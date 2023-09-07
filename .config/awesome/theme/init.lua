@@ -12,7 +12,7 @@ theme.font = theme.font_name .. " " .. theme.font_size
 
 theme.icon_path = theme_path .. "assets/icons/"
 
--- Source: https://unsplash.com/photos/shRafhEd6Dw
+-- Source: https://unsplash.com/photos/mthwaeiqky0
 theme.wallpaper = theme_path .. "assets/wallpaper.jpg"
 
 local colors = require("theme.colors")
