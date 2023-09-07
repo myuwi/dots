@@ -1,5 +1,4 @@
 local awful = require("awful")
-local naughty = require("naughty")
 
 local _M = {}
 
@@ -63,13 +62,6 @@ _M.key = function(keys, modifiers)
   end
 
   local keyboard_name = user_vars.keyboard_name or ""
-
-  if keyboard_name == nil then
-    naughty.notification({
-      urgency = "critical",
-      message = "keyboard_name is not set in user_vars.lua",
-    })
-  end
 
   local mods = table.concat(modifiers, " ")
 
