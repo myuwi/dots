@@ -6,8 +6,8 @@ env:
 
 font:
   normal:
-    family: Mononoki Nerd Font
-  size: 10.5
+    family: JetBrainsMono Nerd Font
+  size: 9.5
 
 window:
   padding:
