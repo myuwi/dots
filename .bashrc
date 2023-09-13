@@ -10,8 +10,8 @@ export VISUAL='nvim'
 export HISTCONTROL=ignoreboth
 
 alias c='clear'
-alias ls='exa -a --group-directories-first'
-alias ll='exa -la --group-directories-first'
+alias ls='eza -a --group-directories-first'
+alias ll='eza -la --group-directories-first'
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
