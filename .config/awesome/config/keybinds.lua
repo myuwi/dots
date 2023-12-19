@@ -150,10 +150,11 @@ awful.keyboard.append_global_keybindings({
   }),
   -- Screenshot
   awful.key({}, "Print", function()
-    local active_screen = mouse.screen
-    local geo = active_screen.geometry
-    local script = ("flameshot full --region %dx%d+%d+%d -c"):format(geo.width, geo.height, geo.x, geo.y)
-    awful.spawn(script, false)
+    -- local active_screen = mouse.screen
+    -- local geo = active_screen.geometry
+    -- local region = ("%dx%d+%d+%d"):format(geo.width, geo.height, geo.x, geo.y)
+    -- local script = "screenshot  " .. region
+    awful.spawn.with_shell("screenshot screen")
   end, {
     description = "take a screenshot of the active screen",
     group = "screen",
@@ -165,7 +166,7 @@ awful.keyboard.append_global_keybindings({
     group = "screen",
   }),
   awful.key({ "Shift" }, "Print", function()
-    helpers.misc.take_screenshot(0)
+    awful.spawn.with_shell("screenshot select")
   end, {
     description = "take a screenshot of a specific window",
     group = "screen",
@@ -176,32 +177,63 @@ awful.keyboard.append_global_keybindings({
     description = "take a screenshot of a specific window with padding",
     group = "screen",
   }),
+  awful.key({ "Mod1" }, "Print", function()
+    awful.spawn.with_shell("screenshot full")
+  end, {
+    description = "take a full screenshot",
+    group = "screen",
+  }),
 })
 
 -- Volume, Media and Brightness keys
 awful.keyboard.append_global_keybindings({
   -- Volume keys
   awful.key({}, "XF86AudioRaiseVolume", function()
-    awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ +5%", false)
-    awesome.emit_signal("widgets::volume::show")
+    awful.spawn.easy_async("wpctl set-volume @DEFAULT_SINK@ 0.05+", function()
+      awesome.emit_signal("widgets::volume::show")
+    end)
   end, {
     description = "volume up",
     group = "volume controls",
   }),
   awful.key({}, "XF86AudioLowerVolume", function()
-    awful.spawn("pactl set-sink-volume @DEFAULT_SINK@ -5%", false)
-    awesome.emit_signal("widgets::volume::show")
+    awful.spawn.easy_async("wpctl set-volume @DEFAULT_SINK@ 0.05-", function()
+      awesome.emit_signal("widgets::volume::show")
+    end)
   end, {
     description = "volume down",
     group = "volume controls",
   }),
   awful.key({}, "XF86AudioMute", function()
-    awful.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle", false)
-    awesome.emit_signal("widgets::volume::show")
+    awful.spawn.easy_async("wpctl set-mute @DEFAULT_SINK@ toggle", function()
+      awesome.emit_signal("widgets::volume::show")
+    end)
   end, {
     description = "volume mute",
     group = "volume controls",
   }),
+
+  -- Mute
+  awful.key({ modkey }, "m", function()
+    awful.spawn("wpctl set-mute @DEFAULT_SOURCE@ toggle", false)
+
+    local mic_script = "wpctl get-volume @DEFAULT_SOURCE@ | sed -e 's/Volume: //'"
+    awful.spawn.easy_async_with_shell(mic_script, function(stdout)
+      local muted_str = stdout:match("MUTED")
+      local muted = muted_str ~= nil
+      local state = muted and "muted" or "unmuted"
+
+      naughty.notification({
+        title = "Microphone",
+        message = "Microphone " .. state,
+        timeout = 1,
+      })
+    end)
+  end, {
+    description = "microphone mute",
+    group = "microphone controls",
+  }),
+
   -- Media controls
   awful.key({}, "XF86AudioPlay", function()
     awful.spawn("playerctl play-pause", false)
@@ -227,6 +259,7 @@ awful.keyboard.append_global_keybindings({
     description = "media stop",
     group = "media controls",
   }),
+
   -- Brightness controls
   awful.key({}, "XF86MonBrightnessUp", function()
     awful.spawn("brillo -q -u 100000 -A 5", false)
@@ -330,6 +363,13 @@ client.connect_signal("request::default_keybindings", function()
     }),
     awful.key({ modkey, "Control" }, "a", function(c)
       ruled.client.apply(c)
+    end, {
+      description = "apply rules to client",
+      group = "client",
+    }),
+    awful.key({ modkey, "Control" }, "s", function(c)
+      c.width = 400
+      c.height = 300
     end, {
       description = "apply rules to client",
       group = "client",

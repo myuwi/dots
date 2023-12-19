@@ -5,7 +5,8 @@ local function start()
   keygrabber = awful.keygrabber({
     keybindings = {
       awful.key({}, "h", function()
-        awful.tag.incmwfact(-0.05)
+        local focused_tag = client.focus.first_tag
+        awful.tag.incmwfact(-0.05, focused_tag)
       end),
       awful.key({}, "j", function()
         -- TODO: use a different method to change client height linearly?
@@ -15,7 +16,8 @@ local function start()
         awful.client.incwfact(0.05)
       end),
       awful.key({}, "l", function()
-        awful.tag.incmwfact(0.05)
+        local focused_tag = client.focus.first_tag
+        awful.tag.incmwfact(0.05, focused_tag)
       end),
     },
     stop_key = { "Escape", "Return" },

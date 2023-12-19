@@ -5,6 +5,8 @@ local gears = require("gears")
 local helpers = require("helpers")
 local ruled = require("ruled")
 
+-- TODO: Window snapping
+
 -- TODO: Use a fallback if a client doesn't have an icon
 -- Try to find missing client icon
 local function set_fallback_icon(c)

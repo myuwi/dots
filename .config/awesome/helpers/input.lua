@@ -61,15 +61,13 @@ _M.key = function(keys, modifiers)
     return
   end
 
-  local keyboard_name = user_vars.keyboard_name or ""
-
   local mods = table.concat(modifiers, " ")
 
   local script = [[
     xdotool keyup ]] .. mods .. [[ &&
     xdotool key ]] .. keys .. [[ &&
     xdotool keydown ]] .. mods .. [[ &&
-    restore-mods ']] .. keyboard_name .. [['
+    restore-mods
   ]]
 
   awful.spawn.with_shell(script)

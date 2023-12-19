@@ -26,6 +26,9 @@ ruled.client.connect_signal("request::rules", function()
   ruled.client.append_rule({
     id = "floating",
     rule_any = {
+      name = {
+        "ArmCord Settings | Version:",
+      },
       class = {
         "An Anime Game Launcher",
         "Arandr",
@@ -35,11 +38,8 @@ ruled.client.connect_signal("request::rules", function()
         "leagueclientux.exe",
         "Thunar",
       },
-      instance = {
-        "Devtools",
-      },
       role = {
-        "devtools",
+        "item-selector",
       },
     },
     properties = {
@@ -76,11 +76,18 @@ ruled.client.connect_signal("request::rules", function()
 
   ruled.client.append_rule({
     id = "discord",
-    rule = {
-      class = "discord",
-      role = "browser-window",
+    rule_any = {
+      class = {
+        "ArmCord",
+        "discord",
+      },
+    },
+    except_any = {
+      name = { "ArmCord Settings | Version:" },
+      role = { "devtools" },
     },
     properties = {
+      placement = helpers.placement.centered,
       floating = true,
       width = 1600,
       height = 900,
@@ -99,8 +106,8 @@ ruled.client.connect_signal("request::rules", function()
       placement = function(c)
         awful.placement.top_right(c, {
           offset = {
-            x = -8,
-            y = 8,
+            x = -beautiful.useless_gap * 2,
+            y = beautiful.useless_gap * 2,
           },
           honor_workarea = true,
         })
@@ -113,7 +120,7 @@ ruled.client.connect_signal("request::rules", function()
     id = "steam",
     rule_any = {
       class = {
-        "Steam",
+        "steam",
       },
     },
     properties = {
@@ -124,7 +131,7 @@ ruled.client.connect_signal("request::rules", function()
   ruled.client.append_rule({
     id = "steam-main",
     rule = {
-      class = "Steam",
+      class = "steam",
       name = "Steam",
     },
     properties = {
@@ -133,7 +140,6 @@ ruled.client.connect_signal("request::rules", function()
     },
   })
 
-  -- FIXME: Spotify appears in top left corner momentarily
   ruled.client.append_rule({
     id = "spotify",
     rule = {
