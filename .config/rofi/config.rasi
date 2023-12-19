@@ -1,5 +1,5 @@
 configuration {
-    modi: "run,drun,window";
+    modi: "drun";
     icon-theme: "Papirus";
     terminal: "alacritty";
     drun-display-format: "{icon} {name}";
@@ -7,13 +7,10 @@ configuration {
     sort: true;
     sorting-method: "fzf";
     matching: "normal";
-    display-drun: "  Apps ";
-    display-run: "  Run ";
-    display-window: "﩯  Window ";
 }
 
 * {
-    font: "FiraCode Nerd Font 12";
+    font: "JetBrainsMono Nerd Font 12";
     bg-col:  #1f1d2e;
     fg-active-col: #908caa;
     border-col: #1f1d2e;
@@ -25,7 +22,7 @@ configuration {
     width: 640;
 }
 
-element-text, element-icon, mode-switcher {
+element-text, element-icon {
     background-color: transparent;
     text-color: inherit;
 }
@@ -40,7 +37,7 @@ window {
 }
 
 mainbox {
-    children: [inputbar,listview,mode-switcher];
+    children: [inputbar,listview];
     background-color: @bg-col;
 }
 
@@ -78,10 +75,6 @@ listview {
     background-color: @bg-col;
 }
 
-mode-switcher {
-
-}
-
 element normal.normal,
 element normal.active,
 element alternate.normal {
@@ -105,31 +98,9 @@ element.selected.active {
 }
 
 element-icon {
-    size: 25px;
+    size: 24px;
 }
 
 element-text {
   highlight: bold;
-}
-
-mode-switcher {
-    spacing: 0;
-    margin: 0px 20px;
-}
-
-button {
-    padding: 10px;
-    background-color: transparent;
-    text-color: @grey;
-    vertical-align: 0.5; 
-    horizontal-align: 0.5;
-}
-
-button selected {
-  background-color: @bg-col;
-  text-color: @blue;
-}
-
-textbox {
-  text-color: @fg-col;
 }
