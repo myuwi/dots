@@ -1,5 +1,14 @@
 local _M = {}
 
+_M.includes = function(tbl, value)
+  for i, _ in ipairs(tbl) do
+    if tbl[i] == value then
+      return true
+    end
+  end
+  return false
+end
+
 --- Creates a shallow copy of a portion of a given table
 --- filtered down to just the elements from the given table
 --- that pass the test implemented by the provided function.
