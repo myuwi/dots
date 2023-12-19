@@ -19,6 +19,7 @@ alias cal='cal -mw'
 alias yt-dl='yt-dlp'
 alias pn='pnpm'
 alias lg='lazygit'
+alias sxiv='nsxiv'
 
 if command -v starship &>/dev/null; then
 	eval "$(starship init bash)"
