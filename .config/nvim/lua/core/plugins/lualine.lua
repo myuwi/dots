@@ -1,3 +1,20 @@
+local function toggleterm_statusline()
+  ---@diagnostic disable-next-line: undefined-field
+  if vim.b.term_title:match("lazygit") then
+    return "LazyGit"
+  end
+
+  ---@diagnostic disable-next-line: undefined-field
+  return "ToggleTerm #" .. vim.b.toggle_number
+end
+
+local toggleterm = {
+  sections = {
+    lualine_a = { toggleterm_statusline },
+  },
+  filetypes = { "toggleterm" },
+}
+
 return {
   "nvim-lualine/lualine.nvim",
   dependencies = { "kyazdani42/nvim-web-devicons", lazy = true },
@@ -5,15 +22,15 @@ return {
     options = {
       icons_enabled = true,
       theme = "auto",
-      component_separators = { left = "", right = "" },
-      section_separators = { left = "", right = "" },
+      component_separators = { left = "", right = "" },
+      section_separators = { left = "", right = "" },
       disabled_filetypes = { "packer", "NVimTree" },
       always_divide_middle = true,
       globalstatus = true,
     },
     sections = {
       lualine_a = { "mode" },
-      lualine_b = { "branch", "diff", "diagnostics" },
+      lualine_b = { { "branch", icon = "󰘬" }, "diff", "diagnostics" },
       lualine_c = { "filename" },
       lualine_x = { "filetype" },
       lualine_y = { "progress" },
@@ -28,6 +45,6 @@ return {
       lualine_z = {},
     },
     tabline = {},
-    extensions = { "nvim-tree", "toggleterm" },
+    extensions = { "nvim-tree", toggleterm },
   },
 }

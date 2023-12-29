@@ -1,6 +1,6 @@
 return {
   "luukvbaal/statuscol.nvim",
-  dependencies = { "lewis6991/gitsigns.nvim" },
+  dependencies = "lewis6991/gitsigns.nvim",
   opts = function()
     local builtin = require("statuscol.builtin")
     local gitsigns = require("gitsigns")
@@ -14,7 +14,11 @@ return {
           click = "v:lua.ScSa",
         },
         {
-          sign = { name = { ".*" }, maxwidth = 1, colwidth = 2 },
+          sign = { name = { ".*" }, maxwidth = 1, colwidth = 2, auto = true },
+          click = "v:lua.ScSa",
+        },
+        {
+          sign = { namespace = { "gitsigns" }, maxwidth = 1, colwidth = 2 },
           click = "v:lua.ScSa",
         },
         {
@@ -22,9 +26,23 @@ return {
           condition = { true, builtin.not_empty },
           click = "v:lua.ScLa",
         },
-        { text = { builtin.foldfunc }, click = "v:lua.ScFa" },
+        {
+          text = { builtin.foldfunc, " " },
+          click = "v:lua.ScFa",
+        },
       },
       clickhandlers = {
+        FoldOpen = function(args)
+          if args.button == "l" then
+            builtin.foldopen_click(args)
+          end
+        end,
+        FoldClose = function(args)
+          if args.button == "l" then
+            builtin.foldclose_click(args)
+          end
+        end,
+        FoldOther = false,
         GitSignsTopdelete = gitsigns_click,
         GitSignsUntracked = gitsigns_click,
         GitSignsAdd = gitsigns_click,

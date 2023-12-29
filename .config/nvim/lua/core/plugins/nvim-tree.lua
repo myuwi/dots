@@ -1,8 +1,38 @@
 return {
-  "kyazdani42/nvim-tree.lua",
+  "nvim-tree/nvim-tree.lua",
   dependencies = {
-    "kyazdani42/nvim-web-devicons",
+    "nvim-tree/nvim-web-devicons",
+    opts = {
+      override = {
+        ["tailwind.config.js"] = { icon = "󱏿", color = "#4db6ac", name = "Tailwind" },
+        ["tailwind.config.cjs"] = { icon = "󱏿", color = "#4db6ac", name = "Tailwind" },
+        ["tailwind.config.mjs"] = { icon = "󱏿", color = "#4db6ac", name = "Tailwind" },
+        ["tailwind.config.ts"] = { icon = "󱏿", color = "#4db6ac", name = "Tailwind" },
+      },
+    },
   },
+  keys = {
+    { "<C-b>", "<cmd>NvimTreeToggle<CR>", desc = "Toggle Nvim-Tree" },
+  },
+  init = function()
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+
+    vim.api.nvim_create_autocmd("VimEnter", {
+      callback = function(data)
+        local directory = vim.fn.isdirectory(data.file) == 1
+
+        if not directory then
+          return
+        end
+
+        vim.cmd.cd(data.file)
+        require("nvim-tree.api").tree.open()
+      end,
+      desc = "cd into directory and open nvim-tree on start",
+      group = vim.api.nvim_create_augroup("nvim-tree", { clear = true }),
+    })
+  end,
   opts = {
     actions = {
       open_file = {
@@ -25,12 +55,5 @@ return {
       ignore = false,
       timeout = 400,
     },
-    on_attach = function(bufnr)
-      local api = require("nvim-tree.api")
-      api.config.mappings.default_on_attach(bufnr)
-
-      vim.keymap.set("n", "bmv", "", { buffer = bufnr })
-      vim.keymap.del("n", "bmv", { buffer = bufnr })
-    end,
   },
 }

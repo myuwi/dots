@@ -5,6 +5,14 @@ return {
     "rose-pine/neovim",
     "famiu/bufdelete.nvim",
   },
+  lazy = false,
+  keys = {
+    { "<C-Tab>", "<cmd>BufferLineCycleNext<CR>", desc = "Cycle next buffer" },
+    { "<C-S-Tab>", "<cmd>BufferLineCyclePrev<CR>", desc = "Cycle previous buffer" },
+    { "<C-A-j>", "<cmd>BufferLineMoveNext<CR>", desc = "Move current buffer forwards" },
+    { "<C-A-k>", "<cmd>BufferLineMovePrev<CR>", desc = "Move current buffer backwards" },
+    { "<Leader>bd", "<cmd>Bdelete<CR>", desc = "Delete current buffer" },
+  },
   opts = function()
     local p = require("rose-pine.palette")
 
