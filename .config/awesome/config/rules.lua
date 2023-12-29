@@ -80,6 +80,7 @@ ruled.client.connect_signal("request::rules", function()
       class = {
         "ArmCord",
         "discord",
+        "VencordDesktop"
       },
     },
     except_any = {

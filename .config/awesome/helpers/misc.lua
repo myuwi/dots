@@ -14,7 +14,9 @@ end
 
 _M.command_exists = function(command, callback)
   awful.spawn.easy_async_with_shell("command -v " .. command, function(_, _, _, exitcode)
-    callback(exitcode == 0)
+    if exitcode == 0 then
+      callback()
+    end
   end)
 end
 

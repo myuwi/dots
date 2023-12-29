@@ -1,4 +1,3 @@
--- local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local naughty = require("naughty")
@@ -12,28 +11,6 @@ naughty.config.defaults.screen = screen.primary
 naughty.config.defaults.timeout = 6
 naughty.config.defaults.title = "Notification"
 naughty.config.defaults.position = "bottom_right"
-
--- ---@param link string
--- local function match_url(link)
---   local url_pattern = "https?://[^ >,;]*"
---   local matched = link:match(url_pattern)
---   return matched
--- end
---
--- local function add_link_button(args)
---   if args.message then
---     local msg_url = match_url(args.message)
---     if msg_url then
---       local action = naughty.action({
---         name = "Open link in Browser",
---       })
---       action:connect_signal("invoked", function()
---         awful.spawn("xdg-open " .. msg_url)
---       end)
---       args.actions[#args.actions + 1] = action
---     end
---   end
--- end
 
 ---@param args table
 local function add_notification_icon(args)

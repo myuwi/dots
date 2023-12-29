@@ -31,4 +31,6 @@ local function start()
   keygrabber:start()
 end
 
-return start
+return {
+  start = start,
+}

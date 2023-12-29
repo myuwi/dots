@@ -1,5 +1,5 @@
 require(... .. ".autostart")
 require(... .. ".clients")
-require(... .. ".keybinds")
+require(... .. ".keys")
 require(... .. ".rules")
 require(... .. ".screens")
