@@ -12,6 +12,7 @@ return {
       lua = { "stylua" },
       fennel = { "fnlfmt" },
       python = { "isort", "black" },
+      sh = { "shfmt" },
       toml = { "taplo" },
     }
 
