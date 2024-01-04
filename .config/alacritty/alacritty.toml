@@ -1,0 +1,20 @@
+import = ["~/.config/alacritty/themes/rose-pine.toml"]
+
+[env]
+TERM = "xterm-256color"
+
+[font]
+size = 9.5
+
+[font.normal]
+family = "JetBrainsMono NF"
+
+[window]
+dynamic_padding = true
+padding = { x = 16, y = 16 }
+
+[keyboard]
+bindings = [
+  { key = "Tab", mods = "Control", chars = "\u001B[9;5u" },
+  { key = "Tab", mods = "Control|Shift", chars = "\u001B[1;5Z" },
+]
