@@ -1,4 +1,5 @@
 local awful = require("awful")
+local fcitx = require("modules.fcitx")
 local gears = require("gears")
 local helpers = require("helpers")
 local naughty = require("naughty")
@@ -237,44 +238,17 @@ client.connect_signal("request::default_keybindings", function()
     end, { description = "apply rules to client", group = "client" }),
   })
 
+  -- Input method bindings
   helpers.misc.command_exists("fcitx5", function()
-    local Control_L = 37
-    local Shift_L = 50
-    local Super_L = 133
-
-    -- Input method bindings
     awful.keyboard.append_client_keybindings({
       awful.key({ modkey }, "space", function()
-        helpers.input.fcitx_toggle()
+        fcitx.toggle()
       end, { description = "toggle input method", group = "input" }),
       awful.key({ modkey, "Control" }, "space", function()
-        -- TODO: Extract to `helpers.input` module
-        helpers.input.fcitx_status(function(mode)
-          if mode == 2 then
-            -- TODO: Improve this to not require manual key ups
-            helpers.input.key_up("space")
-            helpers.input.key("Hiragana", { Super_L, Control_L })
-            -- TODO: Make custom indicator widget similar to the Window Switcher
-            naughty.notification({
-              app_name = "Mozc",
-              title = "Mozc",
-              message = "Input method changed to Hiragana",
-            })
-          end
-        end)
+        fcitx.hiragana()
       end, { description = "set mozc mode to hiragana", group = "input" }),
       awful.key({ modkey, "Shift" }, "space", function()
-        helpers.input.fcitx_status(function(mode)
-          if mode == 2 then
-            helpers.input.key_up("space")
-            helpers.input.key("Katakana", { Super_L, Shift_L })
-            naughty.notification({
-              app_name = "Mozc",
-              title = "Mozc",
-              message = "Input method changed to Katakana",
-            })
-          end
-        end)
+        fcitx.katakana()
       end, { description = "set mozc mode to katakana", group = "input" }),
     })
   end)
