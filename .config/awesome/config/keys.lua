@@ -1,5 +1,5 @@
 local awful = require("awful")
-local fcitx = require("modules.fcitx")
+local input_method = require("modules.input_method")
 local gears = require("gears")
 local helpers = require("helpers")
 local naughty = require("naughty")
@@ -94,10 +94,10 @@ awful.keyboard.append_global_keybindings({
     awful.spawn("flameshot gui", false)
   end, { description = "take an area screenshot", group = "screen" }),
   awful.key({ "Shift" }, "Print", function()
-    awful.spawn.with_shell("screenshot selection")
+    awful.spawn.with_shell("screenshot select")
   end, { description = "take a screenshot of a specific window", group = "screen" }),
   awful.key({ "Control", "Shift" }, "Print", function()
-    helpers.misc.take_screenshot(32)
+    awful.spawn.with_shell("maim -su -p 32 -B | xclip -sel clip -t image/png")
   end, { description = "take a screenshot of a specific window with padding", group = "screen" }),
   awful.key({ "Mod1" }, "Print", function()
     awful.spawn.with_shell("screenshot full")
@@ -208,22 +208,19 @@ awful.keyboard.append_global_keybindings({
 -- Client keybindings
 client.connect_signal("request::default_keybindings", function()
   awful.keyboard.append_client_keybindings({
+    awful.key({ modkey, "Shift" }, "q", function(c)
+      c:kill()
+    end, { description = "close", group = "client" }),
     awful.key({ modkey }, "f", function(c)
       c.fullscreen = not c.fullscreen
       c:raise()
     end, { description = "toggle fullscreen", group = "client" }),
     awful.key({ modkey, "Control" }, "f", function(c)
       c.maximized = not c.maximized
-    end, { description = "(un)maximize", group = "client" }),
-    awful.key({ modkey, "Shift" }, "q", function(c)
-      c:kill()
-    end, { description = "close", group = "client" }),
+    end, { description = "toggle maximize", group = "client" }),
     awful.key({ modkey, "Shift" }, "f", function(c)
       c.floating = not c.floating
     end, { description = "toggle floating", group = "client" }),
-    awful.key({ modkey, "Control" }, "Return", function(c)
-      c:swap(awful.client.getmaster())
-    end, { description = "move to master", group = "client" }),
     awful.key({ modkey }, "c", function(c)
       if c.floating then
         helpers.placement.centered(c)
@@ -231,27 +228,19 @@ client.connect_signal("request::default_keybindings", function()
     end, { description = "center a client", group = "client" }),
     awful.key({ modkey, "Control" }, "a", function(c)
       ruled.client.apply(c)
-    end, { description = "apply rules to client", group = "client" }),
-    awful.key({ modkey, "Control" }, "s", function(c)
-      c.width = 400
-      c.height = 300
-    end, { description = "apply rules to client", group = "client" }),
-  })
+    end, { description = "apply rules", group = "client" }),
 
-  -- Input method bindings
-  helpers.misc.command_exists("fcitx5", function()
-    awful.keyboard.append_client_keybindings({
-      awful.key({ modkey }, "space", function()
-        fcitx.toggle()
-      end, { description = "toggle input method", group = "input" }),
-      awful.key({ modkey, "Control" }, "space", function()
-        fcitx.hiragana()
-      end, { description = "set mozc mode to hiragana", group = "input" }),
-      awful.key({ modkey, "Shift" }, "space", function()
-        fcitx.katakana()
-      end, { description = "set mozc mode to katakana", group = "input" }),
-    })
-  end)
+    -- Input method bindings
+    awful.key({ modkey }, "space", function()
+      input_method.toggle()
+    end, { description = "toggle input method", group = "input method" }),
+    awful.key({ modkey, "Control" }, "space", function()
+      input_method.hiragana()
+    end, { description = "set mozc mode to hiragana", group = "input method" }),
+    awful.key({ modkey, "Shift" }, "space", function()
+      input_method.katakana()
+    end, { description = "set mozc mode to katakana", group = "input method" }),
+  })
 end)
 
 -- Desktop mousebindings

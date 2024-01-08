@@ -16,7 +16,7 @@ end
 
 -- TODO: Make custom indicator widget
 ---@param mode string
-function fcitx_notify(mode)
+function notify(mode)
   naughty.notification({
     app_name = "Mozc",
     title = "Input Method",
@@ -28,7 +28,7 @@ _M.hiragana = function()
   _M.status(function(mode)
     if mode == 2 then
       awful.spawn("xvkbd -xsendevent -text '\\[Hiragana]'", false)
-      fcitx_notify("Hiragana")
+      notify("Hiragana")
     end
   end)
 end
@@ -37,7 +37,7 @@ _M.katakana = function()
   _M.status(function(mode)
     if mode == 2 then
       awful.spawn("xvkbd -xsendevent -text '\\[Katakana]'", false)
-      fcitx_notify("Katakana")
+      notify("Katakana")
     end
   end)
 end
