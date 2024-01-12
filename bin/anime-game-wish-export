@@ -1,7 +1,7 @@
 #!/bin/bash
 die() {
-	echo >&2 "$*"
-	exit 1
+  echo >&2 "$*"
+  exit 1
 }
 
 default_directory="$HOME/.local/share/"
@@ -9,15 +9,15 @@ directory="${1:-$default_directory}"
 
 [[ ! -d "$directory" ]] && die "Invalid directory"
 
-file=$(find "$directory" -path "*_Data/webCaches/Cache/Cache_Data/data_2" -print -quit 2>/dev/null)
+file=$(find "$directory" -path "*_Data/webCaches/*/Cache/Cache_Data/data_2" -print 2>/dev/null | sort -Vr | head -n1)
 
 [[ ! -f "$file" ]] && die "Unable to locate game files"
 
 link=$(strings "$file" | grep -o "https://.*/e20190909gacha-v2/.*" | tail -n1)
 
 if [[ -n "$link" ]]; then
-	echo "$link" | xclip -sel clip
-	echo "Wish History link was successfully copied to the clipboard!"
+  echo "$link" | xclip -sel clip
+  echo "Wish History link was successfully copied to the clipboard!"
 else
-	die "Unable to get Wish History link"
+  die "Unable to get Wish History link"
 fi
