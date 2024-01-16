@@ -2,6 +2,7 @@ return {
   "rose-pine/neovim",
   lazy = false,
   priority = 1000,
+  tag = "v1.2.2",
   opts = {
     disable_float_background = true,
     highlight_groups = {
