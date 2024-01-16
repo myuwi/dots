@@ -78,13 +78,11 @@ ruled.client.connect_signal("request::rules", function()
     id = "discord",
     rule_any = {
       class = {
-        "ArmCord",
         "discord",
-        "VencordDesktop"
+        "vesktop",
       },
     },
     except_any = {
-      name = { "ArmCord Settings | Version:" },
       role = { "devtools" },
     },
     properties = {

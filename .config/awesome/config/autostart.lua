@@ -9,7 +9,7 @@ local start_cmds = {
   "picom --legacy-backends",
   "solaar -w hide",
   "fcitx5",
-  "vencord-desktop",
+  "vesktop",
 }
 
 for _, cmd in ipairs(start_cmds) do
