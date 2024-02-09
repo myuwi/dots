@@ -2,38 +2,47 @@
 # Terminate previous instances of the script
 pgrep -f "${BASH_SOURCE[0]}" | grep -v $$ | xargs -r -L1 kill
 
-device_name=$1
-# L_Ctrl, L_Shift, L_Alt, Super (Win)
-mods="37|50|64|133"
+# xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "%-3s # %s\n", $5, $8 }'
+mods_arr=(
+  50  # Shift_L
+  37  # Control_L
+  133 # Super_L
+  64  # Alt_L
+  108 # ISO_Level3_Shift
+  105 # Control_R
+  62  # Shift_R
+)
+mods_regex=$(echo ${mods_arr[@]} | sed 's/ /|/g')
 
-get_state() {
-	get-keyboard-state "$@" |
-		grep -E "key\[($mods)\]=down" |
-		sed -E 's/[^0-9]+//g'
+get_pressed_mods() {
+  get-keyboard-state "$@" |
+    grep down |
+    sed -E 's/[^0-9]+//g' |
+    grep -E "^($mods_regex)$"
 }
 
-stuck_keys=$(get_state -x "Virtual core XTEST keyboard")
+initial_mods=$(get_pressed_mods -x "Virtual core XTEST keyboard")
 
-if [ -z "$stuck_keys" ]; then
-	exit
+# If no mods, return
+if [ -z "$initial_mods" ]; then
+  exit 0
 fi
 
-declare -A stuck_keys_arr
-
+declare -A stuck_keys
 while read -r id; do
-	stuck_keys_arr["$id"]=true
-done <<<"$stuck_keys"
+  stuck_keys["$id"]=true
+done <<<"$initial_mods"
 
-while [[ "${#stuck_keys_arr[@]}" -ne 0 ]]; do
-	keys=$(get_state "$device_name")
+# Raise virtual mods when physical keys are raised
+while [[ "${#stuck_keys[@]}" -ne 0 ]]; do
+  keys=$(get_pressed_mods)
 
-	for stuck_key in "${!stuck_keys_arr[@]}"; do
-		if ! echo "$keys" | grep -q "$stuck_key"; then
-			# echo $stuck_key is not pressed
-			xdotool keyup "$stuck_key"
-			unset stuck_keys_arr["$stuck_key"]
-		fi
-	done
+  for stuck_key in "${!stuck_keys[@]}"; do
+    if ! echo "$keys" | grep -q "$stuck_key"; then
+      xdotool keyup "$stuck_key"
+      unset stuck_keys["$stuck_key"]
+    fi
+  done
 
-	sleep 0.1
+  sleep 0.1
 done
