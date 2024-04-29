@@ -6,16 +6,6 @@ local dpi = beautiful.xresources.apply_dpi
 local fit = require("ui.layout.fit")
 local helpers = require("helpers")
 
-local function update_task_background(w, c)
-  if c.active then
-    w.bg = beautiful.bg_tasklist_active
-  elseif c.minimized then
-    w.bg = beautiful.bg_tasklist_minimized
-  else
-    w.bg = beautiful.bg_tasklist_inactive
-  end
-end
-
 local tasklist = function(s)
   local tasklist_buttons = {
     awful.button({}, 1, function(c)
@@ -37,6 +27,9 @@ local tasklist = function(s)
       layout = fit.horizontal,
       max_widget_size = dpi(480),
       spacing = dpi(4),
+    },
+    style = {
+      shape = helpers.shape.rounded_rect(4),
     },
     widget_template = {
       {
@@ -60,10 +53,8 @@ local tasklist = function(s)
         margins = dpi(4),
         widget = wibox.container.margin,
       },
-      shape = helpers.shape.rounded_rect(4),
+      id = "background_role",
       widget = wibox.container.background,
-      create_callback = update_task_background,
-      update_callback = update_task_background,
     },
   })
 
