@@ -2,6 +2,8 @@ local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 
+local helpers = require("helpers")
+
 local taglist = require("ui.bar.taglist")
 local tasklist = require("ui.bar.tasklist")
 local systray = require("ui.bar.systray")

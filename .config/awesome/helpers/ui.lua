@@ -1,5 +1,11 @@
+local awful = require("awful")
+local wibox = require("wibox")
+
 local rubato = require("lib.rubato")
-local color = require("helpers.color")
+
+local hcolor = require("helpers.color")
+local hmouse = require("helpers.mouse")
+local htable = require("helpers.table")
 
 local _M = {}
 
@@ -33,7 +39,7 @@ _M.add_hover_background_fade = function(widget, normal_color, hover_color, trans
   local timed = rubato.timed({
     duration = transition,
     subscribed = function(pos)
-      local col = color.gradient(normal_color, hover_color, pos)
+      local col = hcolor.gradient(normal_color, hover_color, pos)
       widget.bg = col
     end,
   })
@@ -66,6 +72,73 @@ _M.add_hover_cursor = function(widget, hover_cursor)
       w.cursor = default_cursor
     end
   end)
+end
+
+--- Colorize some text
+--- @param text string
+--- @param color string
+--- @return string
+_M.colorize_text = function(text, color)
+  return "<span foreground='" .. color .. "'>" .. text .. "</span>"
+end
+
+--- Add a click away handler to a widget
+--- @param widget table A widget
+_M.create_click_away_handler = function(widget, focus_events)
+  ---@type fun(target: any) | nil
+  local cb = nil
+
+  -- TODO: Ignore notifications, backdrop, etc.?
+  local function cb_handler(target, _, _, button)
+    if target == widget then
+      return
+    end
+
+    -- Ignore scroll events
+    if type(button) == "number" and button > 3 then
+      return
+    end
+
+    if cb then
+      cb(target)
+    end
+  end
+
+  local root_binds = htable.map({ 1, 2, 3 }, function(n)
+    return awful.button({ "Any" }, n, cb_handler)
+  end)
+
+  ---@param callback fun(target: any)
+  local function attach(callback)
+    cb = callback
+
+    awful.mouse.append_global_mousebindings(root_binds)
+    client.connect_signal("button::press", cb_handler)
+    wibox.connect_signal("button::press", cb_handler)
+
+    if focus_events then
+      client.connect_signal("focus", cb_handler)
+      tag.connect_signal("property::selected", cb_handler)
+    end
+  end
+
+  local function detach()
+    cb = nil
+
+    hmouse.remove_global_mousebindings(root_binds)
+    client.disconnect_signal("button::press", cb_handler)
+    wibox.disconnect_signal("button::press", cb_handler)
+
+    if focus_events then
+      client.disconnect_signal("focus", cb_handler)
+      tag.disconnect_signal("property::selected", cb_handler)
+    end
+  end
+
+  return {
+    attach = attach,
+    detach = detach,
+  }
 end
 
 return _M

@@ -53,7 +53,16 @@ theme.bar_spacing = dpi(6)
 theme.bg_tasklist_active = colors.overlay
 theme.bg_tasklist_minimized = "#00000000"
 theme.bg_tasklist_inactive = "#00000000"
+-- Calendar
+theme.calendar_fg_current = colors.surface
+theme.calendar_bg_current = colors.accent
+theme.calendar_weekday = colors.subtle
+theme.calendar_weeknumber = colors.subtle
+theme.calendar_day_other = colors.muted
 
+theme.calendar_spacing = 6
+theme.calendar_cell_size = 24
+-- Tasklist
 theme.tasklist_plain_task_name = true
 
 -- Systray

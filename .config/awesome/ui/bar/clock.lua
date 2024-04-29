@@ -1,8 +1,13 @@
-local beautiful = require("beautiful")
-local dpi = beautiful.xresources.apply_dpi
+local awful = require("awful")
 local wibox = require("wibox")
 
 local clock = function()
+  local clock_buttons = {
+    awful.button({}, 1, function()
+      awesome.emit_signal("widgets::time_and_date::show")
+    end),
+  }
+
   local clock_widget = wibox.widget({
     {
       {
@@ -11,7 +16,8 @@ local clock = function()
       },
       widget = wibox.container.place,
     },
-    margins = dpi(8),
+    buttons = clock_buttons,
+    margins = 8,
     widget = wibox.container.margin,
   })
 
