@@ -1,3 +1,4 @@
+local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local naughty = require("naughty")
@@ -39,37 +40,23 @@ naughty.connect_signal("request::display", function(n)
   notification_body.valign = "top"
   notification_body.forced_height = notification_body:get_height_for_width(notification_body_width, screen.primary)
 
-  local action_button_hovered = false
-
-  -- TODO: Make this cleaner?
-  local action_button = function()
-    local btn = button()
-
-    btn:connect_signal("mouse::enter", function()
-      action_button_hovered = true
-    end)
-
-    btn:connect_signal("mouse::leave", function()
-      action_button_hovered = false
-    end)
-
-    return btn
-  end
-
   local actions = {
-    base_layout = wibox.widget({
-      spacing = dpi(8),
-      layout = wibox.layout.flex.horizontal,
-    }),
-    widget_template = action_button,
-    style = {
-      underline_normal = false,
-      underline_selected = true,
-    },
-    widget = naughty.list.actions,
+    children = helpers.table.map(n.actions, function(action)
+      local btn = button({ text = action:get_name() })
+
+      btn.buttons = {
+        awful.button({}, 1, function()
+          action:invoke(n)
+        end),
+      }
+
+      return btn
+    end),
+    spacing = dpi(8),
+    widget = wibox.layout.flex.horizontal,
   }
 
-  local notification = naughty.layout.box({
+  local notification_widget = naughty.layout.box({
     notification = n,
     type = "notification",
     bg = beautiful.colors.transparent,
@@ -94,7 +81,6 @@ naughty.connect_signal("request::display", function(n)
                 {
                   {
                     text = n.app_name,
-                    -- forced_height = dpi(16),
                     ellipsize = "end",
                     widget = wibox.widget.textbox,
                   },
@@ -174,32 +160,26 @@ naughty.connect_signal("request::display", function(n)
     n:reset_timeout(timeout)
   end
 
-  -- Remove default click events
-  -- notification:set_buttons({})
+  notification_widget.buttons = {
+    awful.button({}, 1, function()
+      n:destroy(naughty.notification_closed_reason.dismissed_by_user)
+    end),
+    awful.button({}, 3, function()
+      n:destroy(naughty.notification_closed_reason.expired)
+    end),
+  }
 
-  notification:connect_signal("mouse::enter", notif_mouse_enter)
-  notification:connect_signal("mouse::leave", notif_mouse_leave)
+  notification_widget:connect_signal("mouse::enter", notif_mouse_enter)
+  notification_widget:connect_signal("mouse::leave", notif_mouse_leave)
 
   n:connect_signal("destroyed", function(destroyed_notif, reason)
-    notification:disconnect_signal("mouse::enter", notif_mouse_enter)
-    notification:disconnect_signal("mouse::leave", notif_mouse_leave)
+    notification_widget:disconnect_signal("mouse::enter", notif_mouse_enter)
+    notification_widget:disconnect_signal("mouse::leave", notif_mouse_leave)
 
-    local mouse_left_down = mouse.is_left_mouse_button_pressed
-
-    if
-      reason == naughty.notification_closed_reason.dismissed_by_user
-      and mouse_left_down
-      and not action_button_hovered
-    then
-      -- TODO: Improve?
-      -- Jump to client when a notification is left clicked
+    if reason == naughty.notification_closed_reason.dismissed_by_user then
       if #destroyed_notif.clients > 0 then
         local c = destroyed_notif.clients[1]
         c:jump_to()
-        local geometry = c:geometry()
-        local x = geometry.x + geometry.width / 2
-        local y = geometry.y + geometry.height / 2
-        mouse.coords({ x = x, y = y })
       end
     end
   end)
