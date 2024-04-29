@@ -12,13 +12,26 @@ ruled.client.connect_signal("request::rules", function()
     id = "global",
     rule = {},
     properties = {
-      border_width = beautiful.client_border_width,
+      border_width = 0,
       border_color = beautiful.border_color,
       focus = awful.client.focus.filter,
       raise = true,
       screen = awful.screen.preferred,
       -- placement = awful.placement.no_overlap + awful.placement.no_offscreen,
       titlebars_enabled = false,
+    },
+  })
+
+  ruled.client.append_rule({
+    id = "border",
+    rule_any = {
+      class = {
+        "Alacritty",
+        "Spotify",
+      },
+    },
+    properties = {
+      border_width = beautiful.border_width,
     },
   })
 

@@ -6,7 +6,6 @@ local taglist = require("ui.bar.taglist")
 local tasklist = require("ui.bar.tasklist")
 local systray = require("ui.bar.systray")
 local clock = require("ui.bar.clock")
--- local layoutbox = require("ui.bar.layoutbox")
 
 awful.screen.connect_for_each_screen(function(s)
   local is_primary = s == screen.primary
@@ -18,7 +17,7 @@ awful.screen.connect_for_each_screen(function(s)
     screen = s,
     height = beautiful.bar_height,
     width = beautiful.bar_width,
-    bg = beautiful.bg_bar,
+    bg = beautiful.colors.transparent,
     margins = {
       top = bar_position == "top" and bar_margin or 0,
       left = bar_margin,
@@ -27,23 +26,30 @@ awful.screen.connect_for_each_screen(function(s)
     },
     widget = {
       {
-        taglist(s),
         {
-          tasklist(s),
-          left = beautiful.bar_spacing,
-          right = beautiful.bar_spacing,
-          widget = wibox.container.margin,
+          taglist(s),
+          {
+            tasklist(s),
+            left = beautiful.bar_spacing,
+            right = beautiful.bar_spacing,
+            widget = wibox.container.margin,
+          },
+          {
+            is_primary and systray() or nil,
+            clock(),
+            spacing = beautiful.bar_spacing,
+            layout = wibox.layout.fixed.horizontal,
+          },
+          layout = wibox.layout.align.horizontal,
         },
-        {
-          is_primary and systray() or nil,
-          clock(),
-          spacing = beautiful.bar_spacing,
-          layout = wibox.layout.fixed.horizontal,
-        },
-        layout = wibox.layout.align.horizontal,
+        margins = beautiful.bar_padding,
+        widget = wibox.container.margin,
       },
-      margins = beautiful.bar_padding,
-      widget = wibox.container.margin,
+      bg = beautiful.bg_bar,
+      border_color = beautiful.border_color,
+      border_width = beautiful.border_width,
+      shape = helpers.shape.rounded_rect(beautiful.border_radius),
+      widget = wibox.container.background,
     },
   })
 end)

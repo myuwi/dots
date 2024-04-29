@@ -37,9 +37,7 @@ theme.useless_gap = 6
 -- Borders
 theme.border_radius = 8
 theme.border_color = colors.surface
-
-theme.client_border_width = 0
-theme.widget_border_width = 0
+theme.border_width = 1
 
 -- Bar
 --- @type "top" | "bottom"

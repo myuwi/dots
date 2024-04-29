@@ -130,7 +130,7 @@ local function draw_widget()
       },
       bg = beautiful.bg_normal,
       border_color = beautiful.border_color,
-      border_width = beautiful.widget_border_width,
+      border_width = beautiful.border_width,
       shape = helpers.shape.rounded_rect(beautiful.border_radius),
       widget = wibox.container.background,
     },
