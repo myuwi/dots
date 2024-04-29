@@ -39,16 +39,11 @@ ruled.client.connect_signal("request::rules", function()
   ruled.client.append_rule({
     id = "floating",
     rule_any = {
-      name = {
-        "ArmCord Settings | Version:",
-      },
       class = {
         "An Anime Game Launcher",
         "Arandr",
         "Blueman-manager",
         "Nm-connection-editor",
-        "qjoypad",
-        "leagueclientux.exe",
         "Thunar",
       },
       role = {
