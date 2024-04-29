@@ -1,49 +1,86 @@
 local awful = require("awful")
-local gobject = require("gears.object")
 local wibox = require("wibox")
+
 local helpers = require("helpers")
 
-local backdrop = gobject({})
+local backdrop = {}
 
-function backdrop:show()
+local backdrop_widget = wibox({
+  screen = screen.primary,
+  type = "utility",
+  x = 0,
+  y = 0,
+  width = 1,
+  height = 1,
+  bg = "#00000000",
+  visible = false,
+  ontop = true,
+})
+
+local function update_backdrop_geometry()
+  local coords = {}
+
   for s in screen do
-    if s.backdrop_widget then
-      s.backdrop_widget.visible = true
+    if not coords.left or coords.left > s.geometry.x then
+      coords.left = s.geometry.x
+    end
+
+    if not coords.top or coords.top > s.geometry.y then
+      coords.top = s.geometry.y
+    end
+
+    local sright = s.geometry.x + s.geometry.width
+    if not coords.right or coords.right < sright then
+      coords.right = sright
+    end
+
+    local sbottom = s.geometry.y + s.geometry.height
+    if not coords.bottom or coords.bottom < sbottom then
+      coords.bottom = sbottom
     end
   end
-end
 
-function backdrop:hide()
-  for s in screen do
-    if s.backdrop_widget then
-      s.backdrop_widget.visible = false
-    end
-  end
-end
-
-awful.screen.connect_for_each_screen(function(s)
-  s.backdrop_widget = wibox({
-    screen = s,
-    type = "utility",
-    x = s.geometry.x,
-    y = s.geometry.y,
-    width = s.geometry.width,
-    height = s.geometry.height,
-    bg = "#00000000",
-    visible = false,
-    ontop = true,
+  backdrop_widget:geometry({
+    x = coords.left,
+    y = coords.top,
+    width = coords.right - coords.left,
+    height = coords.bottom - coords.top,
   })
+end
 
-  s.backdrop_widget:buttons( --
-    helpers.table.map({ 1, 2, 3 }, function(n)
-      return awful.button({ "Any" }, n, function()
-        backdrop:emit_signal("click", {
-          screen = s,
-          button = n,
-        })
-      end)
+screen.connect_signal("property::geometry", update_backdrop_geometry)
+update_backdrop_geometry()
+
+---@type function | nil
+local cb = nil
+
+backdrop_widget:buttons( --
+  helpers.table.map({ 1, 2, 3 }, function(n)
+    return awful.button({ "Any" }, n, function()
+      if cb then
+        cb()
+      end
     end)
-  )
-end)
+  end)
+)
+
+local function show()
+  backdrop_widget.visible = true
+end
+
+local function hide()
+  backdrop_widget.visible = false
+end
+
+---@param callback function
+function backdrop.attach(callback)
+  cb = callback
+  show()
+end
+
+function backdrop.detach()
+  cb = nil
+  hide()
+end
 
 return backdrop
