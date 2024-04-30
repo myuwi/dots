@@ -127,7 +127,7 @@ local function calendar()
         {
           week_numbers,
           top = beautiful.calendar_cell_size + beautiful.calendar_spacing,
-          layout = wibox.container.margin,
+          widget = wibox.container.margin,
         },
         {
           grid_header,

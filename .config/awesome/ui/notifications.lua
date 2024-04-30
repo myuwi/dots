@@ -53,7 +53,7 @@ naughty.connect_signal("request::display", function(n)
       return btn
     end),
     spacing = dpi(8),
-    widget = wibox.layout.flex.horizontal,
+    layout = wibox.layout.flex.horizontal,
   }
 
   local notification_widget = naughty.layout.box({
@@ -145,7 +145,7 @@ naughty.connect_signal("request::display", function(n)
         widget = wibox.container.background,
       },
       forced_width = beautiful.notification_width,
-      widget = wibox.layout.fixed.vertical,
+      layout = wibox.layout.fixed.vertical,
     },
   })
 
