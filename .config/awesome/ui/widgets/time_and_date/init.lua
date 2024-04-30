@@ -12,11 +12,15 @@ local s = screen.primary
 -- TODO: make popup with rounded border and margin its own reusable component
 local time_and_date_widget = awful.popup({
   screen = s,
-  x = s.geometry.x,
-  y = s.geometry.y + beautiful.bar_height + beautiful.useless_gap * 4,
-  visible = false,
   ontop = true,
+  visible = false,
   bg = beautiful.colors.transparent,
+  placement = function(w)
+    awful.placement.top_right(w, {
+      margins = beautiful.useless_gap * 2,
+      honor_workarea = true,
+    })
+  end,
   widget = {
     {
       {
@@ -33,18 +37,6 @@ local time_and_date_widget = awful.popup({
     widget = wibox.container.background,
   },
 })
-
-local function place_widget()
-  awful.placement.top_right(time_and_date_widget, {
-    offset = {
-      x = -beautiful.useless_gap * 2,
-      y = beautiful.useless_gap * 2,
-    },
-    honor_workarea = true,
-  })
-end
-
-time_and_date_widget:connect_signal("property::geometry", place_widget)
 
 -- TODO: Somehow whitelist clock widget in bar to avoid closing and reopening on click
 local click_away_handler = helpers.ui.create_click_away_handler(time_and_date_widget, true)
