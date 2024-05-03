@@ -90,9 +90,10 @@ naughty.connect_signal("request::display", function(n)
                   widget = wibox.container.place,
                 },
                 {
+                  image = beautiful.icon_path .. "close.svg",
+                  stylesheet = "* { fill:" .. beautiful.fg_normal .. " }",
                   forced_width = dpi(16),
                   forced_height = dpi(16),
-                  image = beautiful.icon_path .. "close.svg",
                   widget = wibox.widget.imagebox,
                 },
                 layout = wibox.layout.align.horizontal,
