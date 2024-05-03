@@ -54,7 +54,7 @@ _M.stringify = function(tbl)
   local s = "{ "
   for k, v in pairs(tbl) do
     if type(k) ~= "number" then
-      k = '"' .. k .. '"'
+      k = '"' .. tostring(k) .. '"'
     end
     s = s .. "[" .. k .. "] = " .. _M.stringify(v) .. ", "
   end
