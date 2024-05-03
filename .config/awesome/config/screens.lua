@@ -1,6 +1,7 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local gears = require("gears")
+local wibox = require("wibox")
 
 tag.connect_signal("request::default_layouts", function()
   awful.layout.append_default_layouts({
@@ -15,6 +16,17 @@ end)
 
 screen.connect_signal("request::wallpaper", function(s)
   if beautiful.wallpaper then
-    gears.wallpaper.maximized(beautiful.wallpaper, s)
+    local geo = s.geometry
+
+    awful.wallpaper({
+      screen = s,
+      widget = {
+        image = gears.surface.crop_surface({
+          ratio = geo.width / geo.height,
+          surface = gears.surface.load_uncached(beautiful.wallpaper),
+        }),
+        widget = wibox.widget.imagebox,
+      },
+    })
   end
 end)

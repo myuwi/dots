@@ -54,7 +54,7 @@ end
 -- See: https://github.com/awesomeWM/awesome/blob/b54e50ad6cfdcd864a21970b31378f7c64adf3f4/lib/awful/client.lua#L864
 client.connect_signal("property::floating_geometry", intercept_floating_geometry_change)
 
-client.connect_signal("manage", function(c)
+client.connect_signal("request::manage", function(c)
   if not awesome.startup then
     -- Spawn new clients as slaves
     awful.client.setslave(c)
@@ -109,7 +109,7 @@ end
 
 -- Use a rounded shape for client if clients have borders and rounded corners
 if (beautiful.border_width or 0) > 0 and (beautiful.border_radius or 0) > 0 then
-  client.connect_signal("manage", toggle_rounded_corners)
+  client.connect_signal("request::manage", toggle_rounded_corners)
   client.connect_signal("property::fullscreen", toggle_rounded_corners)
   client.connect_signal("property::maximized", toggle_rounded_corners)
 end
