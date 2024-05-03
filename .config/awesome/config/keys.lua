@@ -108,12 +108,12 @@ awful.keyboard.append_global_keybindings({
 awful.keyboard.append_global_keybindings({
   -- Volume keys
   awful.key({}, "XF86AudioRaiseVolume", function()
-    awful.spawn.easy_async("wpctl set-volume @DEFAULT_SINK@ 0.05+", function()
+    awful.spawn.easy_async("wpctl set-volume -l 1 @DEFAULT_SINK@ 0.05+", function()
       awesome.emit_signal("widgets::volume::show")
     end)
   end, { description = "volume up", group = "volume controls" }),
   awful.key({}, "XF86AudioLowerVolume", function()
-    awful.spawn.easy_async("wpctl set-volume @DEFAULT_SINK@ 0.05-", function()
+    awful.spawn.easy_async("wpctl set-volume -l 1 @DEFAULT_SINK@ 0.05-", function()
       awesome.emit_signal("widgets::volume::show")
     end)
   end, { description = "volume down", group = "volume controls" }),
