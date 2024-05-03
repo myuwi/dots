@@ -50,10 +50,8 @@ local function intercept_floating_geometry_change(c)
 end
 
 -- Don't set floating geometry on clients that aren't floating.
--- This fixes an inconsistency in when floating_geometry is set for clients with and without borders.
--- https://github.com/awesomeWM/awesome/blob/b54e50ad6cfdcd864a21970b31378f7c64adf3f4/lib/awful/client.lua#L864
--- TODO: make sure this doesn't have unintented side effects
--- TODO: disconnect this signal when it is not needed anymore
+-- Fixes an inconsistency in when floating_geometry is set for clients with and without borders.
+-- See: https://github.com/awesomeWM/awesome/blob/b54e50ad6cfdcd864a21970b31378f7c64adf3f4/lib/awful/client.lua#L864
 client.connect_signal("property::floating_geometry", intercept_floating_geometry_change)
 
 client.connect_signal("manage", function(c)
