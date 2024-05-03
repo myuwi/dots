@@ -26,6 +26,9 @@ _M.filter = function(tbl, callback)
   return t
 end
 
+--- @param tbl table Table to map
+--- @param callback fun(element: any, i: number, tbl: table): any A mapping function
+--- @return table table A mapped table
 _M.map = function(tbl, callback)
   local t = {}
   for i, element in ipairs(tbl) do
