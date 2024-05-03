@@ -49,10 +49,6 @@ theme.bar_gap = theme.useless_gap * 2
 theme.bar_padding = dpi(6)
 theme.bar_spacing = dpi(6)
 
--- Tasklist
-theme.bg_tasklist_active = colors.overlay
-theme.bg_tasklist_minimized = "#00000000"
-theme.bg_tasklist_inactive = "#00000000"
 -- Calendar
 theme.calendar_fg_current = colors.surface
 theme.calendar_bg_current = colors.accent
@@ -77,10 +73,6 @@ theme.window_switcher_inactive = colors.transparent
 theme.notification_width = dpi(360)
 theme.notification_margin = dpi(16)
 theme.notification_spacing = theme.useless_gap * 2
-
--- Layouts
-theme.layout_max = theme_path .. "assets/layouts/maxw.png"
-theme.layout_tile = theme_path .. "assets/layouts/tilew.png"
 
 -- Icon theme
 theme.icon_theme = "Papirus"
