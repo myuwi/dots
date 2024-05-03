@@ -39,13 +39,14 @@ local time_and_date_widget = awful.popup({
 -- TODO: Somehow whitelist clock widget in bar to avoid closing and reopening on click
 local click_away_handler = helpers.ui.create_click_away_handler(time_and_date_widget, true)
 
+-- TODO: Esc to hide, also refocus client which was unfocused in show()
 local function hide()
   time_and_date_widget.visible = false
   click_away_handler.detach()
 end
 
--- TODO: unfocus client on open?
 local function show()
+  client.focus = nil
   time_and_date_widget.screen = mouse.screen
   click_away_handler.attach(hide)
   calendar:reset()
