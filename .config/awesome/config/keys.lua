@@ -1,10 +1,11 @@
 local awful = require("awful")
-local input_method = require("modules.input_method")
 local gears = require("gears")
-local helpers = require("helpers")
 local naughty = require("naughty")
 local ruled = require("ruled")
 
+local helpers = require("helpers")
+
+local input_method = require("modules.input_method")
 local resize_mode = require("config.resize_mode")
 
 -- Global keybindings

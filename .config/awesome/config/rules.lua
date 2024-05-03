@@ -1,8 +1,9 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
-local helpers = require("helpers")
 local ruled = require("ruled")
+
+local helpers = require("helpers")
 
 ruled.client.connect_signal("request::rules", function()
   local screen_count = screen.count()
