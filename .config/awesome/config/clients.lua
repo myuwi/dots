@@ -122,10 +122,10 @@ screen.connect_signal("arrange", function(s)
 
   for i, c in ipairs(visible_clients) do
     local disable_shadow = (s.selected_tag and s.selected_tag.layout.name == "max") and i > 1
+
     if disable_shadow then
       awful.spawn("xprop -id " .. c.window .. " -f _SHADOW_DISABLE 32c -set _SHADOW_DISABLE 1", false)
     else
-      topmost_found = true
       awful.spawn("xprop -id " .. c.window .. " -f _SHADOW_DISABLE 32c -set _SHADOW_DISABLE 0", false)
     end
   end
