@@ -1,5 +1,6 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
 local helpers = require("helpers")
@@ -27,7 +28,7 @@ local time_and_date_widget = awful.popup({
         calendar,
         layout = wibox.layout.align.vertical,
       },
-      margins = 12,
+      margins = dpi(18),
       widget = wibox.container.margin,
     },
     bg = beautiful.bg_normal,

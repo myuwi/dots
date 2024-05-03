@@ -1,5 +1,6 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 local helpers = require("helpers")
 local ruled = require("ruled")
 
@@ -96,8 +97,8 @@ ruled.client.connect_signal("request::rules", function()
     properties = {
       placement = helpers.placement.centered,
       floating = true,
-      width = 1600,
-      height = 900,
+      width = dpi(1600),
+      height = dpi(900),
       screen = leftmost_screen,
       tag = screen_count > 1 and "1" or "9",
     },
@@ -112,10 +113,7 @@ ruled.client.connect_signal("request::rules", function()
       floating = true,
       placement = function(c)
         awful.placement.top_right(c, {
-          offset = {
-            x = -beautiful.useless_gap * 2,
-            y = beautiful.useless_gap * 2,
-          },
+          margins = beautiful.useless_gap * 2,
           honor_workarea = true,
         })
       end,
@@ -142,8 +140,8 @@ ruled.client.connect_signal("request::rules", function()
       name = "Steam",
     },
     properties = {
-      width = 1600,
-      height = 900,
+      width = dpi(1600),
+      height = dpi(900),
     },
   })
 
@@ -154,8 +152,8 @@ ruled.client.connect_signal("request::rules", function()
     },
     properties = {
       floating = true,
-      width = 1600,
-      height = 900,
+      width = dpi(1600),
+      height = dpi(900),
     },
   })
 
@@ -193,8 +191,8 @@ ruled.client.connect_signal("request::rules", function()
       floating = true,
       fullscreen = false,
       placement = helpers.placement.centered,
-      width = 1280,
-      height = 720,
+      width = dpi(1280),
+      height = dpi(720),
     },
   })
 end)

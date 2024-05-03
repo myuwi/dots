@@ -3,7 +3,9 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local naughty = require("naughty")
 local wibox = require("wibox")
+
 local helpers = require("helpers")
+
 local button = require("ui.components.button")
 
 naughty.config.defaults.app_name = "Notification"
@@ -69,8 +71,8 @@ naughty.connect_signal("request::display", function(n)
               {
                 {
                   {
-                    forced_width = 16,
-                    forced_height = 16,
+                    forced_width = dpi(16),
+                    forced_height = dpi(16),
                     image = n.app_icon,
                     widget = wibox.widget.imagebox,
                   },
@@ -88,8 +90,8 @@ naughty.connect_signal("request::display", function(n)
                   widget = wibox.container.place,
                 },
                 {
-                  forced_width = 16,
-                  forced_height = 16,
+                  forced_width = dpi(16),
+                  forced_height = dpi(16),
                   image = beautiful.icon_path .. "close.svg",
                   widget = wibox.widget.imagebox,
                 },

@@ -7,7 +7,7 @@ local theme_path = gfs.get_configuration_dir() .. "theme/"
 local theme = {}
 
 theme.font_name = "Inter"
-theme.font_size = 9
+theme.font_size = 8.5
 theme.font = theme.font_name .. " " .. theme.font_size
 
 theme.icon_path = theme_path .. "assets/icons/"
@@ -32,19 +32,19 @@ theme.fg_urgent = colors.text
 theme.fg_minimize = colors.text .. "66"
 
 -- Gaps
-theme.useless_gap = 6
+theme.useless_gap = dpi(6)
 
 -- Borders
-theme.border_radius = 8
+theme.border_radius = dpi(8)
 theme.border_color = colors.surface
-theme.border_width = 1
+theme.border_width = dpi(1)
 
 -- Bar
 --- @type "top" | "bottom"
 theme.bar_position = "top"
 --- @type number | nil
 theme.bar_width = nil
-theme.bar_height = 42
+theme.bar_height = dpi(42)
 theme.bar_gap = theme.useless_gap * 2
 theme.bar_padding = dpi(6)
 theme.bar_spacing = dpi(6)
@@ -56,8 +56,9 @@ theme.calendar_weekday = colors.subtle
 theme.calendar_weeknumber = colors.subtle
 theme.calendar_day_other = colors.muted
 
-theme.calendar_spacing = 6
-theme.calendar_cell_size = 24
+theme.calendar_spacing = dpi(6)
+theme.calendar_cell_size = dpi(24)
+
 -- Tasklist
 theme.tasklist_plain_task_name = true
 
