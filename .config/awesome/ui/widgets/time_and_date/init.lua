@@ -7,12 +7,9 @@ local helpers = require("helpers")
 
 local calendar = require(... .. ".calendar")()
 
--- TODO: Don't hardcode to primary screen
-local s = screen.primary
-
 -- TODO: make popup with rounded border and margin its own reusable component
 local time_and_date_widget = awful.popup({
-  screen = s,
+  screen = screen.primary,
   ontop = true,
   visible = false,
   bg = beautiful.colors.transparent,
@@ -49,6 +46,7 @@ end
 
 -- TODO: unfocus client on open?
 local function show()
+  time_and_date_widget.screen = mouse.screen
   click_away_handler.attach(hide)
   calendar:reset()
   time_and_date_widget.visible = true
