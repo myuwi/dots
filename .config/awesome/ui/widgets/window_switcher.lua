@@ -19,7 +19,7 @@ local last_focused_client
 local icon_spacing = dpi(8)
 local container_padding = dpi(16)
 
-local app_icons = wibox.widget({
+local client_icons = wibox.widget({
   spacing = icon_spacing,
   layout = wibox.layout.fixed.horizontal,
 })
@@ -32,7 +32,7 @@ local window_switcher_box = awful.popup({
   placement = awful.placement.centered,
   widget = {
     {
-      app_icons,
+      client_icons,
       margins = container_padding,
       widget = wibox.container.margin,
     },
@@ -53,7 +53,7 @@ local function activate_client_at_index(index)
 end
 
 local function redraw_highlights()
-  for i, c in ipairs(app_icons.children) do
+  for i, c in ipairs(client_icons.children) do
     if hover_index == i then
       c.bg = beautiful.window_switcher_hover
     elseif alt_tab_index == i then
@@ -64,7 +64,7 @@ local function redraw_highlights()
   end
 end
 
-local function draw_app_icons()
+local function draw_client_icons()
   local icon_size = dpi(64)
   local icon_padding = dpi(8)
 
@@ -75,10 +75,10 @@ local function draw_app_icons()
   local icon_text_spacing = dpi(8)
   local text_height = dpi(16)
 
-  app_icons:reset()
+  client_icons:reset()
 
   for i, c in ipairs(visible_clients) do
-    local widget = wibox.widget({
+    local client_icon = wibox.widget({
       {
         {
           {
@@ -115,26 +115,26 @@ local function draw_app_icons()
       widget = wibox.container.background,
     })
 
-    helpers.ui.add_hover_cursor(widget, "hand2")
+    helpers.ui.add_hover_cursor(client_icon, "hand2")
 
-    widget:connect_signal("mouse::enter", function()
+    client_icon:connect_signal("mouse::enter", function()
       hover_index = i
       redraw_highlights()
     end)
 
-    widget:connect_signal("mouse::leave", function()
+    client_icon:connect_signal("mouse::leave", function()
       hover_index = nil
       redraw_highlights()
     end)
 
-    widget:connect_signal("button::press", function(_, _, _, button)
-      if button == 1 then
+    client_icon.buttons = {
+      awful.button({ "Any" }, 1, function()
         activate_client_at_index(i)
         window_switcher_keygrabber:stop()
-      end
-    end)
+      end),
+    }
 
-    app_icons:add(widget)
+    client_icons:add(client_icon)
   end
 
   -- Hacky way to avoid popup not updating its position for one frame after it is made visible
@@ -240,7 +240,7 @@ local function show(a)
   last_focused_client = client.focus
   client.focus = nil
 
-  draw_app_icons()
+  draw_client_icons()
 
   backdrop.attach(cancel)
 
