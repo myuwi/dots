@@ -2,70 +2,74 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local gears = require("gears")
-local helpers = require("helpers")
 local wibox = require("wibox")
 
-local offsetx = dpi(56)
-local offsety = offsetx + dpi(32)
+local helpers = require("helpers")
 
-local width = dpi(56)
-local bar_height = dpi(90)
-
--- local screen = mouse.screen
 local screen = screen.primary
 
+local volume_icon = wibox.widget({
+  image = beautiful.icon_path .. "volume_up.svg",
+  stylesheet = "* { fill:" .. beautiful.fg_normal .. " }",
+  forced_width = dpi(20),
+  forced_height = dpi(20),
+  widget = wibox.widget.imagebox,
+})
+
 local volume_bar = wibox.widget({
-  widget = wibox.widget.progressbar,
   shape = gears.shape.rounded_bar,
   bar_shape = gears.shape.rounded_bar,
   color = beautiful.fg_focus,
   background_color = beautiful.bg_focus,
   max_value = 100,
   value = 0,
+  forced_height = dpi(6),
+  widget = wibox.widget.progressbar,
 })
 
 local volume_text = wibox.widget({
   text = "50",
   halign = "center",
   valign = "center",
-  forced_height = dpi(10),
+  forced_width = dpi(20),
+  forced_height = dpi(20),
   widget = wibox.widget.textbox,
 })
 
 local volume_widget = awful.popup({
   screen = screen,
-  x = screen.geometry.x + offsetx,
-  y = screen.geometry.y + offsety,
-  visible = false,
   ontop = true,
+  visible = false,
+  placement = function(w)
+    awful.placement.bottom(w, {
+      margins = beautiful.useless_gap * 4,
+      honor_workarea = true,
+    })
+  end,
   widget = {
     {
       {
+        volume_icon,
         {
           {
             volume_bar,
-            direction = "east",
-            layout = wibox.container.rotate,
+            valign = "center",
+            widget = wibox.container.place,
           },
-          top = dpi(0),
-          right = dpi(23),
-          left = dpi(23),
-          bottom = dpi(0),
-          forced_width = width,
-          forced_height = bar_height,
-          layout = wibox.container.margin,
+          left = dpi(12),
+          right = dpi(12),
+          widget = wibox.container.margin,
         },
         volume_text,
-        spacing = dpi(20),
-        layout = wibox.layout.fixed.vertical,
+        layout = wibox.layout.align.horizontal,
       },
-      top = dpi(20),
-      bottom = dpi(20),
-      layout = wibox.container.margin,
+      margins = dpi(18),
+      widget = wibox.container.margin,
     },
     bg = beautiful.bg_normal,
     border_color = beautiful.border_color,
     border_width = beautiful.border_width,
+    forced_width = dpi(288),
     shape = helpers.shape.rounded_rect(beautiful.border_radius),
     widget = wibox.container.background,
   },
@@ -80,12 +84,12 @@ local hide_volume_widget = gears.timer({
   end,
 })
 
-volume_widget:connect_signal("button::press", function(_, _, _, button)
-  if button == 3 then
+volume_widget.buttons = {
+  awful.button({ "Any" }, 3, function()
     volume_widget.visible = false
     hide_volume_widget:stop()
-  end
-end)
+  end),
+}
 
 -- Keep widget visible while hovered
 local hovered = false
@@ -117,13 +121,20 @@ end
 
 awesome.connect_signal("widgets::volume::show", function()
   get_audio_status(function(volume, muted)
-    volume_bar.value = volume
-    volume_text.text = muted and "x" or tostring(volume)
+    if not muted then
+      if volume >= 50 then
+        volume_icon.image = beautiful.icon_path .. "volume_up.svg"
+      elseif volume > 0 then
+        volume_icon.image = beautiful.icon_path .. "volume_down.svg"
+      else
+        volume_icon.image = beautiful.icon_path .. "volume_mute.svg"
+      end
+    else
+      volume_icon.image = beautiful.icon_path .. "volume_off.svg"
+    end
 
-    -- screen = mouse.screen
-    -- volume_widget.screen = screen
-    -- volume_widget.x = screen.geometry.x + offsetx
-    -- volume_widget.y = screen.geometry.y + offsety
+    volume_bar.value = volume
+    volume_text.text = tostring(volume)
 
     if volume_widget.visible then
       if not hovered then
