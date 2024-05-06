@@ -1,10 +1,13 @@
 local awful = require("awful")
+local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
 local rubato = require("lib.rubato")
 
 local hcolor = require("helpers.color")
 local hmouse = require("helpers.mouse")
+local hshape = require("helpers.shape")
 local htable = require("helpers.table")
 
 local _M = {}
@@ -139,6 +142,48 @@ _M.create_click_away_handler = function(widget, focus_events)
     attach = attach,
     detach = detach,
   }
+end
+
+---@class (exact) Popup
+---@field forced_width integer?
+---@field forced_height integer?
+---@field margins integer?
+---@field screen table?
+---@field placement fun(w: table): any
+---@field widget table
+
+---@param args Popup
+_M.popup = function(args)
+  local forced_width = args.forced_width
+  local forced_height = args.forced_height
+  local margins = args.margins or dpi(18)
+  local placement = args.placement
+  local s = args.screen or screen.primary
+  local widget = args.widget
+
+  local popup = awful.popup({
+    screen = s,
+    ontop = true,
+    visible = false,
+    bg = beautiful.colors.transparent,
+    placement = placement,
+    widget = {
+      {
+        widget,
+        margins = margins,
+        widget = wibox.container.margin,
+      },
+      bg = beautiful.bg_normal,
+      border_color = beautiful.border_color,
+      border_width = beautiful.border_width,
+      forced_width = forced_width,
+      forced_height = forced_height,
+      shape = hshape.rounded_rect(beautiful.border_radius),
+      widget = wibox.container.background,
+    },
+  })
+
+  return popup
 end
 
 return _M

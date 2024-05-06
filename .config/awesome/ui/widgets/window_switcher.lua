@@ -16,32 +16,15 @@ local window_switcher_keygrabber
 local visible_clients
 local last_focused_client
 
-local icon_spacing = dpi(8)
-local container_padding = dpi(16)
-
 local client_icons = wibox.widget({
-  spacing = icon_spacing,
+  spacing = dpi(8),
   layout = wibox.layout.fixed.horizontal,
 })
 
-local window_switcher_box = awful.popup({
-  screen = screen.primary,
-  ontop = true,
-  visible = false,
-  bg = beautiful.colors.transparent,
+local window_switcher_box = helpers.ui.popup({
   placement = awful.placement.centered,
-  widget = {
-    {
-      client_icons,
-      margins = container_padding,
-      widget = wibox.container.margin,
-    },
-    bg = beautiful.bg_normal,
-    border_color = beautiful.border_color,
-    border_width = beautiful.border_width,
-    shape = helpers.shape.rounded_rect(beautiful.border_radius),
-    widget = wibox.container.background,
-  },
+  margins = dpi(16),
+  widget = client_icons,
 })
 
 local function activate_client_at_index(index)

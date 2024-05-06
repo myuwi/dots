@@ -1,18 +1,12 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
-local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
 local helpers = require("helpers")
 
 local calendar = require(... .. ".calendar")()
 
--- TODO: make popup with rounded border and margin its own reusable component
-local time_and_date_widget = awful.popup({
-  screen = screen.primary,
-  ontop = true,
-  visible = false,
-  bg = beautiful.colors.transparent,
+local time_and_date_widget = helpers.ui.popup({
   placement = function(w)
     awful.placement.top_right(w, {
       margins = beautiful.useless_gap * 2,
@@ -20,19 +14,8 @@ local time_and_date_widget = awful.popup({
     })
   end,
   widget = {
-    {
-      {
-        calendar,
-        layout = wibox.layout.align.vertical,
-      },
-      margins = dpi(18),
-      widget = wibox.container.margin,
-    },
-    bg = beautiful.bg_normal,
-    border_color = beautiful.border_color,
-    border_width = beautiful.border_width,
-    shape = helpers.shape.rounded_rect(beautiful.border_radius),
-    widget = wibox.container.background,
+    calendar,
+    layout = wibox.layout.align.vertical,
   },
 })
 

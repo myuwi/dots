@@ -6,8 +6,6 @@ local wibox = require("wibox")
 
 local helpers = require("helpers")
 
-local screen = screen.primary
-
 local volume_icon = wibox.widget({
   image = beautiful.icon_path .. "volume_up.svg",
   stylesheet = "* { fill:" .. beautiful.fg_normal .. " }",
@@ -36,10 +34,8 @@ local volume_text = wibox.widget({
   widget = wibox.widget.textbox,
 })
 
-local volume_widget = awful.popup({
-  screen = screen,
-  ontop = true,
-  visible = false,
+local volume_widget = helpers.ui.popup({
+  forced_width = dpi(288),
   placement = function(w)
     awful.placement.bottom(w, {
       margins = beautiful.useless_gap * 4,
@@ -47,31 +43,19 @@ local volume_widget = awful.popup({
     })
   end,
   widget = {
+    volume_icon,
     {
       {
-        volume_icon,
-        {
-          {
-            volume_bar,
-            valign = "center",
-            widget = wibox.container.place,
-          },
-          left = dpi(12),
-          right = dpi(12),
-          widget = wibox.container.margin,
-        },
-        volume_text,
-        layout = wibox.layout.align.horizontal,
+        volume_bar,
+        valign = "center",
+        widget = wibox.container.place,
       },
-      margins = dpi(18),
+      left = dpi(12),
+      right = dpi(12),
       widget = wibox.container.margin,
     },
-    bg = beautiful.bg_normal,
-    border_color = beautiful.border_color,
-    border_width = beautiful.border_width,
-    forced_width = dpi(288),
-    shape = helpers.shape.rounded_rect(beautiful.border_radius),
-    widget = wibox.container.background,
+    volume_text,
+    layout = wibox.layout.align.horizontal,
   },
 })
 
