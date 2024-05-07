@@ -82,6 +82,9 @@ awful.keyboard.append_global_keybindings({
   awful.key({ modkey }, "d", function()
     awful.spawn("rofi -show drun", false)
   end, { description = "run rofi", group = "launcher" }),
+  awful.key({ modkey, "Shift" }, "d", function()
+    awesome.emit_signal("widgets::start_menu::show")
+  end, { description = "run rofi", group = "launcher" }),
   -- Toggle picom
   awful.key({ modkey }, "p", function()
     awful.spawn.with_shell("pgrep -ix picom > /dev/null && killall picom || picom --legacy-backends &")

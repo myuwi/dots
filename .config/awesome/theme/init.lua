@@ -35,7 +35,7 @@ theme.fg_minimize = colors.text .. "66"
 theme.useless_gap = dpi(6)
 
 -- Borders
-theme.border_radius = dpi(8)
+theme.border_radius = dpi(6)
 theme.border_color = colors.surface
 theme.border_width = dpi(1)
 
