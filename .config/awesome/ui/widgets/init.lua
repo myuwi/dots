@@ -1,4 +1,4 @@
-require(... .. ".start_menu")
+require(... .. ".launcher")
 require(... .. ".time_and_date")
 require(... .. ".volume")
 require(... .. ".window_switcher")

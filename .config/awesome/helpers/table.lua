@@ -45,6 +45,18 @@ _M.reduce = function(tbl, callback, initial)
   return acc
 end
 
+--- @param tbl table Table to map
+--- @param predicate fun(element: any, i: number, tbl: table): any A predicate function
+--- @return boolean A mapped table
+_M.any = function(tbl, predicate)
+  for i, element in ipairs(tbl) do
+    if predicate(element, i, tbl) then
+      return true
+    end
+  end
+  return false
+end
+
 --- @param tbl table Table to stringify
 _M.stringify = function(tbl)
   if type(tbl) ~= "table" then

@@ -13,86 +13,39 @@ Gtk.IconTheme.set_custom_theme(gtk_theme, beautiful.icon_theme)
 
 local selected_index = 1
 local scroll_offset = 0
-local page_size = 8
+local page_size = 6
 
 local all_apps = {}
 local visible_apps = {}
 
+local last_focused_client = nil
+
 local prompt
 
 local app_list = wibox.widget({
-  spacing = dpi(4),
-  forced_height = dpi(36) * 8 + dpi(4) * 7,
+  spacing = dpi(6),
   layout = wibox.layout.fixed.vertical,
 })
 
 local input = wibox.widget({
   markup = helpers.ui.colorize_text("Search...", beautiful.colors.muted),
-  forced_height = dpi(18),
   widget = wibox.widget.textbox,
 })
 
-local start_menu_widget = helpers.ui.popup({
-  margins = 0,
-  placement = function(w)
-    -- TODO: Is it okay to do this here?
-    w.screen = mouse.screen
-
-    awful.placement.top_left(w, {
-      margins = beautiful.useless_gap * 2,
-      honor_workarea = true,
-    })
-  end,
+local launcher_widget = helpers.ui.popup({
+  margins = dpi(12),
+  forced_width = dpi(552),
+  -- TODO: Don't jump around vertically when the number of results changes
+  placement = awful.placement.centered,
   widget = {
     {
-      {
-        {
-          {
-            {
-              {
-                image = beautiful.icon_path .. "power_settings_new.svg",
-                stylesheet = "* { fill:" .. beautiful.fg_normal .. " }",
-                forced_width = dpi(18),
-                forced_height = dpi(18),
-                widget = wibox.widget.imagebox,
-              },
-              margins = dpi(9),
-              widget = wibox.container.margin,
-            },
-            bg = beautiful.colors.muted .. "1a",
-            shape = helpers.shape.rounded_rect(dpi(6)),
-            widget = wibox.container.background,
-          },
-          valign = "bottom",
-          widget = wibox.container.place,
-        },
-        margins = dpi(9),
-        widget = wibox.container.margin,
-      },
-      bg = beautiful.colors.surface,
-      widget = wibox.container.background,
-    },
-    {
-      {
-        app_list,
-        {
-          {
-            input,
-            margins = dpi(9),
-            widget = wibox.container.margin,
-          },
-          bg = beautiful.colors.surface,
-          shape = helpers.shape.rounded_rect(dpi(6)),
-          widget = wibox.container.background,
-        },
-        spacing = dpi(6),
-        layout = wibox.layout.fixed.vertical,
-      },
-      margins = dpi(9),
+      input,
+      margins = dpi(12),
       widget = wibox.container.margin,
     },
-    forced_width = dpi(336),
-    layout = wibox.layout.align.horizontal,
+    app_list,
+    spacing = dpi(12),
+    layout = wibox.layout.fixed.vertical,
   },
 })
 
@@ -116,8 +69,8 @@ local function draw_app_list()
           {
             {
               image = icon,
-              forced_width = dpi(24),
-              forced_height = dpi(24),
+              forced_width = dpi(28),
+              forced_height = dpi(28),
               widget = wibox.widget.imagebox,
             },
             {
@@ -127,11 +80,15 @@ local function draw_app_list()
             spacing = dpi(12),
             layout = wibox.layout.fixed.horizontal,
           },
-          margins = dpi(6),
+          top = dpi(6),
+          left = dpi(9),
+          right = dpi(9),
+          bottom = dpi(6),
           widget = wibox.container.margin,
         },
         buttons = {
           awful.button({ "Any" }, 1, function()
+            -- FIXME: Hide on click
             app:launch()
           end),
         },
@@ -146,7 +103,7 @@ local function draw_app_list()
     end
   end
 
-  start_menu_widget:_apply_size_now()
+  launcher_widget:_apply_size_now()
 end
 
 local function filter_apps(apps, text)
@@ -156,17 +113,15 @@ local function filter_apps(apps, text)
 
   return helpers.table.filter(apps, function(app)
     return app:get_name():lower():find(text:lower(), 1, true)
+      or helpers.table.any(app:get_keywords(), function(keyword)
+        return keyword:lower():find(text:lower(), 1, true)
+      end)
   end)
 end
 
 local function clamp_selection()
-  if #visible_apps > 0 and selected_index == 0 then
-    selected_index = 1
-  end
-
-  if selected_index > #visible_apps then
-    selected_index = #visible_apps
-  end
+  scroll_offset = math.min(math.max(scroll_offset, 0), #visible_apps - page_size)
+  selected_index = math.min(math.max(selected_index, 1), #visible_apps)
 end
 
 local function set_query(text)
@@ -196,19 +151,18 @@ local function move_selection(amount)
     selected_index = new_index
   end
 
-  if selected_index <= scroll_offset then
-    scroll_offset = selected_index - 1
-  elseif selected_index > scroll_offset + page_size then
-    scroll_offset = selected_index - page_size
-  end
+  -- Make sure scroll follows selection
+  scroll_offset = math.min(math.max(scroll_offset, selected_index - page_size), selected_index - 1)
 
   draw_app_list()
 end
 
-local click_away_handler = helpers.ui.create_click_away_handler(start_menu_widget, true)
+-- TODO: Should this be a backdrop instead?
+local click_away_handler = helpers.ui.create_click_away_handler(launcher_widget, false)
 
 local function hide()
-  start_menu_widget.visible = false
+  launcher_widget.visible = false
+  last_focused_client = nil
   click_away_handler.detach()
   all_apps = {}
   visible_apps = {}
@@ -216,14 +170,19 @@ local function hide()
   prompt:stop()
 end
 
+local function cancel()
+  client.focus = last_focused_client
+  hide()
+end
+
 local function show()
   scroll_offset = 0
   selected_index = 1
 
-  local new_apps = Gio.AppInfo.get_all()
+  local new_apps = Gio.DesktopAppInfo.get_all()
 
   new_apps = helpers.table.filter(new_apps, function(app)
-    return app:should_show()
+    return not app:get_nodisplay()
   end)
 
   table.sort(new_apps, function(a, b)
@@ -233,15 +192,16 @@ local function show()
   all_apps = new_apps
   visible_apps = all_apps
 
+  last_focused_client = client.focus
   client.focus = nil
-  click_away_handler.attach(hide)
+  click_away_handler.attach(cancel)
 
   prompt:reset()
   prompt:start()
 
   draw_app_list()
 
-  start_menu_widget.visible = true
+  launcher_widget.visible = true
 end
 
 prompt = require(... .. ".prompt")({
@@ -251,7 +211,7 @@ prompt = require(... .. ".prompt")({
     end
 
     if key == "Escape" then
-      hide()
+      cancel()
     end
 
     if key == "Return" then
@@ -274,4 +234,4 @@ prompt = require(... .. ".prompt")({
   end,
 })
 
-awesome.connect_signal("widgets::start_menu::show", show)
+awesome.connect_signal("widgets::launcher::show", show)

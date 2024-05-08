@@ -80,8 +80,8 @@ awful.keyboard.append_global_keybindings({
   end, { description = "open a terminal", group = "launcher" }),
   -- App launcher
   awful.key({ modkey }, "d", function()
-    awesome.emit_signal("widgets::start_menu::show")
-  end, { description = "open start menu", group = "launcher" }),
+    awesome.emit_signal("widgets::launcher::show")
+  end, { description = "open launcher", group = "launcher" }),
   -- Toggle picom
   awful.key({ modkey }, "p", function()
     awful.spawn.with_shell("pgrep -ix picom > /dev/null && killall picom || picom --legacy-backends &")
