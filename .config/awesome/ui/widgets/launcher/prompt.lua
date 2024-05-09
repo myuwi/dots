@@ -1,5 +1,4 @@
 local awful = require("awful")
-local gobject = require("gears.object")
 local gtable = require("gears.table")
 
 local prompt = { mt = {} }
@@ -54,7 +53,7 @@ end
 local function new(args)
   args.text = args.text or ""
 
-  local ret = gobject({})
+  local ret = {}
   ret._private = {}
   gtable.crush(ret, prompt)
   gtable.crush(ret, args)
