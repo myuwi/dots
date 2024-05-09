@@ -1,6 +1,7 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
+local gstring = require("gears.string")
 local lgi = require("lgi")
 local Gio = lgi.Gio
 local Gtk = lgi.require("Gtk", "3.0")
@@ -24,8 +25,6 @@ local visible_apps = {}
 
 local last_focused_client = nil
 
--- TODO: 'No results for: "query"' if not results
-
 local input = wibox.widget({
   markup = helpers.ui.colorize_text("Search...", beautiful.colors.muted),
   widget = wibox.widget.textbox,
@@ -36,6 +35,19 @@ local input_prompt
 local app_list = wibox.widget({
   spacing = dpi(6),
   layout = wibox.layout.fixed.vertical,
+})
+
+local no_results_text = wibox.widget({
+  text = "",
+  valign = "center",
+  forced_height = dpi(16),
+  widget = wibox.widget.textbox,
+})
+
+local no_results = wibox.widget({
+  no_results_text,
+  margins = dpi(12),
+  widget = wibox.container.margin,
 })
 
 local launcher_widget = helpers.ui.popup({
@@ -111,8 +123,27 @@ local function create_app_entry(app, i)
   return entry
 end
 
+---@param text string
+local function format_no_results(text)
+  local no_results_format = 'No results for "%s"'
+
+  local escaped = gstring.xml_escape(text) --[[@as string]]
+  local input_text = helpers.ui.colorize_text(escaped, beautiful.colors.text)
+  local formatted = no_results_format:format(input_text)
+
+  return helpers.ui.colorize_text(formatted, beautiful.colors.muted)
+end
+
 local function draw_app_list(apps)
   app_list:reset()
+
+  if #apps == 0 then
+    app_list:add(no_results)
+
+    no_results_text.markup = format_no_results(input.text)
+    launcher_widget:_apply_size_now()
+    return
+  end
 
   for i, app in ipairs(apps) do
     if i > scroll_offset + page_size then
@@ -150,7 +181,7 @@ local function set_query(text)
   if text == "" then
     input.markup = helpers.ui.colorize_text("Search...", beautiful.colors.muted)
   else
-    input.markup = text
+    input.text = text
   end
 
   visible_apps = filter_apps(all_apps, text)
