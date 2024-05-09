@@ -132,14 +132,7 @@ local function cycle_selection(amount)
   end
 
   local new_index = alt_tab_index + amount
-
-  if new_index > #visible_clients then
-    alt_tab_index = new_index - #visible_clients
-  elseif new_index < 1 then
-    alt_tab_index = #visible_clients - new_index
-  else
-    alt_tab_index = new_index
-  end
+  alt_tab_index = (new_index - 1) % #visible_clients + 1
 end
 
 local function cancel()
