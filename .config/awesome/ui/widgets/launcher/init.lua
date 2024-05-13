@@ -151,23 +151,17 @@ end
 local function draw_app_list(apps)
   app_list:reset()
 
-  if #apps == 0 then
-    app_list:add(no_results)
+  if #apps > 0 then
+    local num_visible_apps = math.min(page_size, #apps)
 
-    no_results_text.markup = format_no_results(input.text)
-    launcher_widget:_apply_size_now()
-    return
-  end
-
-  for i, app in ipairs(apps) do
-    if i > scroll_offset + page_size then
-      break
-    end
-
-    if i > scroll_offset then
+    for i = 1 + scroll_offset, num_visible_apps + scroll_offset do
+      local app = apps[i]
       local entry = create_app_entry(app, i)
       app_list:add(entry)
     end
+  else
+    app_list:add(no_results)
+    no_results_text.markup = format_no_results(input.text)
   end
 
   launcher_widget:_apply_size_now()
@@ -218,11 +212,7 @@ local function move_selection(amount)
 end
 
 input_prompt = prompt({
-  keypressed_callback = function(_, key, event)
-    if event == "release" then
-      return
-    end
-
+  keypressed_callback = function(_, key)
     if key == "Escape" then
       launcher.cancel()
     end

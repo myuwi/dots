@@ -14,13 +14,9 @@ end
 function prompt:start()
   self._private.keygrabber = awful.keygrabber({
     mask_modkeys = true,
-    keypressed_callback = function(_, mod, key, event)
+    keypressed_callback = function(_, mod, key)
       if self.keypressed_callback then
-        self.keypressed_callback(mod, key, event)
-      end
-
-      if event == "release" then
-        return
+        self.keypressed_callback(mod, key)
       end
 
       if key == "BackSpace" then
