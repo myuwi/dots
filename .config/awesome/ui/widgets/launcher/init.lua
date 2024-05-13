@@ -50,11 +50,25 @@ local no_results = wibox.widget({
   widget = wibox.container.margin,
 })
 
+local launcher_widget_max_height = 0
+
 local launcher_widget = helpers.ui.popup({
   margins = dpi(12),
   forced_width = dpi(552),
-  -- TODO: Don't jump around vertically when the number of results changes
-  placement = awful.placement.centered,
+  -- TODO: A better way to do this
+  placement = function(w)
+    if w.height > launcher_widget_max_height then
+      launcher_widget_max_height = w.height
+    end
+
+    local top_offset = (w.screen.geometry.height - launcher_widget_max_height) / 2
+
+    awful.placement.top(w, {
+      offset = {
+        y = top_offset,
+      },
+    })
+  end,
   widget = {
     {
       input,
