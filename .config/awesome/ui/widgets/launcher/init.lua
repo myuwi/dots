@@ -9,7 +9,7 @@ local wibox = require("wibox")
 
 local helpers = require("helpers")
 
-local prompt = require(... .. ".prompt")
+local input = require(... .. ".input")
 
 local launcher = {}
 
@@ -25,12 +25,9 @@ local visible_apps = {}
 
 local last_focused_client = nil
 
-local input = wibox.widget({
-  markup = helpers.ui.colorize_text("Search...", beautiful.colors.muted),
-  widget = wibox.widget.textbox,
+local text_input = input({
+  placeholder = helpers.ui.colorize_text("Search...", beautiful.colors.muted),
 })
-
-local input_prompt
 
 local app_list = wibox.widget({
   spacing = dpi(6),
@@ -71,7 +68,7 @@ local launcher_widget = helpers.ui.popup({
   end,
   widget = {
     {
-      input,
+      text_input,
       margins = dpi(12),
       widget = wibox.container.margin,
     },
@@ -161,10 +158,40 @@ local function draw_app_list(apps)
     end
   else
     app_list:add(no_results)
-    no_results_text.markup = format_no_results(input.text)
+    no_results_text.markup = format_no_results(text_input.text)
   end
 
   launcher_widget:_apply_size_now()
+end
+
+local function move_selection(amount)
+  local new_index = selected_index + amount
+  selected_index = (new_index - 1) % #visible_apps + 1
+
+  -- Make sure scroll follows selection
+  scroll_offset = math.min(math.max(scroll_offset, selected_index - page_size), selected_index - 1)
+
+  draw_app_list(visible_apps)
+end
+
+text_input.keypressed_callback = function(_, key)
+  if key == "Escape" then
+    launcher.cancel()
+  end
+
+  if key == "Return" then
+    local selected = app_list.children[selected_index - scroll_offset]
+
+    if selected then
+      selected.launch()
+    end
+  end
+
+  if key == "Up" then
+    move_selection(-1)
+  elseif key == "Down" then
+    move_selection(1)
+  end
 end
 
 local function filter_apps(apps, text)
@@ -185,56 +212,13 @@ local function clamp_selection()
   selected_index = math.min(math.max(selected_index, 1), #visible_apps)
 end
 
-local function set_query(text)
-  if text == "" then
-    input.markup = helpers.ui.colorize_text("Search...", beautiful.colors.muted)
-  else
-    input.text = text
-  end
-
+local function set_filter(text)
   visible_apps = filter_apps(all_apps, text)
   clamp_selection()
   draw_app_list(visible_apps)
 end
 
-local function move_selection(amount)
-  if amount == 0 then
-    return
-  end
-
-  local new_index = selected_index + amount
-  selected_index = (new_index - 1) % #visible_apps + 1
-
-  -- Make sure scroll follows selection
-  scroll_offset = math.min(math.max(scroll_offset, selected_index - page_size), selected_index - 1)
-
-  draw_app_list(visible_apps)
-end
-
-input_prompt = prompt({
-  keypressed_callback = function(_, key)
-    if key == "Escape" then
-      launcher.cancel()
-    end
-
-    if key == "Return" then
-      local selected = app_list.children[selected_index - scroll_offset]
-
-      if selected then
-        selected.launch()
-      end
-    end
-
-    if key == "Up" then
-      move_selection(-1)
-    elseif key == "Down" then
-      move_selection(1)
-    end
-  end,
-  changed_callback = function(text)
-    set_query(text)
-  end,
-})
+text_input.changed_callback = set_filter
 
 -- TODO: Should this be a backdrop instead?
 local click_away_handler = helpers.ui.create_click_away_handler(launcher_widget, false)
@@ -247,7 +231,7 @@ function launcher.hide()
   all_apps = {}
   visible_apps = {}
 
-  input_prompt:stop()
+  text_input:unfocus()
 end
 
 function launcher.cancel()
@@ -276,8 +260,8 @@ function launcher.show()
   client.focus = nil
   click_away_handler.attach(launcher.cancel)
 
-  input_prompt:reset()
-  input_prompt:start()
+  text_input:reset()
+  text_input:focus()
 
   draw_app_list(visible_apps)
 

@@ -3,14 +3,6 @@ local gtable = require("gears.table")
 
 local prompt = { mt = {} }
 
-function prompt:reset()
-  self.text = ""
-
-  if self.changed_callback then
-    self.changed_callback(self.text)
-  end
-end
-
 function prompt:start()
   self._private.keygrabber = awful.keygrabber({
     mask_modkeys = true,
@@ -40,6 +32,14 @@ function prompt:stop()
   self._private.keygrabber:stop()
 end
 
+function prompt:reset()
+  self.text = ""
+
+  if self.changed_callback then
+    self.changed_callback(self.text)
+  end
+end
+
 ---@class (exact) PromptArgs
 ---@field text string?
 ---@field keypressed_callback fun(mod, key: string, event: string): any
@@ -47,6 +47,7 @@ end
 
 ---@param args PromptArgs
 local function new(args)
+  args = args or {}
   args.text = args.text or ""
 
   local ret = {}
