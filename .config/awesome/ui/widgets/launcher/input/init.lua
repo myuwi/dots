@@ -91,15 +91,18 @@ local function new(args)
         w.keypressed_callback(mod, key)
       end
     end,
-    changed_callback = function(text)
+    changed_callback = function(text, cursor_pos)
       w._private.placeholder.visible = text == ""
       w._private.textbox.text = text
       w.text = text
 
-      local text_width = wibox.widget.textbox.get_markup_geometry(gstring.xml_escape(text)).width
+      local text_before_cursor = text:sub(1, cursor_pos)
+      local text_before_cursor_width =
+        wibox.widget.textbox.get_markup_geometry(gstring.xml_escape(text_before_cursor)).width
+
       cursor_positioner:move_widget(w._private.cursor, function(_, a)
         return {
-          x = math.min(text_width, a.parent.width),
+          x = math.min(text_before_cursor_width, a.parent.width),
           y = dpi(2),
         }
       end)
