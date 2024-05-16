@@ -1,12 +1,21 @@
 return {
   "rose-pine/neovim",
+  name = "rose-pine",
   lazy = false,
   priority = 1000,
-  tag = "v1.2.2",
   opts = {
-    disable_float_background = true,
+    extend_background_behind_borders = false,
+
+    styles = {
+      bold = false,
+      italic = true,
+      transparency = false,
+    },
+    groups = {
+      border = "highlight_med",
+    },
     highlight_groups = {
-      DiagnosticUnnecessary = {},
+      NormalFloat = { bg = "NONE" },
     },
   },
   config = function(_, opts)

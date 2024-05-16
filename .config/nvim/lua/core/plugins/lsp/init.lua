@@ -20,6 +20,8 @@ return {
           "clojure_lsp",
           "eslint",
           "emmet_ls",
+          "fennel_ls",
+          "gopls",
           "jsonls",
           "lemminx",
           "marksman",
@@ -72,9 +74,6 @@ return {
         automatic_installation = true,
         handlers = { setup },
       })
-
-      -- FIXME: Not recognized by Mason...
-      setup("fennel_ls")
 
       for _, sign in ipairs(opts.signs) do
         vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })

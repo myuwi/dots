@@ -17,7 +17,7 @@ local toggleterm = {
 
 return {
   "nvim-lualine/lualine.nvim",
-  dependencies = { "kyazdani42/nvim-web-devicons", lazy = true },
+  dependencies = { "nvim-tree/nvim-web-devicons", lazy = true },
   opts = {
     options = {
       icons_enabled = true,
