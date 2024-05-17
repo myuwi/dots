@@ -17,13 +17,12 @@ local visible_clients
 local last_focused_client
 
 local client_icons = wibox.widget({
-  spacing = dpi(8),
+  spacing = dpi(6),
   layout = wibox.layout.fixed.horizontal,
 })
 
 local window_switcher_box = helpers.ui.popup({
   placement = awful.placement.centered,
-  margins = dpi(16),
   widget = client_icons,
 })
 
@@ -48,15 +47,11 @@ local function redraw_highlights()
 end
 
 local function draw_client_icons()
-  local icon_size = dpi(64)
-  local icon_padding = dpi(8)
-
-  local icon_top_margin = dpi(16)
-  local icon_bottom_margin = dpi(8)
-  local icon_x_margin = dpi(16)
-
-  local icon_text_spacing = dpi(8)
-  local text_height = dpi(16)
+  local icon_size = dpi(60)
+  local icon_padding = dpi(12)
+  local outside_padding = dpi(12)
+  local icon_text_spacing = dpi(6)
+  local text_height = dpi(12)
 
   client_icons:reset()
 
@@ -66,10 +61,10 @@ local function draw_client_icons()
         {
           {
             {
-              awful.widget.clienticon(c),
+              client = c,
               forced_height = icon_size,
               forced_width = icon_size,
-              widget = wibox.container.margin,
+              widget = awful.widget.clienticon,
             },
             margins = icon_padding,
             widget = wibox.container.margin,
@@ -78,19 +73,14 @@ local function draw_client_icons()
             text = c.name,
             halign = "center",
             valign = "center",
-            ellipsize = "end",
-            forced_width = icon_size + icon_padding * 2,
             forced_height = text_height,
             widget = wibox.widget.textbox,
           },
           spacing = icon_text_spacing,
+          forced_width = icon_size + icon_padding * 2,
           layout = wibox.layout.fixed.vertical,
-          widget = wibox.container.margin,
         },
-        top = icon_top_margin,
-        left = icon_x_margin,
-        right = icon_x_margin,
-        bottom = icon_bottom_margin,
+        margins = outside_padding,
         widget = wibox.container.margin,
       },
       shape = helpers.shape.rounded_rect(beautiful.border_radius),
