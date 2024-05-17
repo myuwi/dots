@@ -35,6 +35,7 @@ local volume_text = wibox.widget({
 })
 
 local volume_widget = helpers.ui.popup({
+  margins = dpi(18),
   forced_width = dpi(288),
   placement = function(w)
     awful.placement.bottom(w, {

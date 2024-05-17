@@ -156,7 +156,7 @@ end
 _M.popup = function(args)
   local forced_width = args.forced_width
   local forced_height = args.forced_height
-  local margins = args.margins or dpi(18)
+  local margins = args.margins or dpi(12)
   local placement = args.placement
   local s = args.screen or screen.primary
   local widget = args.widget

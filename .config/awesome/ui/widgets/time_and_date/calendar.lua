@@ -1,5 +1,6 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
 local helpers = require("helpers")
@@ -118,31 +119,35 @@ local function calendar()
 
   local widget = wibox.widget({
     {
-      title,
-      halign = "center",
-      widget = wibox.container.place,
-    },
-    {
+      {
+        title,
+        halign = "center",
+        widget = wibox.container.place,
+      },
       {
         {
-          week_numbers,
-          top = beautiful.calendar_cell_size + beautiful.calendar_spacing,
-          widget = wibox.container.margin,
-        },
-        {
-          grid_header,
-          grid,
+          {
+            week_numbers,
+            top = beautiful.calendar_cell_size + beautiful.calendar_spacing,
+            widget = wibox.container.margin,
+          },
+          {
+            grid_header,
+            grid,
+            spacing = beautiful.calendar_spacing,
+            layout = wibox.layout.fixed.vertical,
+          },
           spacing = beautiful.calendar_spacing,
-          layout = wibox.layout.fixed.vertical,
+          layout = wibox.layout.fixed.horizontal,
         },
-        spacing = beautiful.calendar_spacing,
-        layout = wibox.layout.fixed.horizontal,
+        halign = "center",
+        widget = wibox.container.place,
       },
-      halign = "center",
-      widget = wibox.container.place,
+      spacing = beautiful.calendar_spacing,
+      layout = wibox.layout.fixed.vertical,
     },
-    spacing = beautiful.calendar_spacing,
-    layout = wibox.layout.fixed.vertical,
+    margins = dpi(6),
+    widget = wibox.container.margin,
   })
 
   widget.buttons = {

@@ -50,7 +50,6 @@ local no_results = wibox.widget({
 local launcher_widget_max_height = 0
 
 local launcher_widget = helpers.ui.popup({
-  margins = dpi(12),
   forced_width = dpi(552),
   -- TODO: A better way to do this
   placement = function(w)
