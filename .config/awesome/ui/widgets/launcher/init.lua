@@ -37,7 +37,7 @@ local app_list = wibox.widget({
 local no_results_text = wibox.widget({
   text = "",
   valign = "center",
-  forced_height = dpi(16),
+  forced_height = dpi(18),
   widget = wibox.widget.textbox,
 })
 
@@ -50,7 +50,7 @@ local no_results = wibox.widget({
 local launcher_widget_max_height = 0
 
 local launcher_widget = helpers.ui.popup({
-  forced_width = dpi(552),
+  forced_width = dpi(576),
   -- TODO: A better way to do this
   placement = function(w)
     if w.height > launcher_widget_max_height then
@@ -78,7 +78,7 @@ local launcher_widget = helpers.ui.popup({
 })
 
 local function create_app_entry(app, i)
-  local icon = gtk_theme:lookup_by_gicon(app:get_icon(), dpi(28), 0)
+  local icon = gtk_theme:lookup_by_gicon(app:get_icon(), dpi(30), 0)
 
   if icon then
     icon = icon:get_filename()
@@ -89,15 +89,15 @@ local function create_app_entry(app, i)
       {
         {
           image = icon,
-          forced_width = dpi(28),
-          forced_height = dpi(28),
+          forced_width = dpi(30),
+          forced_height = dpi(30),
           widget = wibox.widget.imagebox,
         },
         {
           text = app:get_name(),
           widget = wibox.widget.textbox,
         },
-        spacing = dpi(12),
+        spacing = dpi(9),
         layout = wibox.layout.fixed.horizontal,
       },
       top = dpi(6),
@@ -198,6 +198,7 @@ local function filter_apps(apps, text)
     return apps
   end
 
+  -- TODO: Prioritize apps whose name matches the query
   return helpers.table.filter(apps, function(app)
     return app:get_name():lower():find(text:lower(), 1, true)
       or helpers.table.any(app:get_keywords(), function(keyword)
