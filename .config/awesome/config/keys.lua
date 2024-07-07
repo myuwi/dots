@@ -78,10 +78,12 @@ awful.keyboard.append_global_keybindings({
     local terminal = "alacritty"
     awful.spawn(terminal, false)
   end, { description = "open a terminal", group = "launcher" }),
+
   -- App launcher
   awful.key({ modkey }, "d", function()
     awesome.emit_signal("widgets::launcher::show")
   end, { description = "open launcher", group = "launcher" }),
+
   -- Toggle picom
   awful.key({ modkey }, "p", function()
     awful.spawn.with_shell("pgrep -ix picom > /dev/null && killall picom || picom --legacy-backends &")
@@ -89,20 +91,17 @@ awful.keyboard.append_global_keybindings({
 
   -- Screenshot
   awful.key({}, "Print", function()
-    awful.spawn.with_shell("screenshot screen")
-  end, { description = "take a screenshot of the active screen", group = "screen" }),
+    awful.spawn.with_shell("sana -c")
+  end, { description = "take a screenshot of the active screen", group = "screenshot" }),
   awful.key({ "Control" }, "Print", function()
     awful.spawn("flameshot gui", false)
-  end, { description = "take an area screenshot", group = "screen" }),
+  end, { description = "take a screenshot with an interactive gui", group = "screenshot" }),
   awful.key({ "Shift" }, "Print", function()
-    awful.spawn.with_shell("screenshot select")
-  end, { description = "take a screenshot of a specific window", group = "screen" }),
-  awful.key({ "Control", "Shift" }, "Print", function()
-    awful.spawn.with_shell("maim -su -p 32 -B | xclip -sel clip -t image/png")
-  end, { description = "take a screenshot of a specific window with padding", group = "screen" }),
+    awful.spawn.with_shell("sana -s")
+  end, { description = "take a screenshot of a selection or window", group = "screenshot" }),
   awful.key({ "Mod1" }, "Print", function()
-    awful.spawn.with_shell("screenshot full")
-  end, { description = "take a full screenshot", group = "screen" }),
+    awful.spawn.with_shell("sana -f")
+  end, { description = "take a full screenshot", group = "screenshot" }),
 })
 
 -- Volume, Media and Brightness keys

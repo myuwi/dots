@@ -1,0 +1,82 @@
+#!/bin/bash
+set -o pipefail
+
+function usage() {
+  printf "%s <option>\n" $(basename ${0})
+  printf "%s\n" "Options:"
+  printf "%s\t%s\n" "-h" "show this help message"
+  printf "%s\t%s\n" "-c" "current screen"
+  printf "%s\t%s\n" "-f" "fullscreen"
+  printf "%s\t%s\n" "-g" "geometry"
+  exit 0
+}
+
+function current_monitor_geometry() {
+  MONITORS=$(xrandr | grep -o '[0-9]*x[0-9]*[+-][0-9]*[+-][0-9]*')
+
+  eval $(xdotool getmouselocation --shell --prefix "MOUSE_")
+
+  for mon in ${MONITORS}; do
+    MON_W=$(echo ${mon} | awk -F "[x+]" '{print $1}')
+    MON_H=$(echo ${mon} | awk -F "[x+]" '{print $2}')
+    MON_X=$(echo ${mon} | awk -F "[x+]" '{print $3}')
+    MON_Y=$(echo ${mon} | awk -F "[x+]" '{print $4}')
+
+    if ((${MOUSE_X} >= ${MON_X})); then
+      if ((${MOUSE_X} <= ${MON_X} + ${MON_W})); then
+        if ((${MOUSE_Y} >= ${MON_Y})); then
+          if ((${MOUSE_Y} <= ${MON_Y} + ${MON_H})); then
+            echo "$mon"
+            return 0
+          fi
+        fi
+      fi
+    fi
+  done
+
+  return 1
+}
+
+function notify() {
+  notify-send -a "Sana" "$@"
+}
+
+tmpfile="/tmp/screenshot.png"
+
+case "$1" in
+-f)
+  # Full screenshot with screens aligned vertically
+  # Currently only works correctly if there are three 1920x1080 screens and the middle one is 200px higher than the rest
+  # TODO: get screen coords (sorted) and automatically align them vertically
+  maim |
+    convert png:- \( +clone -crop 1920x1080+1920+0 \) -geometry +1920+200 -composite -crop 5760x1080+0+200 "$tmpfile"
+  ;;
+-c)
+  # Current screen
+  maim -ug $(current_monitor_geometry) "$tmpfile"
+  ;;
+-g)
+  # Geometry
+  if [ -z "$2" ]; then
+    echo >&2 "Invalid geometry"
+    exit 1
+  fi
+
+  maim -ug "$2" "$tmpfile"
+  ;;
+-s)
+  # Selection
+  maim -su "$tmpfile"
+  ;;
+-h | *)
+  usage
+  ;;
+esac
+
+if [[ -f "$tmpfile" ]]; then
+  xclip -sel clip -t image/png "$tmpfile"
+  notify "Screenshot taken" "Screenshot copied to clipboard."
+  rm -f "$tmpfile"
+else
+  notify "Screenshot aborted" "Screenshot aborted by the user."
+fi
