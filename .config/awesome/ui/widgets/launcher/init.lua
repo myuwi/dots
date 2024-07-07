@@ -198,13 +198,28 @@ local function filter_apps(apps, text)
     return apps
   end
 
-  -- TODO: Prioritize apps whose name matches the query
-  return helpers.table.filter(apps, function(app)
+  local filtered_apps = helpers.table.filter(apps, function(app)
     return app:get_name():lower():find(text:lower(), 1, true)
       or helpers.table.any(app:get_keywords(), function(keyword)
         return keyword:lower():find(text:lower(), 1, true)
       end)
   end)
+
+  table.sort(filtered_apps, function(a, b)
+    local a_name = a:get_name():lower()
+    local b_name = b:get_name():lower()
+
+    local a_match = a_name:find(text:lower(), 1, true) ~= nil
+    local b_match = b_name:find(text:lower(), 1, true) ~= nil
+
+    if a_match == b_match then
+      return a_name < b_name
+    end
+
+    return a_match
+  end)
+
+  return filtered_apps
 end
 
 local function clamp_selection()
@@ -243,9 +258,7 @@ function launcher.show()
   scroll_offset = 0
   selected_index = 1
 
-  local new_apps = Gio.DesktopAppInfo.get_all()
-
-  new_apps = helpers.table.filter(new_apps, function(app)
+  local new_apps = helpers.table.filter(Gio.DesktopAppInfo.get_all(), function(app)
     return not app:get_nodisplay()
   end)
 
