@@ -34,12 +34,16 @@ naughty.connect_signal("request::display", function(n)
   local notification_body_width = beautiful.notification_width - beautiful.notification_margin * 2
   -- Adjust for icon width and spacing
   if n.image ~= nil then
-    notification_body_width = notification_body_width - dpi(64) - dpi(16)
+    notification_body_width = notification_body_width - dpi(60) - dpi(12)
   end
 
-  local notification_body = wibox.widget.textbox(n.message, true)
-  notification_body.ellipsize = "none"
-  notification_body.valign = "top"
+  local notification_body = wibox.widget({
+    text = n.message,
+    ellipsize = "none",
+    valign = "top",
+    widget = wibox.widget.textbox,
+  })
+
   notification_body.forced_height = notification_body:get_height_for_width(notification_body_width, screen.primary)
 
   local actions = {
@@ -54,7 +58,7 @@ naughty.connect_signal("request::display", function(n)
 
       return btn
     end),
-    spacing = dpi(8),
+    spacing = dpi(6),
     layout = wibox.layout.flex.horizontal,
   }
 
@@ -70,44 +74,29 @@ naughty.connect_signal("request::display", function(n)
             {
               {
                 {
-                  {
-                    forced_width = dpi(16),
-                    forced_height = dpi(16),
-                    image = n.app_icon,
-                    widget = wibox.widget.imagebox,
-                  },
+                  image = n.app_icon,
+                  forced_width = dpi(18),
+                  forced_height = dpi(18),
                   visible = n.app_icon ~= nil,
-                  right = dpi(6),
-                  widget = wibox.container.margin,
-                },
-                {
-                  {
-                    text = n.app_name,
-                    ellipsize = "end",
-                    widget = wibox.widget.textbox,
-                  },
-                  halign = "left",
-                  widget = wibox.container.place,
-                },
-                {
-                  image = beautiful.icon_path .. "close.svg",
-                  stylesheet = "* { fill:" .. beautiful.fg_normal .. " }",
-                  forced_width = dpi(16),
-                  forced_height = dpi(16),
                   widget = wibox.widget.imagebox,
                 },
-                layout = wibox.layout.align.horizontal,
+                {
+                  text = n.app_name,
+                  widget = wibox.widget.textbox,
+                },
+                spacing = dpi(6),
+                layout = wibox.layout.fixed.horizontal,
               },
-              bottom = dpi(16),
+              bottom = dpi(12),
               widget = wibox.container.margin,
             },
             {
               {
-                visible = n.image ~= nil,
-                clip_shape = helpers.shape.rounded_rect(dpi(4)),
-                forced_width = dpi(64),
-                forced_height = dpi(64),
                 image = n.image,
+                forced_width = dpi(60),
+                forced_height = dpi(60),
+                clip_shape = helpers.shape.rounded_rect(dpi(3)),
+                visible = n.image ~= nil,
                 widget = wibox.widget.imagebox,
               },
               {
@@ -115,25 +104,24 @@ naughty.connect_signal("request::display", function(n)
                   {
                     text = n.title,
                     font = beautiful.font_name .. " Bold " .. beautiful.font_size,
-                    forced_height = dpi(16),
-                    ellipsize = "end",
+                    forced_height = dpi(18),
                     widget = wibox.widget.textbox,
                   },
                   notification_body,
-                  spacing = dpi(2),
+                  spacing = dpi(3),
                   layout = wibox.layout.fixed.vertical,
                 },
                 top = dpi(6),
-                bottom = dpi(8),
+                bottom = dpi(6),
                 widget = wibox.container.margin,
               },
-              spacing = dpi(16),
+              spacing = dpi(12),
               layout = wibox.layout.fixed.horizontal,
             },
             {
               actions,
               visible = n.actions and #n.actions > 0,
-              top = dpi(16),
+              top = dpi(12),
               widget = wibox.container.margin,
             },
             layout = wibox.layout.fixed.vertical,

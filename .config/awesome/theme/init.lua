@@ -72,7 +72,7 @@ theme.window_switcher_inactive = colors.transparent
 
 -- Notifications
 theme.notification_width = dpi(360)
-theme.notification_margin = dpi(16)
+theme.notification_margin = dpi(18)
 theme.notification_spacing = theme.useless_gap * 2
 
 -- Icon theme
