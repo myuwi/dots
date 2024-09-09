@@ -47,109 +47,6 @@ return {
           fg = p.text,
           bg = p.surface,
         },
-        -- diagnostic = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- diagnostic_visible = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- diagnostic_selected = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- 	gui = 'bold,italic',
-        -- },
-        -- info = {
-        -- 	fg = '<color-value-here>',
-        -- 	guisp = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- info_visible = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- info_selected = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- 	gui = 'bold,italic',
-        -- 	guisp = '<color-value-here>',
-        -- },
-        -- info_diagnostic = {
-        -- 	fg = '<color-value-here>',
-        -- 	guisp = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- info_diagnostic_visible = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- info_diagnostic_selected = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- 	gui = 'bold,italic',
-        -- 	guisp = '<color-value-here>',
-        -- },
-        -- warning = {
-        -- 	fg = '<color-value-here>',
-        -- 	guisp = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- warning_visible = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- warning_selected = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- 	gui = 'bold,italic',
-        -- 	guisp = '<color-value-here>',
-        -- },
-        -- warning_diagnostic = {
-        -- 	fg = '<color-value-here>',
-        -- 	guisp = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- warning_diagnostic_visible = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- warning_diagnostic_selected = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- 	gui = 'bold,italic',
-        -- 	guisp = warning_diagnostic_fg,
-        -- },
-        -- error = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- 	guisp = '<color-value-here>',
-        -- },
-        -- error_visible = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- error_selected = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- 	gui = 'bold,italic',
-        -- 	guisp = '<color-value-here>',
-        -- },
-        -- error_diagnostic = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- 	guisp = '<color-value-here>',
-        -- },
-        -- error_diagnostic_visible = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- error_diagnostic_selected = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- 	gui = 'bold,italic',
-        -- 	guisp = '<color-value-here>',
-        -- },
         modified = {
           fg = p.gold,
           bg = p.base,
@@ -177,18 +74,6 @@ return {
           bg = p.base,
           italic = false,
         },
-        -- separator_selected = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- separator_visible = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- separator = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
         indicator_selected = {
           fg = p.surface,
           bg = p.surface,
@@ -211,18 +96,6 @@ return {
           bold = true,
           italic = true,
         },
-        -- tab = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- tab_selected = {
-        -- 	fg = tabline_sel_bg,
-        -- 	bg = '<color-value-here>',
-        -- },
-        -- tab_close = {
-        -- 	fg = '<color-value-here>',
-        -- 	bg = '<color-value-here>',
-        -- },
       },
       options = {
         show_close_icon = false,
@@ -230,10 +103,9 @@ return {
           style = "none",
         },
         separator_style = { "", "" },
-        close_command = function(bufnum)
-          require("bufdelete").bufdelete(bufnum, true)
-        end,
-        right_mouse_command = "",
+        close_command = "Bdelete! %d",
+        middle_mouse_command = "Bdelete! %d",
+        right_mouse_command = false,
         offsets = {
           {
             filetype = "NvimTree",

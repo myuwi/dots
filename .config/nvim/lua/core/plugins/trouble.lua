@@ -3,8 +3,8 @@ return {
     "folke/which-key.nvim",
     optional = true,
     opts = {
-      groups = {
-        ["<leader>x"] = { name = "+Trouble" },
+      spec = {
+        { "<leader>x", group = "Trouble" },
       },
     },
   },

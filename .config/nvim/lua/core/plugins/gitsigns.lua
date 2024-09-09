@@ -3,11 +3,9 @@ return {
     "folke/which-key.nvim",
     optional = true,
     opts = {
-      groups = {
-        ["<leader>g"] = {
-          name = "+Git",
-          t = "+Toggle",
-        },
+      spec = {
+        { "<leader>g", group = "Git" },
+        { "<leader>gt", desc = "+Toggle" },
       },
     },
   },

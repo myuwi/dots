@@ -11,7 +11,13 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup("core.plugins", {
+require("lazy").setup({
+  spec = {
+    -- Import the main which-key spec first so it uses opts_extended correctly
+    { import = "core.plugins.which-key" },
+    { import = "core.plugins" },
+  },
+  change_detection = { notify = false },
   install = {
     colorscheme = { "rose-pine" },
   },

@@ -3,8 +3,8 @@ return {
     "folke/which-key.nvim",
     optional = true,
     opts = {
-      groups = {
-        ["<leader>p"] = { name = "+Telescope" },
+      spec = {
+        { "<leader>p", group = "Telescope" },
       },
     },
   },
