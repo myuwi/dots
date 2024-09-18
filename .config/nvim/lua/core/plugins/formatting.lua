@@ -20,6 +20,7 @@ return {
       python = { "isort", "black" },
       sh = { "shfmt" },
       toml = { "taplo" },
+      typst = { "typstyle" },
     }
 
     local prettier_filetypes = {

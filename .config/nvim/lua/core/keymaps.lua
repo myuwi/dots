@@ -6,6 +6,9 @@ end
 -- Put in Visual Mode should not replace register
 vim.keymap.set("x", "p", "pgvy")
 
+vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
+vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true })
+
 -- Move lines with alt + jk
 vim.keymap.set("n", "<A-j>", "<cmd>m+<CR>==", opts("Move current line down"))
 vim.keymap.set("n", "<A-k>", "<cmd>m-2<CR>==", opts("Move current line up"))

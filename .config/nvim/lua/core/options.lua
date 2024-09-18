@@ -15,6 +15,8 @@ vim.opt.relativenumber = true
 -- vim.opt.numberwidth = 4
 vim.opt.signcolumn = "yes"
 
+vim.opt.linebreak = true
+
 -- Cursor
 vim.opt.cursorline = true
 vim.opt.scrolloff = 1

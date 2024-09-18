@@ -31,7 +31,8 @@ return {
           "lua_ls",
           "svelte",
           "tailwindcss",
-          "tsserver",
+          "typst_lsp",
+          "ts_ls",
           "yamlls",
         },
         signs = {
