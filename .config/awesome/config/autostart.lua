@@ -6,7 +6,7 @@ local home_dir = os.getenv("HOME")
 local start_cmds = {
   "/usr/lib/xfce-polkit/xfce-polkit",
   home_dir .. "/.dots/.screenlayout/default.sh",
-  "picom --legacy-backends",
+  "picom",
   "solaar -w hide",
   "fcitx5",
   "vesktop",

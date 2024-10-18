@@ -86,7 +86,7 @@ awful.keyboard.append_global_keybindings({
 
   -- Toggle picom
   awful.key({ modkey }, "p", function()
-    awful.spawn.with_shell("pgrep -ix picom > /dev/null && killall picom || picom --legacy-backends &")
+    awful.spawn.with_shell("pgrep -ix picom > /dev/null && killall picom || picom &")
   end, { description = "toggle picom", group = "misc" }),
 
   -- Screenshot
