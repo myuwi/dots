@@ -18,8 +18,9 @@ return {
       return {
         servers = {
           "clojure_lsp",
-          "eslint",
+          "denols",
           "emmet_ls",
+          "eslint",
           "fennel_ls",
           "gopls",
           "jsonls",
@@ -31,6 +32,7 @@ return {
           "lua_ls",
           "svelte",
           "tailwindcss",
+          "taplo",
           "typst_lsp",
           "ts_ls",
           "yamlls",
@@ -62,9 +64,9 @@ return {
           capabilities = require("core.plugins.lsp.handlers").capabilities,
         }
 
-        local has_custom_opts, override_opts = pcall(require, "core.plugins.lsp.servers." .. server_name)
-        if has_custom_opts then
-          server_opts = vim.tbl_deep_extend("force", server_opts, has_custom_opts and override_opts or {})
+        local has_override_opts, override_opts = pcall(require, "core.plugins.lsp.servers." .. server_name)
+        if has_override_opts then
+          server_opts = vim.tbl_deep_extend("force", server_opts, override_opts)
         end
 
         lspconfig[server_name].setup(server_opts)
