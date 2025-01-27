@@ -3,15 +3,16 @@ return {
   dependencies = {
     "nvim-tree/nvim-web-devicons",
     "rose-pine/neovim",
-    "famiu/bufdelete.nvim",
+    "folke/snacks.nvim",
   },
   lazy = false,
+  -- stylua: ignore
   keys = {
     { "<C-Tab>", "<cmd>BufferLineCycleNext<CR>", desc = "Cycle next buffer" },
     { "<C-S-Tab>", "<cmd>BufferLineCyclePrev<CR>", desc = "Cycle previous buffer" },
     { "<C-A-j>", "<cmd>BufferLineMoveNext<CR>", desc = "Move current buffer forwards" },
     { "<C-A-k>", "<cmd>BufferLineMovePrev<CR>", desc = "Move current buffer backwards" },
-    { "<Leader>bd", "<cmd>Bdelete<CR>", desc = "Delete current buffer" },
+    { "<Leader>bd", function() Snacks.bufdelete() end, desc = "Delete current buffer" },
   },
   opts = function()
     local p = require("rose-pine.palette")
@@ -103,9 +104,11 @@ return {
           style = "none",
         },
         separator_style = { "", "" },
-        close_command = "Bdelete! %d",
-        middle_mouse_command = "Bdelete! %d",
+        -- stylua: ignore start
+        close_command = function(n) Snacks.bufdelete(n) end,
+        middle_mouse_command = function(n) Snacks.bufdelete(n) end,
         right_mouse_command = false,
+        -- stylua: ignore end
         offsets = {
           {
             filetype = "NvimTree",
