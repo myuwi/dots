@@ -6,11 +6,13 @@ end
 -- Put in Visual Mode should not replace register
 vim.keymap.set("x", "p", "pgvy")
 
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", opts("Clear search highlights"))
+
 -- Move lines with alt + jk
 vim.keymap.set("n", "<A-j>", "<cmd>m+<CR>==", opts("Move current line down"))
 vim.keymap.set("n", "<A-k>", "<cmd>m-2<CR>==", opts("Move current line up"))
-vim.keymap.set("i", "<A-j>", "<ESC><cmd>m+<CR>==gi", opts("Move current line down"))
-vim.keymap.set("i", "<A-k>", "<ESC><cmd>m-2<CR>==gi", opts("Move current line up"))
+vim.keymap.set("i", "<A-j>", "<Esc><cmd>m+<CR>==gi", opts("Move current line down"))
+vim.keymap.set("i", "<A-k>", "<Esc><cmd>m-2<CR>==gi", opts("Move current line up"))
 -- TODO: possible to use <cmd> instead?
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", opts("Move selected line(s) down"))
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", opts("Move selected line(s) up"))
