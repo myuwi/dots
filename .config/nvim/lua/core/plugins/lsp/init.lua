@@ -34,7 +34,7 @@ return {
           "svelte",
           "tailwindcss",
           "taplo",
-          "typst_lsp",
+          "tinymist",
           "ts_ls",
           "yamlls",
         },
