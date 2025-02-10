@@ -1,6 +1,6 @@
 local M = {}
 
-M.on_attach = function(_, bufnr)
+M.on_attach = function(client, bufnr)
   ---@param desc string
   local function opts(desc)
     return { buffer = bufnr, desc = desc, noremap = true, silent = true }
@@ -18,6 +18,16 @@ M.on_attach = function(_, bufnr)
   vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("Select a code action available at the current cursor position"))
   vim.keymap.set("n", "gr", vim.lsp.buf.references, opts("List all the references to the symbol under the cursor"))
   vim.keymap.set("n", "<leader>gR", "<cmd>LspRestart<CR>", opts("Restart LSP client"))
+
+  -- TODO: Refresh when it becomes available?
+  if client.server_capabilities.codeLensProvider then
+    vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+      buffer = bufnr,
+      callback = function()
+        vim.lsp.codelens.refresh()
+      end,
+    })
+  end
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
