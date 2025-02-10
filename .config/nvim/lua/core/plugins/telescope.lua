@@ -27,7 +27,10 @@ return {
           "^.git/",
           ".netlify/",
           ".svelte%-kit/",
+          "_build",
+          ".elixir_ls",
           "node_modules",
+          "deps",
           "target",
         },
         vimgrep_arguments = {

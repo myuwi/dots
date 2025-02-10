@@ -19,6 +19,7 @@ return {
         servers = {
           "clojure_lsp",
           "denols",
+          "elixirls",
           "emmet_ls",
           "eslint",
           "fennel_ls",
