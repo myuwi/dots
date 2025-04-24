@@ -1,5 +1,6 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
 local helpers = require("helpers")
@@ -7,6 +8,7 @@ local helpers = require("helpers")
 local taglist = require("ui.bar.taglist")
 local tasklist = require("ui.bar.tasklist")
 local systray = require("ui.bar.systray")
+local battery = require("ui.bar.battery")
 local clock = require("ui.bar.clock")
 
 awful.screen.connect_for_each_screen(function(s)
@@ -37,10 +39,15 @@ awful.screen.connect_for_each_screen(function(s)
             widget = wibox.container.margin,
           },
           {
-            is_primary and systray() or nil,
-            clock(),
-            spacing = beautiful.bar_spacing,
-            layout = wibox.layout.fixed.horizontal,
+            {
+              is_primary and systray() or nil,
+              battery(),
+              clock(),
+              spacing = beautiful.bar_spacing * 2,
+              layout = wibox.layout.fixed.horizontal,
+            },
+            right = dpi(8),
+            widget = wibox.container.margin,
           },
           layout = wibox.layout.align.horizontal,
         },
