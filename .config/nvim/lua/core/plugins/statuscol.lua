@@ -10,7 +10,7 @@ return {
       ft_ignore = { "NvimTree" },
       segments = {
         {
-          sign = { name = { "Diagnostic" }, maxwidth = 1, colwidth = 2 },
+          sign = { namespace = { "diagnostic" }, maxwidth = 1, colwidth = 2 },
           click = "v:lua.ScSa",
         },
         {

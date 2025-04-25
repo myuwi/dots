@@ -6,11 +6,12 @@ M.on_attach = function(client, bufnr)
     return { buffer = bufnr, desc = desc, noremap = true, silent = true }
   end
 
+  -- stylua: ignore start
   vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, opts("Show diagnostics in floating window"))
   vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, opts("Add buffer diagnostics to the location list"))
   vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts("Jump to the declaration of the symbol under the cursor"))
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts("Jump to the definition of the symbol under the cursor"))
-  vim.keymap.set("n", "K", vim.lsp.buf.hover, opts("Display hover information about the symbol under the cursor in a floating window"))
+  vim.keymap.set("n", "K", function() vim.lsp.buf.hover({ border = "single" }) end, opts("Display hover information about the symbol under the cursor in a floating window"))
   vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts("Lists all the implementations for the symbol under the cursor"))
   vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, opts("Jump to the definition of the type of the symbol under the cursor"))
   vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename all references to the symbol under the cursor"))
@@ -18,6 +19,7 @@ M.on_attach = function(client, bufnr)
   vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("Select a code action available at the current cursor position"))
   vim.keymap.set("n", "gr", vim.lsp.buf.references, opts("List all the references to the symbol under the cursor"))
   vim.keymap.set("n", "<leader>gR", "<cmd>LspRestart<CR>", opts("Restart LSP client"))
+  -- stylua: ignore end
 
   -- TODO: Refresh when it becomes available?
   if client.server_capabilities.codeLensProvider then

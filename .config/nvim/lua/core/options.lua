@@ -54,3 +54,6 @@ vim.opt.laststatus = 3
 vim.opt.showmode = false
 
 vim.opt.iskeyword:append("-")
+
+-- React Native Expo Hot reload breaks without this
+vim.opt.backupcopy = "yes"

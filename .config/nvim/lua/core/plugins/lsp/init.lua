@@ -8,55 +8,54 @@ return {
       "b0o/schemastore.nvim",
       { "folke/neodev.nvim", opts = {} },
     },
-    opts = function()
-      local float = {
-        focusable = true,
-        style = "minimal",
-        border = "single",
-      }
-
-      return {
-        servers = {
-          "clojure_lsp",
-          "denols",
-          "elixirls",
-          "emmet_ls",
-          "eslint",
-          "fennel_ls",
-          "gopls",
-          "jsonls",
-          "lemminx",
-          "marksman",
-          "prismals",
-          "pyright",
-          "rust_analyzer",
-          "lua_ls",
-          "svelte",
-          "tailwindcss",
-          "taplo",
-          "tinymist",
-          "ts_ls",
-          "yamlls",
+    opts = {
+      servers = {
+        { "biome", opts = { mason = false } },
+        "clojure_lsp",
+        { "denols", opts = { mason = false } },
+        "elixirls",
+        "emmet_ls",
+        "eslint",
+        "fennel_ls",
+        { "gleam", opts = { mason = false } },
+        "gopls",
+        "jsonls",
+        "lemminx",
+        "marksman",
+        "prismals",
+        "pyright",
+        { "rust_analyzer", opts = { mason = false } },
+        "lua_ls",
+        "svelte",
+        "tailwindcss",
+        "taplo",
+        "tinymist",
+        "ts_ls",
+        "yamlls",
+      },
+      ---@type vim.diagnostic.Opts
+      diagnostic = {
+        virtual_text = true,
+        update_in_insert = true,
+        underline = true,
+        severity_sort = true,
+        float = {
+          border = "single",
         },
         signs = {
-          { name = "DiagnosticSignError", text = "" },
-          { name = "DiagnosticSignWarn", text = "" },
-          { name = "DiagnosticSignHint", text = "" },
-          { name = "DiagnosticSignInfo", text = "" },
+          text = {
+            [vim.diagnostic.severity.ERROR] = "",
+            [vim.diagnostic.severity.WARN] = "",
+            [vim.diagnostic.severity.HINT] = "",
+            [vim.diagnostic.severity.INFO] = "",
+          },
         },
-        float = float,
-        diagnostic = {
-          virtual_text = true,
-          update_in_insert = true,
-          underline = true,
-          severity_sort = true,
-          float = float,
-        },
-      }
-    end,
+      },
+    },
     config = function(_, opts)
       local lspconfig = require("lspconfig")
       local mason_lspconfig = require("mason-lspconfig")
+      local mason_lspconfig_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
       require("mason").setup()
 
       local function setup(server_name)
@@ -73,19 +72,26 @@ return {
         lspconfig[server_name].setup(server_opts)
       end
 
+      local ensure_installed = {}
+
+      for _, server in ipairs(opts.servers) do
+        local server_name = type(server) == "table" and server[1] or server
+        local server_opts = type(server) == "table" and server.opts or {}
+
+        if server_opts.mason == false or not vim.tbl_contains(mason_lspconfig_servers, server_name) then
+          setup(server_name)
+        else
+          ensure_installed[#ensure_installed + 1] = server_name
+        end
+      end
+
       mason_lspconfig.setup({
-        ensure_installed = opts.servers,
-        automatic_installation = true,
+        ensure_installed = ensure_installed,
+        automatic_installation = false,
         handlers = { setup },
       })
 
-      for _, sign in ipairs(opts.signs) do
-        vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
-      end
-
       vim.diagnostic.config(opts.diagnostic)
-      vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, opts.float)
-      vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, opts.float)
     end,
   },
 }

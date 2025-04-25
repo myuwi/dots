@@ -2,14 +2,7 @@ return {
   "nvim-tree/nvim-tree.lua",
   dependencies = {
     "nvim-tree/nvim-web-devicons",
-    opts = {
-      override = {
-        ["tailwind.config.js"] = { icon = "󱏿", color = "#4db6ac", name = "Tailwind" },
-        ["tailwind.config.cjs"] = { icon = "󱏿", color = "#4db6ac", name = "Tailwind" },
-        ["tailwind.config.mjs"] = { icon = "󱏿", color = "#4db6ac", name = "Tailwind" },
-        ["tailwind.config.ts"] = { icon = "󱏿", color = "#4db6ac", name = "Tailwind" },
-      },
-    },
+    "folke/snacks.nvim",
   },
   keys = {
     { "<C-b>", "<cmd>NvimTreeToggle<CR>", desc = "Toggle Nvim-Tree" },
@@ -32,12 +25,29 @@ return {
       desc = "cd into directory and open nvim-tree on start",
       group = vim.api.nvim_create_augroup("nvim-tree", { clear = true }),
     })
+
+    local prev = { new_name = "", old_name = "" } -- Prevents duplicate events
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "NvimTreeSetup",
+      callback = function()
+        local events = require("nvim-tree.api").events
+        events.subscribe(events.Event.NodeRenamed, function(data)
+          if prev.new_name ~= data.new_name or prev.old_name ~= data.old_name then
+            data = data
+            Snacks.rename.on_rename_file(data.old_name, data.new_name)
+          end
+        end)
+      end,
+    })
   end,
   opts = {
     actions = {
       open_file = {
         resize_window = true,
       },
+    },
+    renderer = {
+      root_folder_label = false,
     },
     diagnostics = {
       enable = true,

@@ -24,7 +24,7 @@ return {
       theme = "auto",
       component_separators = { left = "", right = "" },
       section_separators = { left = "", right = "" },
-      disabled_filetypes = { "packer", "NVimTree" },
+      disabled_filetypes = { "NVimTree" },
       always_divide_middle = true,
       globalstatus = true,
     },
@@ -44,7 +44,6 @@ return {
       lualine_y = {},
       lualine_z = {},
     },
-    tabline = {},
     extensions = { "nvim-tree", toggleterm },
   },
 }

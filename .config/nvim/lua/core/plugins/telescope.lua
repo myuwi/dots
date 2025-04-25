@@ -25,33 +25,17 @@ return {
       defaults = {
         file_ignore_patterns = {
           "^.git/",
-          ".netlify/",
-          ".svelte%-kit/",
-          "_build",
-          ".elixir_ls",
-          "node_modules",
-          "deps",
-          "target",
-        },
-        vimgrep_arguments = {
-          "rg",
-          "--color=never",
-          "--no-heading",
-          "--with-filename",
-          "--line-number",
-          "--column",
-          "--smart-case",
-          "-uu",
         },
       },
       pickers = {
         find_files = {
-          no_ignore = true,
           hidden = true,
         },
+        grep_string = {
+          additional_args = { "--hidden" },
+        },
         live_grep = {
-          no_ignore = true,
-          hidden = true,
+          additional_args = { "--hidden" },
         },
       },
     },
