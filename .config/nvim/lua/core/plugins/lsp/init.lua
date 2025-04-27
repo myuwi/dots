@@ -2,11 +2,11 @@ return {
   {
     "neovim/nvim-lspconfig",
     dependencies = {
-      { "folke/neoconf.nvim", opts = {} },
-      "williamboman/mason.nvim",
+      { "williamboman/mason.nvim", opts = {} },
       "williamboman/mason-lspconfig.nvim",
       "b0o/schemastore.nvim",
-      { "folke/neodev.nvim", opts = {} },
+      { "folke/neoconf.nvim", opts = {} },
+      { "folke/lazydev.nvim", ft = "lua", opts = {} },
     },
     opts = {
       servers = {
@@ -53,23 +53,28 @@ return {
       },
     },
     config = function(_, opts)
-      local lspconfig = require("lspconfig")
       local mason_lspconfig = require("mason-lspconfig")
       local mason_lspconfig_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
-      require("mason").setup()
+      local on_attach = require("core.plugins.lsp.attach")
+
+      vim.api.nvim_create_autocmd("LspAttach", {
+        group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
+        callback = function(args)
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          local bufnr = args.buf
+          on_attach(client, bufnr)
+        end,
+      })
+
+      local capabilities =
+        vim.tbl_deep_extend("force", vim.lsp.protocol.make_client_capabilities(), require("cmp_nvim_lsp").default_capabilities())
+
+      vim.lsp.config("*", {
+        capabilities = capabilities,
+      })
 
       local function setup(server_name)
-        local server_opts = {
-          on_attach = require("core.plugins.lsp.handlers").on_attach,
-          capabilities = require("core.plugins.lsp.handlers").capabilities,
-        }
-
-        local has_override_opts, override_opts = pcall(require, "core.plugins.lsp.servers." .. server_name)
-        if has_override_opts then
-          server_opts = vim.tbl_deep_extend("force", server_opts, override_opts)
-        end
-
-        lspconfig[server_name].setup(server_opts)
+        return vim.lsp.enable(server_name)
       end
 
       local ensure_installed = {}
@@ -77,11 +82,12 @@ return {
       for _, server in ipairs(opts.servers) do
         local server_name = type(server) == "table" and server[1] or server
         local server_opts = type(server) == "table" and server.opts or {}
+        local use_mason = server_opts.mason ~= false and vim.tbl_contains(mason_lspconfig_servers, server_name)
 
-        if server_opts.mason == false or not vim.tbl_contains(mason_lspconfig_servers, server_name) then
-          setup(server_name)
-        else
+        if use_mason then
           ensure_installed[#ensure_installed + 1] = server_name
+        else
+          setup(server_name)
         end
       end
 

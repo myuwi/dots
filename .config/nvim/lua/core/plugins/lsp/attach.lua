@@ -1,6 +1,4 @@
-local M = {}
-
-M.on_attach = function(client, bufnr)
+local function on_attach(client, bufnr)
   ---@param desc string
   local function opts(desc)
     return { buffer = bufnr, desc = desc, noremap = true, silent = true }
@@ -32,7 +30,4 @@ M.on_attach = function(client, bufnr)
   end
 end
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-M.capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-
-return M
+return on_attach
