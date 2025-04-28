@@ -16,13 +16,8 @@ alias cal='cal -mw'
 alias yt-dl='yt-dlp'
 alias pn='pnpm'
 alias lg='lazygit'
+alias ld='lazydocker'
 alias sxiv='nsxiv'
 
 eval "$(starship init bash)"
-
-[ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
-source /usr/share/nvm/nvm.sh
-source /usr/share/nvm/bash_completion
-source /usr/share/nvm/install-nvm-exec
-
-source /opt/asdf-vm/asdf.sh
+eval "$(mise activate bash)"
