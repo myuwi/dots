@@ -10,7 +10,7 @@ return {
     },
     opts = {
       servers = {
-        { "biome", opts = { mason = false } },
+        "biome",
         "clojure_lsp",
         { "denols", opts = { mason = false } },
         "elixirls",
