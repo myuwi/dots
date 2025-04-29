@@ -5,7 +5,6 @@ return {
   priority = 1000,
   opts = {
     extend_background_behind_borders = false,
-
     styles = {
       bold = false,
       italic = true,

@@ -1,3 +1,5 @@
+---@module "snacks"
+
 return {
   "akinsho/bufferline.nvim",
   dependencies = {
