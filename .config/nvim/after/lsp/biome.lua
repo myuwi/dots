@@ -1,4 +1,4 @@
-local util = require("core.util")
+local util = require("util")
 
 local biome_bin = util.from_node_modules("biome") or "biome"
 
