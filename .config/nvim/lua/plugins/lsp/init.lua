@@ -64,7 +64,7 @@ return {
     config = function(_, opts)
       local mason_lspconfig = require("mason-lspconfig")
       local mason_lspconfig_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
-      local on_attach = require("core.plugins.lsp.attach")
+      local on_attach = require("plugins.lsp.attach")
 
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),

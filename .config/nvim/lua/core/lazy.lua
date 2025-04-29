@@ -14,8 +14,8 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
     -- Import the main which-key spec first so it uses opts_extended correctly
-    { import = "core.plugins.which-key" },
-    { import = "core.plugins" },
+    { import = "plugins.which-key" },
+    { import = "plugins" },
   },
   change_detection = { notify = false },
   install = {
