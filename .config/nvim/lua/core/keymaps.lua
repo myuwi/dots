@@ -8,6 +8,8 @@ vim.keymap.set("x", "p", "pgvy")
 
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>", opts("Clear search highlights"))
 
+vim.keymap.set("c", "<Esc>", "<C-c>")
+
 -- Move lines with alt + jk
 vim.keymap.set("n", "<A-j>", "<cmd>m+<CR>==", opts("Move current line down"))
 vim.keymap.set("n", "<A-k>", "<cmd>m-2<CR>==", opts("Move current line up"))

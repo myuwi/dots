@@ -51,6 +51,13 @@ return {
         },
       },
     },
+    cmdline = {
+      keymap = {
+        preset = "inherit",
+        ["<Tab>"] = { "show", "select_next", "fallback" },
+        ["<S-Tab>"] = { "show", "select_prev", "fallback" },
+      },
+    },
     sources = {
       default = { "lazydev", "lsp", "snippets", "path", "buffer" },
       providers = {
