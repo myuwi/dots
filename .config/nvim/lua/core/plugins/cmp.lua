@@ -1,12 +1,8 @@
 return {
-  "hrsh7th/nvim-cmp",
+  "saghen/blink.cmp",
   event = { "InsertEnter", "CmdlineEnter" },
+  version = "*",
   dependencies = {
-    "onsails/lspkind-nvim",
-    "hrsh7th/cmp-buffer",
-    "hrsh7th/cmp-path",
-    "hrsh7th/cmp-cmdline",
-    "hrsh7th/cmp-nvim-lsp",
     {
       "L3MON4D3/LuaSnip",
       dependencies = { "rafamadriz/friendly-snippets" },
@@ -22,69 +18,47 @@ return {
         require("luasnip.loaders.from_vscode").lazy_load()
       end,
     },
-    "saadparwaiz1/cmp_luasnip",
   },
-  opts = function()
-    local cmp = require("cmp")
-    local luasnip = require("luasnip")
-    local lspkind = require("lspkind")
-
-    return {
-      snippet = {
-        expand = function(args)
-          luasnip.lsp_expand(args.body)
-        end,
+  ---@module "blink.cmp"
+  ---@type blink.cmp.Config
+  opts = {
+    keymap = {
+      preset = "default",
+      ["<CR>"] = { "accept", "fallback" },
+      ["<Esc>"] = { "cancel", "fallback" },
+      ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+      ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
+      ["<C-u>"] = { "scroll_documentation_up", "fallback" },
+      ["<C-d>"] = { "scroll_documentation_down", "fallback" },
+    },
+    completion = {
+      documentation = {
+        auto_show = true,
+        auto_show_delay_ms = 0,
+        window = { border = "single" },
       },
-      mapping = {
-        ["<Up>"] = cmp.mapping.select_prev_item(),
-        ["<Down>"] = cmp.mapping.select_next_item(),
-        ["<C-u>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
-        ["<C-d>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
-        ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
-        ["<CR>"] = cmp.mapping.confirm({ select = false }),
-        ["<Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_next_item()
-          elseif luasnip.expand_or_locally_jumpable() then
-            luasnip.expand_or_jump()
-          else
-            fallback()
-          end
-        end, { "i", "s" }),
-        ["<S-Tab>"] = cmp.mapping(function(fallback)
-          if cmp.visible() then
-            cmp.select_prev_item()
-          elseif luasnip.locally_jumpable(-1) then
-            luasnip.jump(-1)
-          else
-            fallback()
-          end
-        end, { "i", "s" }),
-      },
-      sources = {
-        { name = "nvim_lsp" },
-        { name = "nvim_lua" },
-        { name = "luasnip" },
-        { name = "buffer" },
-        { name = "path" },
-      },
-      formatting = {
-        fields = { "kind", "abbr", "menu" },
-        format = lspkind.cmp_format({
-          mode = "symbol",
-          maxwidth = 50,
-          menu = {
-            nvim_lsp = "[LSP]",
-            nvim_lua = "[NVIM_LUA]",
-            luasnip = "[Snippet]",
-            buffer = "[Buffer]",
-            path = "[Path]",
+      ghost_text = { enabled = true },
+      list = { selection = { preselect = false } },
+      menu = {
+        max_height = 24,
+        draw = {
+          columns = {
+            { "kind_icon", "label", gap = 1 },
+            { "source_name" },
           },
-        }),
+        },
       },
-      window = {
-        documentation = { border = "rounded" },
+    },
+    sources = {
+      default = { "lazydev", "lsp", "snippets", "path", "buffer" },
+      providers = {
+        lazydev = {
+          name = "LazyDev",
+          module = "lazydev.integrations.blink",
+          score_offset = 100,
+        },
       },
-    }
-  end,
+    },
+    snippets = { preset = "luasnip" },
+  },
 }
