@@ -23,8 +23,7 @@ return {
   ---@type blink.cmp.Config
   opts = {
     keymap = {
-      preset = "default",
-      ["<CR>"] = { "accept", "fallback" },
+      preset = "enter",
       ["<Esc>"] = { "cancel", "fallback" },
       ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
       ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
@@ -40,6 +39,9 @@ return {
       ghost_text = { enabled = true },
       list = { selection = { preselect = false } },
       menu = {
+        auto_show = function()
+          return not require("blink.cmp").snippet_active()
+        end,
         max_height = 24,
         draw = {
           columns = {
