@@ -1,23 +1,30 @@
 local gtimer = require("gears.timer")
 local wibox = require("wibox")
 
+function read_file(path)
+  local file = io.open(path, "r")
+
+  if not file then
+    return nil
+  end
+
+  local content = file:read()
+  file:close()
+
+  return content
+end
+
 function battery_status()
-  local acpi = io.popen("acpi -b")
+  local capacity = read_file("/sys/class/power_supply/BAT0/capacity")
+  local status = read_file("/sys/class/power_supply/BAT0/status")
 
-  if acpi == nil then
+  if status == nil or capacity == nil then
     return nil
   end
 
-  local status, charge_str, _ = string.match(acpi:read(), "Battery 0: ([%a%s]+), (%d?%d?%d)%%,?(.*)")
-  acpi:close()
+  local status_text = status == "Full" and "Charged " or status ~= "Discharging" and status .. " " or ""
 
-  if status == nil or charge_str == nil then
-    return nil
-  end
-
-  local charging = status ~= "Discharging"
-
-  return (charging and "Charging " or "") .. charge_str .. "%"
+  return status_text .. capacity .. "%"
 end
 
 local battery = function()
