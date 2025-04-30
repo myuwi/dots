@@ -168,9 +168,10 @@ naughty.connect_signal("request::display", function(n)
     notification_widget:disconnect_signal("mouse::leave", notif_mouse_leave)
 
     if reason == naughty.notification_closed_reason.dismissed_by_user then
-      if #destroyed_notif.clients > 0 then
-        local c = destroyed_notif.clients[1]
-        c:jump_to()
+      local client = destroyed_notif.clients[1]
+      if client then
+        client.first_tag:view_only()
+        client:activate()
       end
     end
   end)
