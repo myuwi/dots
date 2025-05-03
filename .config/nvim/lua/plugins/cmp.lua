@@ -9,7 +9,6 @@ return {
       opts = {
         history = false,
         update_events = { "InsertLeave", "TextChanged", "TextChangedI" },
-        enable_autosnippets = true,
         region_check_events = { "CursorMoved", "InsertEnter", "InsertLeave" },
         delete_check_events = { "TextChanged", "InsertEnter", "InsertLeave" },
       },
@@ -24,7 +23,6 @@ return {
   opts = {
     keymap = {
       preset = "enter",
-      ["<Esc>"] = { "cancel", "fallback" },
       ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
       ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
       ["<C-u>"] = { "scroll_documentation_up", "fallback" },
@@ -54,6 +52,7 @@ return {
     cmdline = {
       keymap = {
         preset = "inherit",
+        ["<Esc>"] = { "cancel", "fallback" },
         ["<Tab>"] = { "show", "select_next", "fallback" },
         ["<S-Tab>"] = { "show", "select_prev", "fallback" },
       },
