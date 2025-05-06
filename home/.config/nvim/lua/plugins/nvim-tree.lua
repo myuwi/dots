@@ -14,18 +14,17 @@ return {
     vim.g.loaded_netrwPlugin = 1
 
     vim.api.nvim_create_autocmd("VimEnter", {
-      callback = function(data)
-        local directory = vim.fn.isdirectory(data.file) == 1
-
-        if not directory then
-          return
-        end
-
-        vim.cmd.cd(data.file)
-        require("nvim-tree.api").tree.open()
-      end,
-      desc = "cd into directory and open nvim-tree on start",
       group = vim.api.nvim_create_augroup("nvim-tree", { clear = true }),
+      desc = "open nvim-tree on start",
+      callback = function(data)
+        if vim.fn.isdirectory(data.file) == 1 then
+          local nvim_tree_api = require("nvim-tree.api")
+
+          nvim_tree_api.tree.open()
+          vim.cmd("vsplit +enew")
+          nvim_tree_api.tree.resize()
+        end
+      end,
     })
 
     local prev = { new_name = "", old_name = "" } -- Prevents duplicate events
@@ -43,14 +42,7 @@ return {
     })
   end,
   opts = {
-    actions = {
-      open_file = {
-        resize_window = true,
-      },
-    },
-    renderer = {
-      root_folder_label = false,
-    },
+    sync_root_with_cwd = true,
     diagnostics = {
       enable = true,
       show_on_dirs = true,
@@ -62,10 +54,11 @@ return {
         error = "E",
       },
     },
-    git = {
-      enable = true,
-      ignore = false,
-      timeout = 400,
+    renderer = {
+      root_folder_label = false,
+    },
+    view = {
+      signcolumn = "no",
     },
   },
 }
