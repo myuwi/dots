@@ -41,6 +41,9 @@ return {
         buffer_visible = { fg = p.highlight_high, bg = p.base },
         buffer_selected = { fg = p.text, bg = p.surface, bold = true },
 
+        indicator_visible = { bg = p.base },
+        indicator_selected = { bg = p.surface },
+
         duplicate = { fg = p.highlight_med, bg = p.base, italic = false },
         duplicate_visible = { fg = p.highlight_med, bg = p.base, italic = false },
         duplicate_selected = { fg = p.text, bg = p.surface, italic = false },
