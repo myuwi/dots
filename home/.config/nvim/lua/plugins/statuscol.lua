@@ -1,6 +1,6 @@
 return {
   "luukvbaal/statuscol.nvim",
-  dependencies = "lewis6991/gitsigns.nvim",
+  dependencies = { "lewis6991/gitsigns.nvim" },
   opts = function()
     local builtin = require("statuscol.builtin")
     local gitsigns = require("gitsigns")
