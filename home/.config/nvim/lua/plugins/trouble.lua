@@ -10,7 +10,7 @@ return {
   },
   {
     "folke/trouble.nvim",
-    dependencies = "nvim-tree/nvim-web-devicons",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     -- stylua: ignore
     keys = {
       { "<leader>xx", function() require("trouble").toggle() end, desc = "Trouble: Toggle" },
