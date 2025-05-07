@@ -14,7 +14,8 @@ return {
       border = "highlight_med",
     },
     highlight_groups = {
-      NormalFloat = { bg = "NONE" },
+      NormalFloat = { bg = "none" },
+      WinSeparator = { fg = "base" },
     },
   },
   config = function(_, opts)
