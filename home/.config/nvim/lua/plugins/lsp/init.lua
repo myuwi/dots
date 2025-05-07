@@ -1,8 +1,8 @@
 return {
   "neovim/nvim-lspconfig",
   dependencies = {
-    { "williamboman/mason.nvim", opts = {} },
-    "williamboman/mason-lspconfig.nvim",
+    { "mason-org/mason.nvim", opts = {} },
+    "mason-org/mason-lspconfig.nvim",
     "saghen/blink.cmp",
     "b0o/schemastore.nvim",
     { "folke/neoconf.nvim", opts = {} },
@@ -62,7 +62,7 @@ return {
   },
   config = function(_, opts)
     local mason_lspconfig = require("mason-lspconfig")
-    local mason_lspconfig_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
+    local mason_lspconfig_servers = vim.tbl_keys(require("mason-lspconfig.mappings").get_mason_map().lspconfig_to_package)
     local on_attach = require("plugins.lsp.attach")
 
     vim.api.nvim_create_autocmd("LspAttach", {
@@ -80,28 +80,26 @@ return {
       capabilities = capabilities,
     })
 
-    local function setup(server_name)
-      return vim.lsp.enable(server_name)
-    end
-
     local ensure_installed = {}
 
     for _, server in ipairs(opts.servers) do
-      local server_name = type(server) == "table" and server[1] or server
-      local server_opts = type(server) == "table" and server.opts or {}
+      server = type(server) == "table" and server or { server }
+
+      local server_name = server[1]
+      local server_opts = server.opts or {}
+
       local use_mason = server_opts.mason ~= false and vim.tbl_contains(mason_lspconfig_servers, server_name)
 
       if use_mason then
         ensure_installed[#ensure_installed + 1] = server_name
       else
-        setup(server_name)
+        vim.lsp.enable(server_name)
       end
     end
 
     mason_lspconfig.setup({
+      automatic_enable = true,
       ensure_installed = ensure_installed,
-      automatic_installation = false,
-      handlers = { setup },
     })
 
     vim.diagnostic.config(opts.diagnostic)
