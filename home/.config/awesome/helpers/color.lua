@@ -1,4 +1,4 @@
-local _M = {}
+local M = {}
 
 local minmax = function(n, min, max)
   return math.max(math.min(n, max), min)
@@ -16,7 +16,7 @@ local decimal_to_hex = function(decimal)
   return string.format("%02x", decimal)
 end
 
-_M.rgb_to_hex = function(color)
+function M.rgb_to_hex(color)
   local r = minmax(color.r or color[1], 0, 255)
   local g = minmax(color.g or color[2], 0, 255)
   local b = minmax(color.b or color[3], 0, 255)
@@ -24,7 +24,7 @@ _M.rgb_to_hex = function(color)
   return "#" .. string.format("%02x%02x%02x", math.floor(r), math.floor(g), math.floor(b))
 end
 
-_M.hex_to_rgb = function(color)
+function M.hex_to_rgb(color)
   color = color:gsub("#", "")
 
   return {
@@ -34,20 +34,20 @@ _M.hex_to_rgb = function(color)
   }
 end
 
-_M.gradient = function(color1, color2, phase)
-  local rgb1 = _M.hex_to_rgb(color1)
-  local rgb2 = _M.hex_to_rgb(color2)
+function M.gradient(color1, color2, phase)
+  local rgb1 = M.hex_to_rgb(color1)
+  local rgb2 = M.hex_to_rgb(color2)
 
   local r = math.ceil(rgb1.r * (1 - phase) + rgb2.r * phase)
   local g = math.ceil(rgb1.g * (1 - phase) + rgb2.g * phase)
   local b = math.ceil(rgb1.b * (1 - phase) + rgb2.b * phase)
 
-  return _M.rgb_to_hex({ r, g, b })
+  return M.rgb_to_hex({ r, g, b })
 end
 
 -- Lightens a given hex color by the specified amount
-_M.lighten = function(color, amount)
-  local rgb = _M.hex_to_rgb(color)
+function M.lighten(color, amount)
+  local rgb = M.hex_to_rgb(color)
   local r = rgb.r
   local g = rgb.g
   local b = rgb.b
@@ -59,12 +59,12 @@ _M.lighten = function(color, amount)
   g = g > 255 and 255 or g
   b = b > 255 and 255 or b
 
-  return _M.rgb_to_hex({ r, g, b })
+  return M.rgb_to_hex({ r, g, b })
 end
 
 -- Darkens a given hex color by the specified amount
-_M.darken = function(color, amount)
-  local rgb = _M.hex_to_rgb(color)
+function M.darken(color, amount)
+  local rgb = M.hex_to_rgb(color)
   local r = rgb.r
   local g = rgb.g
   local b = rgb.b
@@ -72,7 +72,7 @@ _M.darken = function(color, amount)
   r = math.max(0, r - math.floor(r * (amount / 100)))
   g = math.max(0, g - math.floor(g * (amount / 100)))
   b = math.max(0, b - math.floor(b * (amount / 100)))
-  return _M.rgb_to_hex({ r, g, b })
+  return M.rgb_to_hex({ r, g, b })
 end
 
-return _M
+return M

@@ -10,12 +10,12 @@ local hmouse = require("helpers.mouse")
 local hshape = require("helpers.shape")
 local htable = require("helpers.table")
 
-local _M = {}
+local M = {}
 
 --- Add a hover background to a widget
 --- @param widget table A widget
 --- @param hover_color string A color
-_M.add_hover_background = function(widget, hover_color)
+function M.add_hover_background(widget, hover_color)
   local old_bg
 
   widget:connect_signal("mouse::enter", function()
@@ -38,7 +38,7 @@ end
 --- @param normal_color string A color
 --- @param hover_color string A color
 --- @param transition number A transition duration
-_M.add_hover_background_fade = function(widget, normal_color, hover_color, transition)
+function M.add_hover_background_fade(widget, normal_color, hover_color, transition)
   local timed = rubato.timed({
     duration = transition,
     subscribed = function(pos)
@@ -59,7 +59,7 @@ end
 --- Add a hover cursor to a widget
 --- @param widget table A widget
 --- @param hover_cursor string A cursor name
-_M.add_hover_cursor = function(widget, hover_cursor)
+function M.add_hover_cursor(widget, hover_cursor)
   local default_cursor = "left_ptr"
 
   widget:connect_signal("mouse::enter", function()
@@ -81,13 +81,13 @@ end
 --- @param text string
 --- @param color string
 --- @return string
-_M.colorize_text = function(text, color)
+function M.colorize_text(text, color)
   return "<span foreground='" .. color .. "'>" .. text .. "</span>"
 end
 
 --- Add a click away handler to a widget
 --- @param widget table A widget
-_M.create_click_away_handler = function(widget, focus_events)
+function M.create_click_away_handler(widget, focus_events)
   ---@type fun(target: any) | nil
   local cb = nil
 
@@ -153,7 +153,7 @@ end
 ---@field widget table
 
 ---@param args Popup
-_M.popup = function(args)
+function M.popup(args)
   local forced_width = args.forced_width
   local forced_height = args.forced_height
   local margins = args.margins or dpi(12)
@@ -186,4 +186,4 @@ _M.popup = function(args)
   return popup
 end
 
-return _M
+return M

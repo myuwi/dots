@@ -1,6 +1,6 @@
 local awful = require("awful")
 
-local _M = {}
+local M = {}
 
 local get_process_name = function(cmd)
   local process_name = cmd
@@ -25,7 +25,7 @@ local get_process_name = function(cmd)
 end
 
 -- Run if not already running
-_M.once = function(cmd)
+function M.once(cmd)
   local process_name = get_process_name(cmd)
 
   awful.spawn.easy_async(string.format("pgrep -U %s -ix %s", os.getenv("USER"), process_name), function(out)
@@ -37,4 +37,4 @@ _M.once = function(cmd)
   end)
 end
 
-return _M
+return M

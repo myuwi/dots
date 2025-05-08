@@ -1,7 +1,7 @@
-local _M = {}
+local M = {}
 
 -- https://github.com/awesomeWM/awesome/issues/3806
-function _M.remove_global_mousebinding(button)
+function M.remove_global_mousebinding(button)
   local root_btns = root._buttons()
 
   for _, v1 in ipairs(button) do
@@ -15,10 +15,10 @@ function _M.remove_global_mousebinding(button)
   root._buttons(root_btns)
 end
 
-function _M.remove_global_mousebindings(buttons)
+function M.remove_global_mousebindings(buttons)
   for _, v in ipairs(buttons) do
-    _M.remove_global_mousebinding(v)
+    M.remove_global_mousebinding(v)
   end
 end
 
-return _M
+return M

@@ -1,6 +1,6 @@
-local _M = {}
+local M = {}
 
-_M.includes = function(tbl, value)
+function M.includes(tbl, value)
   for i, _ in ipairs(tbl) do
     if tbl[i] == value then
       return true
@@ -16,7 +16,7 @@ end
 --- @param tbl table Table to filter
 --- @param callback fun(element: any, i: number, tbl: table): boolean A test function
 --- @return table table A filtered table
-_M.filter = function(tbl, callback)
+function M.filter(tbl, callback)
   local t = {}
   for i, element in ipairs(tbl) do
     if callback(element, i, tbl) then
@@ -29,7 +29,7 @@ end
 --- @param tbl table Table to map
 --- @param callback fun(element: any, i: number, tbl: table): any A mapping function
 --- @return table table A mapped table
-_M.map = function(tbl, callback)
+function M.map(tbl, callback)
   local t = {}
   for i, element in ipairs(tbl) do
     t[#t + 1] = callback(element, i, tbl)
@@ -37,7 +37,7 @@ _M.map = function(tbl, callback)
   return t
 end
 
-_M.reduce = function(tbl, callback, initial)
+function M.reduce(tbl, callback, initial)
   local acc = initial or table.remove(tbl, 1)
   for i, element in ipairs(tbl) do
     acc = callback(acc, element, i, tbl)
@@ -48,7 +48,7 @@ end
 --- @param tbl table Table to map
 --- @param predicate fun(element: any, i: number, tbl: table): any A predicate function
 --- @return boolean A mapped table
-_M.any = function(tbl, predicate)
+function M.any(tbl, predicate)
   for i, element in ipairs(tbl) do
     if predicate(element, i, tbl) then
       return true
@@ -58,7 +58,7 @@ _M.any = function(tbl, predicate)
 end
 
 --- @param tbl table Table to stringify
-_M.stringify = function(tbl)
+function M.stringify(tbl)
   if type(tbl) ~= "table" then
     return tostring(tbl)
   end
@@ -68,9 +68,9 @@ _M.stringify = function(tbl)
     if type(k) ~= "number" then
       k = '"' .. tostring(k) .. '"'
     end
-    s = s .. "[" .. k .. "] = " .. _M.stringify(v) .. ", "
+    s = s .. "[" .. k .. "] = " .. M.stringify(v) .. ", "
   end
   return s .. "}"
 end
 
-return _M
+return M

@@ -1,9 +1,9 @@
 local menubar_utils = require("menubar.utils")
 
-local _M = {}
+local M = {}
 
 --- @param client_name string
-_M.find_icon = function(client_name)
+function M.find_icon(client_name)
   local icon = menubar_utils.lookup_icon(client_name)
 
   -- Try to "correct" the class to find the icon
@@ -16,4 +16,4 @@ _M.find_icon = function(client_name)
   return icon
 end
 
-return _M
+return M

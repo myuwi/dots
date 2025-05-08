@@ -1,16 +1,16 @@
 local awful = require("awful")
 local naughty = require("naughty")
 
-local _M = {}
+local M = {}
 
 --- @param callback fun(id: integer|nil)
-_M.status = function(callback)
+function M.status(callback)
   awful.spawn.easy_async("fcitx5-remote", function(mode)
     callback(tonumber(mode))
   end)
 end
 
-_M.toggle = function()
+function M.toggle()
   awful.spawn("fcitx5-remote -t", false)
 end
 
@@ -24,8 +24,8 @@ function notify(mode)
   })
 end
 
-_M.hiragana = function()
-  _M.status(function(mode)
+function M.hiragana()
+  M.status(function(mode)
     if mode == 2 then
       awful.spawn("xvkbd -xsendevent -text '\\[Hiragana]'", false)
       notify("Hiragana")
@@ -33,8 +33,8 @@ _M.hiragana = function()
   end)
 end
 
-_M.katakana = function()
-  _M.status(function(mode)
+function M.katakana()
+  M.status(function(mode)
     if mode == 2 then
       awful.spawn("xvkbd -xsendevent -text '\\[Katakana]'", false)
       notify("Katakana")
@@ -42,4 +42,4 @@ _M.katakana = function()
   end)
 end
 
-return _M
+return M
