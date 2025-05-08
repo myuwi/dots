@@ -5,8 +5,7 @@ local naughty = require("naughty")
 local wibox = require("wibox")
 
 local helpers = require("helpers")
-
-local button = require("ui.components.button")
+local widget = require("ui.core.widget")
 
 naughty.config.defaults.app_name = "Notification"
 naughty.config.defaults.ontop = true
@@ -48,7 +47,7 @@ naughty.connect_signal("request::display", function(n)
 
   local actions = {
     children = helpers.table.map(n.actions, function(action)
-      local btn = button({ text = action:get_name() })
+      local btn = widget.button({ text = action:get_name() })
 
       btn.buttons = {
         awful.button({}, 1, function()

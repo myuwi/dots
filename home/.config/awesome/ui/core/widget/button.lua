@@ -4,8 +4,8 @@ local xresources = require("beautiful.xresources")
 local dpi = xresources.apply_dpi
 local helpers = require("helpers")
 
-local button = function(args)
-  local args = args or {}
+local function button(args)
+  args = args or {}
   local text = args.text or ""
 
   local widget = wibox.widget({
