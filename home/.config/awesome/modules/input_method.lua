@@ -16,7 +16,7 @@ end
 
 -- TODO: Make custom indicator widget
 ---@param mode string
-function notify(mode)
+local function notify(mode)
   naughty.notification({
     app_name = "Mozc",
     title = "Input Method",
