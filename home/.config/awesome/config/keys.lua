@@ -1,5 +1,4 @@
 local awful = require("awful")
-local gears = require("gears")
 local naughty = require("naughty")
 local ruled = require("ruled")
 
@@ -8,267 +7,315 @@ local helpers = require("helpers")
 local input_method = require("modules.input_method")
 local resize_mode = require("config.resize_mode")
 
--- Global keybindings
-awful.keyboard.append_global_keybindings({
-  awful.key({ modkey, "Control" }, "r", awesome.restart, { description = "reload awesome", group = "awesome" }),
+---@param mods string[]
+---@param key string
+---@param callback fun(...) | string
+---@param desc string
+---@return unknown
+local function bind(mods, key, callback, desc)
+  local _callback = callback
+  if type(callback) == "string" then
+    _callback = function()
+      awful.spawn(callback, false)
+    end
+  end
+  return awful.key(mods, key, _callback, { description = desc })
+end
 
-  -- Client navigation
-  awful.key({ modkey }, "h", function()
-    awful.client.focus.bydirection("left")
-  end, { description = "focus client on left", group = "client" }),
-  awful.key({ modkey }, "j", function()
-    awful.client.focus.bydirection("down")
-  end, { description = "focus client below", group = "client" }),
-  awful.key({ modkey }, "k", function()
-    awful.client.focus.bydirection("up")
-  end, { description = "focus client above", group = "client" }),
-  awful.key({ modkey }, "l", function()
-    awful.client.focus.bydirection("right")
-  end, { description = "focus client on right", group = "client" }),
+---@class BindDef
+---@field [1] string[]
+---@field [2] string
+---@field [3] fun(...) | string
+---@field [4] string
 
-  -- Layout manipulation
-  awful.key({ modkey }, "r", function()
-    resize_mode.start()
-  end, { description = "enter resize mode", group = "layout" }),
-  awful.key({ modkey }, "s", function()
-    awful.layout.inc(1)
-  end, { description = "select next layout", group = "layout" }),
-  awful.key({ modkey, "Shift" }, "s", function()
-    awful.layout.inc(-1)
-  end, { description = "select previous layout", group = "layout" }),
-  awful.key({ modkey }, "b", function()
-    local s = mouse.screen
-    s.bar.visible = not s.bar.visible
-  end, { description = "toggle bar visibility", group = "layout" }),
-  awful.key({ modkey, "Shift" }, "j", function()
-    awful.client.swap.byidx(1)
-  end, { description = "swap with next client by index", group = "client" }),
-  awful.key({ modkey, "Shift" }, "k", function()
-    awful.client.swap.byidx(-1)
-  end, { description = "swap with previous client by index", group = "client" }),
-  awful.key({ modkey, "Control" }, "j", function()
-    awful.screen.focus_relative(1)
-  end, { description = "focus the next screen", group = "screen" }),
-  awful.key({ modkey, "Control" }, "k", function()
-    awful.screen.focus_relative(-1)
-  end, { description = "focus the previous screen", group = "screen" }),
-  awful.key({ modkey, "Shift" }, "h", function()
-    awful.tag.incnmaster(1, nil, true)
-  end, { description = "increase the number of master clients", group = "layout" }),
-  awful.key({ modkey, "Shift" }, "l", function()
-    awful.tag.incnmaster(-1, nil, true)
-  end, { description = "decrease the number of master clients", group = "layout" }),
-  awful.key({ modkey, "Control" }, "h", function()
-    awful.tag.incncol(1, nil, true)
-  end, { description = "increase the number of columns", group = "layout" }),
-  awful.key({ modkey, "Control" }, "l", function()
-    awful.tag.incncol(-1, nil, true)
-  end, { description = "decrease the number of columns", group = "layout" }),
+---@param group string
+---@param keybinds BindDef[]
+---@return table
+local function key_group(group, keybinds)
+  local ret = {}
+  for _, def in pairs(keybinds) do
+    local kb = bind(def[1], def[2], def[3], def[4])
+    kb.group = group
+    ret[#ret + 1] = kb
+  end
+  return ret
+end
 
-  -- Window Switcher
-  awful.key({ modkey }, "Tab", function()
-    awesome.emit_signal("widgets::window_switcher::show", 1)
-  end, { description = "go forward", group = "client" }),
-  awful.key({ modkey, "Shift" }, "Tab", function()
-    awesome.emit_signal("widgets::window_switcher::show", -1)
-  end, { description = "go back", group = "client" }),
+local unpack = unpack or table.unpack
+local function emit(...)
+  local args = { ... }
+  return function()
+    awesome.emit_signal(unpack(args))
+  end
+end
 
-  -- Terminal
-  awful.key({ modkey }, "Return", function()
-    local terminal = "alacritty"
-    awful.spawn(terminal, false)
-  end, { description = "open a terminal", group = "launcher" }),
+-- General
 
-  -- App launcher
-  awful.key({ modkey }, "d", function()
-    awesome.emit_signal("widgets::launcher::show")
-  end, { description = "open launcher", group = "launcher" }),
+awful.keyboard.append_global_keybindings(key_group("general", {
+  { { modkey, "Control" }, "r", awesome.restart, "reload awesome" },
+}))
 
-  -- Toggle picom
-  awful.key({ modkey }, "p", function()
-    awful.spawn.with_shell("pgrep -ix picom > /dev/null && killall picom || picom &")
-  end, { description = "toggle picom", group = "misc" }),
+-- Client
 
-  -- Screenshot
-  awful.key({}, "Print", function()
-    awful.spawn.with_shell("sana -c")
-  end, { description = "take a screenshot of the active screen", group = "screenshot" }),
-  awful.key({ "Control" }, "Print", function()
-    awful.spawn("flameshot gui", false)
-  end, { description = "take a screenshot with an interactive gui", group = "screenshot" }),
-  awful.key({ "Shift" }, "Print", function()
-    awful.spawn.with_shell("sana -s")
-  end, { description = "take a screenshot of a selection or window", group = "screenshot" }),
-  awful.key({ "Mod1" }, "Print", function()
-    awful.spawn.with_shell("sana -f")
-  end, { description = "take a full screenshot", group = "screenshot" }),
-})
+local function close_window(c)
+  c:kill()
+end
 
--- Volume, Media and Brightness keys
-awful.keyboard.append_global_keybindings({
-  -- Volume keys
-  awful.key({}, "XF86AudioRaiseVolume", function()
-    awful.spawn.easy_async("wpctl set-volume -l 1 @DEFAULT_SINK@ 0.05+", function()
-      awesome.emit_signal("widgets::volume::show")
-    end)
-  end, { description = "volume up", group = "volume controls" }),
-  awful.key({}, "XF86AudioLowerVolume", function()
-    awful.spawn.easy_async("wpctl set-volume -l 1 @DEFAULT_SINK@ 0.05-", function()
-      awesome.emit_signal("widgets::volume::show")
-    end)
-  end, { description = "volume down", group = "volume controls" }),
-  awful.key({}, "XF86AudioMute", function()
-    awful.spawn.easy_async("wpctl set-mute @DEFAULT_SINK@ toggle", function()
-      awesome.emit_signal("widgets::volume::show")
-    end)
-  end, { description = "volume mute", group = "volume controls" }),
+local function toggle_fullscreen(c)
+  c.fullscreen = not c.fullscreen
+  c:raise()
+end
 
-  -- Mute
-  awful.key({ modkey }, "m", function()
-    local mic_script =
-      "wpctl set-mute @DEFAULT_SOURCE@ toggle && wpctl get-volume @DEFAULT_SOURCE@ | sed -e 's/Volume: //'"
-    awful.spawn.easy_async_with_shell(mic_script, function(stdout)
-      local state = stdout:match("MUTED") and "muted" or "unmuted"
+local function toggle_maximized(c)
+  c.maximized = not c.maximized
+end
 
-      naughty.notification({
-        title = "Microphone",
-        message = "Microphone " .. state,
-        timeout = 1,
-      })
-    end)
-  end, { description = "microphone mute", group = "microphone controls" }),
+local function toggle_floating(c)
+  c.floating = not c.floating
+end
 
-  -- Media controls
-  awful.key({}, "XF86AudioPlay", function()
-    awful.spawn("playerctl play-pause", false)
-  end, { description = "media play", group = "media controls" }),
-  awful.key({}, "XF86AudioNext", function()
-    awful.spawn("playerctl next", false)
-  end, { description = "media next", group = "media controls" }),
-  awful.key({}, "XF86AudioPrev", function()
-    awful.spawn("playerctl previous", false)
-  end, { description = "media previous", group = "media controls" }),
-  awful.key({}, "XF86AudioStop", function()
-    awful.spawn("playerctl stop", false)
-  end, { description = "media stop", group = "media controls" }),
+local function center_window(c)
+  if c.floating then
+    helpers.placement.centered(c)
+  end
+end
 
-  -- Brightness controls
-  awful.key({}, "XF86MonBrightnessUp", function()
-    awful.spawn("brillo -q -u 100000 -A 5", false)
-  end, { description = "brightness up", group = "screen" }),
-  awful.key({}, "XF86MonBrightnessDown", function()
-    awful.spawn("brillo -q -u 100000 -U 5", false)
-  end, { description = "brightness down", group = "screen" }),
-})
+local function reapply_rules(c)
+  ruled.client.apply(c)
+end
 
--- Tag navigation keybindings
-awful.keyboard.append_global_keybindings({
-  awful.key({
-    modifiers = { modkey },
-    keygroup = "numrow",
-    description = "view tag",
-    group = "tag",
-    on_press = function(index)
-      local screen = awful.screen.focused()
-      local tag = screen.tags[index]
-      if tag then
-        tag:view_only()
-      end
-    end,
-  }),
-  awful.key({
-    modifiers = { modkey, "Control" },
-    keygroup = "numrow",
-    description = "toggle tag",
-    group = "tag",
-    on_press = function(index)
-      local screen = awful.screen.focused()
-      local tag = screen.tags[index]
-      if tag then
-        awful.tag.viewtoggle(tag)
-      end
-    end,
-  }),
-  awful.key({
-    modifiers = { modkey, "Shift" },
-    keygroup = "numrow",
-    description = "move focused client to tag",
-    group = "tag",
-    on_press = function(index)
-      if client.focus then
-        local tag = client.focus.screen.tags[index]
-        if tag then
-          client.focus:move_to_tag(tag)
-        end
-      end
-    end,
-  }),
-})
+local function focus_dir(dir)
+  return function()
+    awful.client.focus.bydirection(dir)
+  end
+end
 
--- Client keybindings
+local function swap_dir(dir)
+  return function()
+    awful.client.swap.bydirection(dir)
+  end
+end
+
 client.connect_signal("request::default_keybindings", function()
-  awful.keyboard.append_client_keybindings({
-    awful.key({ modkey, "Shift" }, "q", function(c)
-      c:kill()
-    end, { description = "close", group = "client" }),
-    awful.key({ modkey }, "f", function(c)
-      c.fullscreen = not c.fullscreen
-      c:raise()
-    end, { description = "toggle fullscreen", group = "client" }),
-    awful.key({ modkey, "Control" }, "f", function(c)
-      c.maximized = not c.maximized
-    end, { description = "toggle maximize", group = "client" }),
-    awful.key({ modkey, "Shift" }, "f", function(c)
-      c.floating = not c.floating
-    end, { description = "toggle floating", group = "client" }),
-    awful.key({ modkey }, "c", function(c)
-      if c.floating then
-        helpers.placement.centered(c)
-      end
-    end, { description = "center a client", group = "client" }),
-    awful.key({ modkey, "Control" }, "a", function(c)
-      ruled.client.apply(c)
-    end, { description = "apply rules", group = "client" }),
+  awful.keyboard.append_client_keybindings(key_group("client", {
+    { { modkey, "Shift" }, "q", close_window, "close" },
+    { { modkey }, "f", toggle_fullscreen, "toggle fullscreen" },
+    { { modkey, "Control" }, "f", toggle_maximized, "toggle maximized" },
+    { { modkey, "Shift" }, "f", toggle_floating, "toggle floating" },
+    { { modkey }, "c", center_window, "center client" },
+    { { modkey, "Control" }, "a", reapply_rules, "re-apply window rules" },
 
-    -- Input method bindings
-    awful.key({ modkey }, "space", function()
-      input_method.toggle()
-    end, { description = "toggle input method", group = "input method" }),
-    awful.key({ modkey, "Control" }, "space", function()
-      input_method.hiragana()
-    end, { description = "set mozc mode to hiragana", group = "input method" }),
-    awful.key({ modkey, "Shift" }, "space", function()
-      input_method.katakana()
-    end, { description = "set mozc mode to katakana", group = "input method" }),
-  })
+    { { modkey }, "h", focus_dir("left"), "focus client on the left" },
+    { { modkey }, "j", focus_dir("down"), "focus client below" },
+    { { modkey }, "k", focus_dir("up"), "focus client above" },
+    { { modkey }, "l", focus_dir("right"), "focus client on the right" },
+
+    { { modkey, "Shift" }, "h", swap_dir("left"), "swap with client on the left" },
+    { { modkey, "Shift" }, "j", swap_dir("down"), "swap with client below" },
+    { { modkey, "Shift" }, "k", swap_dir("up"), "swap with client above" },
+    { { modkey, "Shift" }, "l", swap_dir("right"), "swap with client on the right" },
+  }))
 end)
 
--- Desktop mousebindings
-awful.mouse.append_global_mousebindings( --
-  helpers.table.map({ 1, 2, 3 }, function(n)
-    return awful.button({ "Any" }, n, function()
-      client.focus = nil
-    end)
-  end)
-)
+-- awful.keyboard.append_global_keybindings(key_group("screen", {}))
 
--- Client mousebindings
+-- Layout
+
+local function sel_layout(i)
+  return function()
+    awful.layout.inc(i)
+  end
+end
+
+local function nmaster(n)
+  return function()
+    awful.tag.incnmaster(n, nil, true)
+  end
+end
+
+awful.keyboard.append_global_keybindings(key_group("layout", {
+  { { modkey }, "r", resize_mode.start, "enter resize mode" },
+  { { modkey }, "s", sel_layout(1), "select next layout" },
+  { { modkey, "Shift" }, "s", sel_layout(-1), "select previous layout" },
+
+  { { modkey, "Control" }, "h", nmaster(1), "increase the number of master clients" },
+  { { modkey, "Control" }, "l", nmaster(-1), "decrease the number of master clients" },
+}))
+
+-- Tag
+
+local function view_tag(i)
+  return function()
+    local screen = awful.screen.focused()
+    local tag = screen.tags[i]
+    if tag then
+      tag:view_only()
+    end
+  end
+end
+
+local function move_to_tag(i)
+  return function()
+    if client.focus then
+      local tag = client.focus.screen.tags[i]
+      if tag then
+        client.focus:move_to_tag(tag)
+      end
+    end
+  end
+end
+
+local function toggle_tag(i)
+  return function()
+    local screen = awful.screen.focused()
+    local tag = screen.tags[i]
+    if tag then
+      awful.tag.viewtoggle(tag)
+    end
+  end
+end
+
+for i = 1, 9 do
+  awful.keyboard.append_global_keybindings(key_group("tag", {
+    { { modkey }, "#" .. i + 9, view_tag(i), "view tag" },
+    { { modkey, "Control" }, "#" .. i + 9, toggle_tag(i), "toggle tag" },
+    { { modkey, "Shift" }, "#" .. i + 9, move_to_tag(i), "move to tag" },
+  }))
+end
+
+-- Launcher
+
+awful.keyboard.append_global_keybindings(key_group("launcher", {
+  { { modkey }, "d", emit("widgets::launcher::show"), "open launcher" },
+  { { modkey }, "Return", "alacritty", "open terminal" },
+}))
+
+-- Screenshot
+
+awful.keyboard.append_global_keybindings(key_group("screenshot", {
+  { {}, "Print", "sana -c", "take a screenshot of the active screen" },
+  { { "Control" }, "Print", "flameshot gui", "take a screenshot with an interactive gui" },
+  { { "Shift" }, "Print", "sana -s", "take a screenshot of a selection or window" },
+  { { "Mod1" }, "Print", "sana -f", "take a full screenshot" },
+}))
+
+-- Shell
+
+local function toggle_bar()
+  local s = mouse.screen
+  s.bar.visible = not s.bar.visible
+end
+
+awful.keyboard.append_global_keybindings(key_group("shell", {
+  { { modkey }, "b", toggle_bar, "toggle bar visibility" },
+
+  { { modkey }, "Tab", emit("widgets::window_switcher::show", 1), "open window switcher" },
+  { { modkey, "Shift" }, "Tab", emit("widgets::window_switcher::show", -1), "open window switcher" },
+}))
+
+-- Misc
+
+local function toggle_compositor()
+  awful.spawn.with_shell("pkill picom || picom & disown")
+end
+
+awful.keyboard.append_global_keybindings(key_group("misc", {
+  { { modkey }, "p", toggle_compositor, "toggle compositor" },
+}))
+
+-- Volume Controls
+
+---@param v string
+local function vol(v)
+  return function()
+    awful.spawn.easy_async("wpctl set-volume -l 1 @DEFAULT_SINK@ " .. v, function()
+      awesome.emit_signal("signal::volume")
+    end)
+  end
+end
+
+local function vol_mute()
+  awful.spawn.easy_async("wpctl set-mute @DEFAULT_SINK@ toggle", function()
+    awesome.emit_signal("signal::volume")
+  end)
+end
+
+awful.keyboard.append_global_keybindings(key_group("volume controls", {
+  { {}, "XF86AudioRaiseVolume", vol("0.05+"), "increase volume" },
+  { {}, "XF86AudioLowerVolume", vol("0.05-"), "decrease volume" },
+  { {}, "XF86AudioMute", vol_mute, "mute volume" },
+}))
+
+-- Microphone
+
+local function mic_mute()
+  local mic_script =
+    "wpctl set-mute @DEFAULT_SOURCE@ toggle && wpctl get-volume @DEFAULT_SOURCE@ | sed -e 's/Volume: //'"
+  awful.spawn.easy_async_with_shell(mic_script, function(stdout)
+    local state = stdout:match("MUTED") and "muted" or "unmuted"
+
+    naughty.notification({
+      title = "Microphone",
+      message = "Microphone " .. state,
+      timeout = 1,
+    })
+  end)
+end
+
+awful.keyboard.append_global_keybindings(key_group("microphone", {
+  { { modkey }, "m", mic_mute, "microphone mute" },
+}))
+
+-- Media Controls
+
+awful.keyboard.append_global_keybindings(key_group("media controls", {
+  { {}, "XF86AudioPlay", "playerctl play-pause", "media play/pause" },
+  { {}, "XF86AudioNext", "playerctl next", "media next" },
+  { {}, "XF86AudioPrev", "playerctl previous", "media previous" },
+  { {}, "XF86AudioStop", "playerctl stop", "media stop" },
+}))
+
+-- Brightness
+
+awful.keyboard.append_global_keybindings(key_group("brightness", {
+  { {}, "XF86MonBrightnessUp", "brillo -q -u 100000 -A 5", "brightness up" },
+  { {}, "XF86MonBrightnessDown", "brillo -q -u 100000 -U 5", "brightness down" },
+}))
+
+-- Input Method
+
+awful.keyboard.append_global_keybindings(key_group("input method", {
+  { { modkey }, "space", input_method.toggle, "toggle input method" },
+  { { modkey, "Control" }, "space", input_method.hiragana, "set mozc mode to hiragana" },
+  { { modkey, "Shift" }, "space", input_method.katakana, "set mozc mode to katakana" },
+}))
+
+-- Mouse buttons
+
+local function unfocus_client()
+  client.focus = nil
+end
+
+awful.mouse.append_global_mousebindings({
+  awful.button({ "Any" }, 1, unfocus_client),
+  awful.button({ "Any" }, 2, unfocus_client),
+  awful.button({ "Any" }, 3, unfocus_client),
+})
+
+---@param action? string
+local function activate_client(action)
+  return function(c)
+    c:activate({ context = "mouse_click", action = action })
+  end
+end
+
 client.connect_signal("request::default_mousebindings", function()
-  awful.mouse.append_client_mousebindings( --
-    gears.table.join(
-      helpers.table.map({ 1, 2, 3 }, function(n)
-        return awful.button({}, n, function(c)
-          c:activate({ context = "mouse_click" })
-        end)
-      end),
-      {
-        awful.button({ modkey }, 1, function(c)
-          c:activate({ context = "mouse_click", action = "mouse_move" })
-        end),
-        awful.button({ modkey }, 3, function(c)
-          c:activate({ context = "mouse_click", action = "mouse_resize" })
-        end),
-      }
-    )
-  )
+  awful.mouse.append_client_mousebindings({
+    awful.button({}, 1, activate_client(nil)),
+    awful.button({}, 2, activate_client(nil)),
+    awful.button({}, 3, activate_client(nil)),
+
+    awful.button({ modkey }, 1, activate_client("mouse_move")),
+    awful.button({ modkey }, 3, activate_client("mouse_resize")),
+  })
 end)

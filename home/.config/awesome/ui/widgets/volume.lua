@@ -104,7 +104,7 @@ local function get_audio_status(callback)
   end)
 end
 
-awesome.connect_signal("widgets::volume::show", function()
+awesome.connect_signal("signal::volume", function()
   get_audio_status(function(volume, muted)
     if not muted then
       if volume >= 50 then

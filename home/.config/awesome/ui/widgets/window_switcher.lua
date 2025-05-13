@@ -160,27 +160,15 @@ local function show(a)
 
   window_switcher_keygrabber = awful.keygrabber({
     keybindings = {
-      awful.key({
-        modifiers = { modkey },
-        key = "Tab",
-        on_press = function()
-          cycle_selection(1)
-          redraw_highlights()
-        end,
-      }),
-      awful.key({
-        modifiers = { modkey, "Shift" },
-        key = "Tab",
-        on_press = function()
-          cycle_selection(-1)
-          redraw_highlights()
-        end,
-      }),
-      awful.key({
-        modifiers = { modkey },
-        key = "Escape",
-        on_press = cancel,
-      }),
+      awful.key({ modkey }, "Tab", function()
+        cycle_selection(1)
+        redraw_highlights()
+      end),
+      awful.key({ modkey, "Shift" }, "Tab", function()
+        cycle_selection(-1)
+        redraw_highlights()
+      end),
+      awful.key({ modkey }, "Escape", cancel),
     },
     stop_key = modkey,
     stop_event = "release",
