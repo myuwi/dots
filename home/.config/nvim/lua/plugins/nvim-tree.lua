@@ -22,6 +22,7 @@ return {
 
           nvim_tree_api.tree.open()
           vim.cmd("vsplit +enew")
+          vim.cmd("wincmd p")
           nvim_tree_api.tree.resize()
         end
       end,
