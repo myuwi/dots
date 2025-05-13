@@ -1,9 +1,9 @@
 local awful = require("awful")
-local beautiful = require("beautiful")
 local cairo = require("lgi").cairo
 local gears = require("gears")
-local helpers = require("helpers")
 local ruled = require("ruled")
+
+local helpers = require("helpers")
 
 -- TODO: Window snapping
 
@@ -70,12 +70,12 @@ client.connect_signal("request::manage", function(c)
     awful.placement.no_offscreen(c)
   end
 
-  -- A workaround for applying rules to clients that spawn without a class but are assigned a class later
+  -- A workaround for applying rules to clients that spawn without a class but are assigned one later
   if not c.class then
     c:connect_signal("property::class", late_apply_rules)
   end
 
-  -- Add icon for clients that don't have it
+  -- Try to add icon for clients that don't have it
   if not c.icon then
     if c.class then
       set_fallback_icon(c)
@@ -95,24 +95,6 @@ end)
 client.connect_signal("property::minimized", function(c)
   c:lower()
 end)
-
-local rounded_shape = helpers.shape.rounded_rect(beautiful.border_radius)
-local function toggle_rounded_corners(c)
-  if (c.border_width or 0) > 0 then
-    if c.fullscreen or c.maximized then
-      c.shape = gears.shape.rectangle
-    else
-      c.shape = rounded_shape
-    end
-  end
-end
-
--- Use a rounded shape for client if clients have borders and rounded corners
-if (beautiful.border_width or 0) > 0 and (beautiful.border_radius or 0) > 0 then
-  client.connect_signal("request::manage", toggle_rounded_corners)
-  client.connect_signal("property::fullscreen", toggle_rounded_corners)
-  client.connect_signal("property::maximized", toggle_rounded_corners)
-end
 
 -- Disable stacked shadows in max layout
 screen.connect_signal("arrange", function(s)
