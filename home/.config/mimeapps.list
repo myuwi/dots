@@ -1,16 +1,39 @@
 [Added Associations]
-text/plain=visual-studio-code.desktop;
+application/json=nvim.desktop;
+application/pdf=firefox.desktop;
+application/x-extension-htm=firefox.desktop;
+application/x-extension-html=firefox.desktop;
+application/x-extension-shtml=firefox.desktop;
+application/xhtml+xml=firefox.desktop;
+application/x-extension-xhtml=firefox.desktop;
+application/x-extension-xht=firefox.desktop;
 image/png=sxiv.desktop;gimp.desktop;
 image/jpeg=sxiv.desktop;
 image/gif=sxiv.desktop;
-application/pdf=org.pwmt.zathura-pdf-mupdf.desktop;
-application/json=visual-studio-code.desktop;
+text/html=firefox.desktop;
+text/plain=nvim.desktop;
+x-scheme-handler/http=firefox.desktop;
+x-scheme-handler/https=firefox.desktop;
+x-scheme-handler/chrome=firefox.desktop;
 
 [Default Applications]
-x-scheme-handler/eclipse+command x-scheme-handler/eclipse+mpc=_usr_lib_eclipse_.desktop
-x-scheme-handler/msteams=teams.desktop
+application/json=nvim.desktop
+application/pdf=firefox.desktop;
+application/x-extension-htm=firefox.desktop
+application/x-extension-html=firefox.desktop
+application/x-extension-shtml=firefox.desktop
+application/xhtml+xml=firefox.desktop
+application/x-extension-xhtml=firefox.desktop
+application/x-extension-xht=firefox.desktop
+application/yaml=nvim.desktop
 inode/directory=thunar.desktop
 image/png=sxiv.desktop;
 image/jpeg=sxiv.desktop;
 image/gif=sxiv.desktop;
-text/plain=visual-studio-code.desktop
+text/html=firefox.desktop
+text/plain=nvim.desktop
+text/*=nvim.desktop
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
+x-scheme-handler/chrome=firefox.desktop
+x-scheme-handler/msteams=teams.desktop
