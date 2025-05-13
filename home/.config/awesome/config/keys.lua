@@ -248,9 +248,9 @@ awful.keyboard.append_global_keybindings(key_group("volume controls", {
 
 -- Microphone
 
+local mic_script = "wpctl set-mute @DEFAULT_SOURCE@ toggle && wpctl get-volume @DEFAULT_SOURCE@"
+
 local function mic_mute()
-  local mic_script =
-    "wpctl set-mute @DEFAULT_SOURCE@ toggle && wpctl get-volume @DEFAULT_SOURCE@ | sed -e 's/Volume: //'"
   awful.spawn.easy_async_with_shell(mic_script, function(stdout)
     local state = stdout:match("MUTED") and "muted" or "unmuted"
 

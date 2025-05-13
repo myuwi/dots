@@ -89,7 +89,7 @@ volume_widget:connect_signal("mouse::leave", function()
   hide_volume_widget:again()
 end)
 
-local volume_script = "wpctl get-volume @DEFAULT_SINK@ | sed -e 's/Volume: //'"
+local volume_script = "wpctl get-volume @DEFAULT_SINK@"
 
 --- @param callback fun(volume: integer, muted: boolean)
 local function get_audio_status(callback)
