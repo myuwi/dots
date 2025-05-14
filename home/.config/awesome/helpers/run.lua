@@ -2,39 +2,21 @@ local awful = require("awful")
 
 local M = {}
 
-local get_process_name = function(cmd)
-  local process_name = cmd
-  local firstspace = process_name:find(" ")
+local script = [[
+  pgrep -U $USER -x $(basename "%s" | cut -d ' ' -f 1 | cut -c 1-15) || \
+    (nohup %s >/dev/null 2>&1 &)
+]]
 
-  -- Remove args
-  if firstspace then
-    process_name = process_name:sub(0, firstspace - 1)
-  end
-
-  -- Remove executable path
-  if process_name:find("/") then
-    process_name = process_name:match("([%w-]+)$")
-  end
-
-  -- Cut process name to max 15 chars
-  if process_name:len() > 15 then
-    process_name = process_name:sub(1, 15)
-  end
-
-  return process_name
-end
+local toggle_script = script:gsub("pgrep", "pkill")
 
 -- Run if not already running
 function M.once(cmd)
-  local process_name = get_process_name(cmd)
+  awful.spawn.with_shell(script:format(cmd, cmd))
+end
 
-  awful.spawn.easy_async(string.format("pgrep -U %s -ix %s", os.getenv("USER"), process_name), function(out)
-    if out ~= "" then
-      return
-    end
-
-    awful.spawn(cmd, false)
-  end)
+-- Kill process if already running, otherwise run the process
+function M.toggle(cmd)
+  awful.spawn.with_shell(toggle_script:format(cmd, cmd))
 end
 
 return M

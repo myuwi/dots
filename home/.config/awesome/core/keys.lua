@@ -4,8 +4,8 @@ local ruled = require("ruled")
 
 local helpers = require("helpers")
 
-local input_method = require("modules.input_method")
-local resize_mode = require("config.resize_mode")
+local input_method = require("core.input_method")
+local resize_mode = require("core.resize_mode")
 
 ---@param mods string[]
 ---@param key string
@@ -216,7 +216,7 @@ awful.keyboard.append_global_keybindings(key_group("shell", {
 -- Misc
 
 local function toggle_compositor()
-  awful.spawn.with_shell("pkill picom || picom & disown")
+  helpers.run.toggle("picom")
 end
 
 awful.keyboard.append_global_keybindings(key_group("misc", {
