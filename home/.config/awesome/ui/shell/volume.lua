@@ -4,7 +4,7 @@ local dpi = beautiful.xresources.apply_dpi
 local gears = require("gears")
 local wibox = require("wibox")
 
-local helpers = require("helpers")
+local widget = require("ui.widgets")
 
 local volume_icon = wibox.widget({
   image = beautiful.icon_path .. "volume_up.svg",
@@ -34,7 +34,7 @@ local volume_text = wibox.widget({
   widget = wibox.widget.textbox,
 })
 
-local volume_widget = helpers.ui.popup({
+local volume_widget = widget.popup({
   margins = dpi(18),
   forced_width = dpi(288),
   placement = function(w)

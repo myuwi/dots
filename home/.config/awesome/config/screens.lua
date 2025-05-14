@@ -5,6 +5,7 @@ local wibox = require("wibox")
 
 tag.connect_signal("request::default_layouts", function()
   awful.layout.append_default_layouts({
+    -- TODO: Let client only occupy master, even if stack is empty
     awful.layout.suit.tile,
     awful.layout.suit.max,
   })

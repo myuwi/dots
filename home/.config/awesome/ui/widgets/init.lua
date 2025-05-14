@@ -1,4 +1,5 @@
-require(... .. ".launcher")
-require(... .. ".time_and_date")
-require(... .. ".volume")
-require(... .. ".window_switcher")
+return {
+  button = require("ui.widgets.button"),
+  calendar = require("ui.widgets.calendar"),
+  popup = require("ui.widgets.popup"),
+}

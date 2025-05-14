@@ -4,8 +4,9 @@ local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
 local helpers = require("helpers")
+local widget = require("ui.widgets")
 
-local backdrop = require("ui.widgets.backdrop")
+local backdrop = require("ui.shell.backdrop")
 
 -- Somewhat replicates the Windows behavior
 -- https://en.wikipedia.org/wiki/Alt-Tab#Behavior
@@ -21,7 +22,7 @@ local client_icons = wibox.widget({
   layout = wibox.layout.fixed.horizontal,
 })
 
-local window_switcher_box = helpers.ui.popup({
+local window_switcher_box = widget.popup({
   placement = awful.placement.centered,
   widget = client_icons,
 })
@@ -203,4 +204,4 @@ local function show(a)
   window_switcher_box.visible = true
 end
 
-awesome.connect_signal("widgets::window_switcher::show", show)
+awesome.connect_signal("shell::window_switcher::show", show)

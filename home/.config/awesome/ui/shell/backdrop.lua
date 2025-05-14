@@ -51,7 +51,7 @@ end
 screen.connect_signal("property::geometry", update_backdrop_geometry)
 update_backdrop_geometry()
 
----@type function | nil
+---@type fun() | nil
 local cb = nil
 
 backdrop_widget:buttons( --

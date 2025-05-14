@@ -5,11 +5,11 @@ local wibox = require("wibox")
 
 local helpers = require("helpers")
 
-local taglist = require("ui.bar.taglist")
-local tasklist = require("ui.bar.tasklist")
-local systray = require("ui.bar.systray")
-local battery = require("ui.bar.battery")
-local clock = require("ui.bar.clock")
+local taglist = require("ui.shell.bar.taglist")
+local tasklist = require("ui.shell.bar.tasklist")
+local systray = require("ui.shell.bar.systray")
+local battery = require("ui.shell.bar.battery")
+local clock = require("ui.shell.bar.clock")
 
 awful.screen.connect_for_each_screen(function(s)
   local is_primary = s == screen.primary

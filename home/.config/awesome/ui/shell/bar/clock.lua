@@ -4,7 +4,7 @@ local wibox = require("wibox")
 local clock = function()
   local clock_buttons = {
     awful.button({}, 1, function()
-      awesome.emit_signal("widgets::time_and_date::show")
+      awesome.emit_signal("shell::calendar_popup::show")
     end),
   }
 

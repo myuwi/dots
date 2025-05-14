@@ -8,6 +8,7 @@ local Gtk = lgi.require("Gtk", "3.0")
 local wibox = require("wibox")
 
 local helpers = require("helpers")
+local widget = require("ui.widgets")
 
 local input = require(... .. ".input")
 
@@ -49,7 +50,7 @@ local no_results = wibox.widget({
 
 local launcher_widget_max_height = 0
 
-local launcher_widget = helpers.ui.popup({
+local launcher_widget = widget.popup({
   forced_width = dpi(576),
   -- TODO: A better way to do this
   placement = function(w)
@@ -281,4 +282,4 @@ function launcher.show()
   launcher_widget.visible = true
 end
 
-awesome.connect_signal("widgets::launcher::show", launcher.show)
+awesome.connect_signal("shell::launcher::show", launcher.show)

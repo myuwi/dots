@@ -5,7 +5,7 @@ local naughty = require("naughty")
 local wibox = require("wibox")
 
 local helpers = require("helpers")
-local widget = require("ui.core.widget")
+local widget = require("ui.widgets")
 
 naughty.config.defaults.app_name = "Notification"
 naughty.config.defaults.ontop = true

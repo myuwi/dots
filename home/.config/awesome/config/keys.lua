@@ -186,7 +186,7 @@ end
 -- Launcher
 
 awful.keyboard.append_global_keybindings(key_group("launcher", {
-  { { modkey }, "d", emit("widgets::launcher::show"), "open launcher" },
+  { { modkey }, "d", emit("shell::launcher::show"), "open launcher" },
   { { modkey }, "Return", "alacritty", "open terminal" },
 }))
 
@@ -209,8 +209,8 @@ end
 awful.keyboard.append_global_keybindings(key_group("shell", {
   { { modkey }, "b", toggle_bar, "toggle bar visibility" },
 
-  { { modkey }, "Tab", emit("widgets::window_switcher::show", 1), "open window switcher" },
-  { { modkey, "Shift" }, "Tab", emit("widgets::window_switcher::show", -1), "open window switcher" },
+  { { modkey }, "Tab", emit("shell::window_switcher::show", 1), "open window switcher" },
+  { { modkey, "Shift" }, "Tab", emit("shell::window_switcher::show", -1), "open window switcher" },
 }))
 
 -- Misc
