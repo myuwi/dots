@@ -5,7 +5,6 @@ local ruled = require("ruled")
 local helpers = require("helpers")
 
 local input_method = require("core.input_method")
-local resize_mode = require("core.resize_mode")
 
 ---@param mods string[]
 ---@param key string
@@ -121,6 +120,23 @@ end)
 
 -- Layout
 
+local function cycle_mwfact()
+  local t = awful.screen.focused().selected_tag
+
+  if t then
+    local factors = { 0.3333, 0.5, 0.6666 }
+
+    for i, factor in ipairs(factors) do
+      if t.master_width_factor == factor then
+        t.master_width_factor = factors[(i % #factors) + 1]
+        return
+      end
+    end
+
+    t.master_width_factor = 0.5
+  end
+end
+
 local function sel_layout(i)
   return function()
     awful.layout.inc(i)
@@ -134,7 +150,7 @@ local function nmaster(n)
 end
 
 awful.keyboard.append_global_keybindings(key_group("layout", {
-  { { modkey }, "r", resize_mode.start, "enter resize mode" },
+  { { modkey }, "r", cycle_mwfact, "cycle master width factor" },
   { { modkey }, "s", sel_layout(1), "select next layout" },
   { { modkey, "Shift" }, "s", sel_layout(-1), "select previous layout" },
 
