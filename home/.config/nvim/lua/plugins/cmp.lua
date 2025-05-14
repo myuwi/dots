@@ -2,22 +2,7 @@ return {
   "saghen/blink.cmp",
   event = { "InsertEnter", "CmdlineEnter" },
   version = "*",
-  dependencies = {
-    {
-      "L3MON4D3/LuaSnip",
-      dependencies = { "rafamadriz/friendly-snippets" },
-      opts = {
-        history = false,
-        update_events = { "InsertLeave", "TextChanged", "TextChangedI" },
-        region_check_events = { "CursorMoved", "InsertEnter", "InsertLeave" },
-        delete_check_events = { "TextChanged", "InsertEnter", "InsertLeave" },
-      },
-      config = function(_, opts)
-        require("luasnip").setup(opts)
-        require("luasnip.loaders.from_vscode").lazy_load()
-      end,
-    },
-  },
+  dependencies = { "rafamadriz/friendly-snippets" },
   ---@module "blink.cmp"
   ---@type blink.cmp.Config
   opts = {
@@ -67,6 +52,5 @@ return {
         },
       },
     },
-    snippets = { preset = "luasnip" },
   },
 }
