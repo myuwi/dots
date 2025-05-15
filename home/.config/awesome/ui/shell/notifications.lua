@@ -45,15 +45,18 @@ naughty.connect_signal("request::display", function(n)
 
   notification_body.forced_height = notification_body:get_height_for_width(notification_body_width, screen.primary)
 
+  -- FIXME: Race condition (?) in "invoked" signal handler sometimes causes "dismissed_by_user"
+  --        to be returned as the reason for dismissal even when action button is pressed
   local actions = {
     children = helpers.table.map(n.actions, function(action)
-      local btn = widget.button({ text = action:get_name() })
-
-      btn.buttons = {
-        awful.button({}, 1, function()
-          action:invoke(n)
-        end),
-      }
+      local btn = widget.button({
+        text = action:get_name(),
+        buttons = {
+          awful.button({}, 1, function()
+            action:invoke(n)
+          end),
+        },
+      })
 
       return btn
     end),

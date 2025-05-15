@@ -4,6 +4,11 @@ local wibox = require("wibox")
 
 local helpers = require("helpers")
 
+---@class (exact) ButtonArgs
+---@field text string
+---@field buttons? table[]
+
+---@param args ButtonArgs
 local function button(args)
   args = args or {}
   local text = args.text or ""
@@ -25,6 +30,7 @@ local function button(args)
     bg = beautiful.colors.overlay,
     forced_height = dpi(28),
     shape = helpers.shape.rounded_rect(beautiful.border_radius),
+    buttons = args.buttons,
     widget = wibox.container.background,
   })
 
