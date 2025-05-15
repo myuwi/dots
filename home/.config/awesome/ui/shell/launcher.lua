@@ -10,8 +10,6 @@ local wibox = require("wibox")
 local helpers = require("helpers")
 local widget = require("ui.widgets")
 
-local input = require(... .. ".input")
-
 local launcher = {}
 
 local gtk_theme = Gtk.IconTheme.new()
@@ -26,7 +24,7 @@ local visible_apps = {}
 
 local last_focused_client = nil
 
-local text_input = input({
+local text_input = widget.input({
   placeholder = helpers.ui.colorize_text("Search...", beautiful.colors.muted),
 })
 

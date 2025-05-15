@@ -5,7 +5,7 @@ local gtable = require("gears.table")
 local gtimer = require("gears.timer")
 local wibox = require("wibox")
 
-local prompt = require(... .. ".prompt")
+local prompt = require("ui.widgets.input.prompt")
 
 local input = { mt = {} }
 
