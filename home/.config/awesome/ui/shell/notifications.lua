@@ -1,6 +1,7 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
+local gsurface = require("gears.surface")
 local naughty = require("naughty")
 local wibox = require("wibox")
 
@@ -14,23 +15,22 @@ naughty.config.defaults.timeout = 6
 naughty.config.defaults.title = "Notification"
 naughty.config.defaults.position = "bottom_right"
 
----@param args table
-local function add_notification_icon(args)
-  if not args.icon and args.app_name then
-    local app_icon = helpers.client.find_icon(args.app_name)
-    if app_icon then
-      args.app_icon = app_icon
-    end
-  end
-  return args
-end
+-- Don't set notification image as the icon
+naughty.disconnect_signal("request::icon", naughty.icon_path_handler)
 
-naughty.config.notify_callback = function(args)
-  return add_notification_icon(args)
-end
+-- Enable path and app_icon handling
+-- NOTE: Falls back to an icon from an associated client (via `naughty.client_icon_handler`) if not found here
+naughty.connect_signal("request::icon", function(n, context, hints)
+  if context == "path" then
+    n.icon = gsurface.load_uncached_silently(hints.path)
+  elseif context == "app_icon" then
+    n.icon = helpers.client.find_icon(hints.app_icon)
+  end
+end)
 
 naughty.connect_signal("request::display", function(n)
   local notification_body_width = beautiful.notification_width - beautiful.notification_margin * 2
+
   -- Adjust for icon width and spacing
   if n.image ~= nil then
     notification_body_width = notification_body_width - dpi(60) - dpi(12)
@@ -76,10 +76,10 @@ naughty.connect_signal("request::display", function(n)
             {
               {
                 {
-                  image = n.app_icon,
+                  image = n.icon,
                   forced_width = dpi(18),
                   forced_height = dpi(18),
-                  visible = n.app_icon ~= nil,
+                  visible = n.icon ~= nil,
                   widget = wibox.widget.imagebox,
                 },
                 {
