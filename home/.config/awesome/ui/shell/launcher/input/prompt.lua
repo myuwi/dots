@@ -16,6 +16,7 @@ function prompt:start()
     mask_modkeys = true,
     keypressed_callback = function(_, mod, key)
       if self.keypressed_callback then
+        -- TODO: return a boolean to indicate whether other handlers should be processed after the callback
         self.keypressed_callback(mod, key)
       end
 
@@ -61,7 +62,7 @@ end
 ---@class (exact) PromptArgs
 ---@field text string?
 ---@field cursor_pos integer? The number of characters on the left side of the cursor
----@field keypressed_callback fun(mod, key: string): any
+---@field keypressed_callback fun(mods: string[], key: string): any
 ---@field changed_callback fun(text: string, cursor_pos: integer): any
 
 ---@param args PromptArgs

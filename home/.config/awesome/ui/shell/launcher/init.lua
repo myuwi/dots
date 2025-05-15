@@ -30,6 +30,7 @@ local text_input = input({
   placeholder = helpers.ui.colorize_text("Search...", beautiful.colors.muted),
 })
 
+-- TODO: extract as a reusable scrollable list widget?
 local app_list = wibox.widget({
   spacing = dpi(6),
   layout = wibox.layout.fixed.vertical,
@@ -72,11 +73,32 @@ local launcher_widget = widget.popup({
       margins = dpi(12),
       widget = wibox.container.margin,
     },
+    -- TODO: scrollbar to indicate list position
     app_list,
     spacing = dpi(12),
     layout = wibox.layout.fixed.vertical,
   },
 })
+
+---@param i integer
+local function launch_at_index(i)
+  local app = visible_apps[i]
+  local cmd = app:get_commandline():gsub("%%[fFuU]", "")
+
+  if app:get_boolean("Terminal") then
+    cmd = "alacritty -e " .. cmd
+  end
+
+  awful.spawn(cmd, false)
+  launcher.hide()
+end
+
+local function redraw_highlights()
+  for i, c in ipairs(app_list.children) do
+    local index = i + scroll_offset
+    c.bg = index == selected_index and beautiful.colors.surface or beautiful.colors.transparent
+  end
+end
 
 local function create_app_entry(app, i)
   local icon = gtk_theme:lookup_by_gicon(app:get_icon(), dpi(30), 0)
@@ -107,29 +129,21 @@ local function create_app_entry(app, i)
       bottom = dpi(6),
       widget = wibox.container.margin,
     },
-    bg = i == selected_index and beautiful.colors.surface,
+    bg = i == selected_index and beautiful.colors.surface or beautiful.colors.transparent,
     shape = helpers.shape.rounded_rect(dpi(4)),
     widget = wibox.container.background,
   })
 
-  helpers.ui.add_hover_cursor(entry, "hand2")
-
-  entry.launch = function()
-    local cmd = app:get_commandline():gsub("%%[fFuU]", "")
-
-    if app:get_boolean("Terminal") then
-      cmd = "alacritty -e " .. cmd
-    end
-
-    awful.spawn(cmd, false)
-    launcher.hide()
-  end
-
   entry.buttons = {
     awful.button({ "Any" }, 1, function()
-      entry.launch()
+      launch_at_index(i)
     end),
   }
+
+  entry:connect_signal("mouse::enter", function()
+    selected_index = i
+    redraw_highlights()
+  end)
 
   return entry
 end
@@ -145,6 +159,7 @@ local function format_no_results(text)
   return helpers.ui.colorize_text(formatted, beautiful.colors.muted)
 end
 
+-- TODO (perf): reuse elements instead of discarding them on every render
 local function draw_app_list(apps)
   app_list:reset()
 
@@ -166,7 +181,7 @@ end
 
 local function move_selection(amount)
   local new_index = selected_index + amount
-  selected_index = (new_index - 1) % #visible_apps + 1
+  selected_index = ((new_index - 1) % #visible_apps) + 1
 
   -- Make sure scroll follows selection
   scroll_offset = math.min(math.max(scroll_offset, selected_index - page_size), selected_index - 1)
@@ -174,25 +189,46 @@ local function move_selection(amount)
   draw_app_list(visible_apps)
 end
 
-text_input.keypressed_callback = function(_, key)
+local function scroll_list(amount)
+  local min_scroll_offset = 0
+  local max_scroll_offset = #visible_apps - math.min(page_size, #visible_apps)
+  local new_offset = math.min(math.max(scroll_offset + amount, min_scroll_offset), max_scroll_offset)
+
+  -- Update only if needed
+  if new_offset ~= scroll_offset then
+    scroll_offset = new_offset
+
+    draw_app_list(visible_apps)
+  end
+end
+
+-- TODO: declarative keybind handling?
+text_input.keypressed_callback = function(mods, key)
   if key == "Escape" then
     launcher.cancel()
   end
 
   if key == "Return" then
-    local selected = app_list.children[selected_index - scroll_offset]
-
-    if selected then
-      selected.launch()
-    end
+    launch_at_index(selected_index)
   end
 
-  if key == "Up" then
+  local shift = mods[1] == "Shift"
+
+  if key == "Tab" and shift or key == "Up" then
     move_selection(-1)
-  elseif key == "Down" then
+  elseif key == "Tab" or key == "Down" then
     move_selection(1)
   end
 end
+
+app_list.buttons = {
+  awful.button({}, 4, function()
+    scroll_list(-1)
+  end),
+  awful.button({}, 5, function()
+    scroll_list(1)
+  end),
+}
 
 local function filter_apps(apps, text)
   if text == "" then

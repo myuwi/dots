@@ -36,7 +36,7 @@ end
 ---@class (exact) InputArgs
 ---@field text string?
 ---@field placeholder string?
----@field keypressed_callback fun(mod, key: string, event: string): any
+---@field keypressed_callback fun(mods: string[], key: string, event: string): any
 ---@field changed_callback fun(text: string): any
 
 ---@param args InputArgs
