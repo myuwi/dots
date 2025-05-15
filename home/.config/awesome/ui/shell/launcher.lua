@@ -81,6 +81,11 @@ local launcher_widget = widget.popup({
 ---@param i integer
 local function launch_at_index(i)
   local app = visible_apps[i]
+
+  if not app then
+    return
+  end
+
   local cmd = app:get_commandline():gsub("%%[fFuU]", "")
 
   if app:get_boolean("Terminal") then
