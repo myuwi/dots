@@ -157,7 +157,7 @@ local function format_no_results(text)
   return helpers.ui.colorize_text(formatted, beautiful.colors.muted)
 end
 
--- TODO (perf): reuse elements instead of discarding them on every render
+-- TODO(perf): reuse elements instead of discarding them on every render
 local function draw_app_list(apps)
   app_list:reset()
 

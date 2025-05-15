@@ -5,9 +5,6 @@ local ruled = require("ruled")
 
 local helpers = require("helpers")
 
--- TODO: Window snapping
-
--- TODO: Use a fallback if a client doesn't have an icon
 -- Try to find missing client icon
 local function set_fallback_icon(c)
   if c and c.valid and c.class and not c.icon then
@@ -20,6 +17,7 @@ local function set_fallback_icon(c)
       local cr = cairo.Context(img)
       cr:set_source_surface(s, 0, 0)
       cr:paint()
+
       c.icon = img._native
     end
   end
