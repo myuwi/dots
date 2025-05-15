@@ -37,9 +37,9 @@ end
 
 local function redraw_highlights()
   for i, c in ipairs(client_icons.children) do
-    if hover_index == i then
+    if i == hover_index then
       c.bg = beautiful.window_switcher_hover
-    elseif alt_tab_index == i then
+    elseif i == alt_tab_index then
       c.bg = beautiful.window_switcher_focus
     else
       c.bg = beautiful.window_switcher_inactive
@@ -88,8 +88,6 @@ local function draw_client_icons()
       bg = alt_tab_index == i and beautiful.window_switcher_focus or beautiful.window_switcher_inactive,
       widget = wibox.container.background,
     })
-
-    helpers.ui.add_hover_cursor(client_icon, "hand2")
 
     client_icon:connect_signal("mouse::enter", function()
       hover_index = i

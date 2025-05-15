@@ -1,7 +1,7 @@
 local beautiful = require("beautiful")
+local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
-local xresources = require("beautiful.xresources")
-local dpi = xresources.apply_dpi
+
 local helpers = require("helpers")
 
 local function button(args)
@@ -28,8 +28,7 @@ local function button(args)
     widget = wibox.container.background,
   })
 
-  helpers.ui.add_hover_background_fade(widget, beautiful.colors.overlay, beautiful.colors.highlight_med, 0.05)
-  helpers.ui.add_hover_cursor(widget, "hand2")
+  helpers.ui.add_hover_background(widget, helpers.color.lighten(beautiful.colors.overlay, 0.05), 0.05)
 
   return widget
 end

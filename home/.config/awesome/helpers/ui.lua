@@ -1,4 +1,5 @@
 local awful = require("awful")
+local gcolor = require("gears.color")
 local wibox = require("wibox")
 
 local rubato = require("lib.rubato")
@@ -11,46 +12,38 @@ local M = {}
 
 --- Add a hover background to a widget
 --- @param widget table A widget
---- @param hover_color string A color
-function M.add_hover_background(widget, hover_color)
-  local old_bg
+--- @param hover_color string A color value in hexadecimal
+--- @param transition_duration? number A transition duration in seconds
+function M.add_hover_background(widget, hover_color, transition_duration)
+  transition_duration = transition_duration or 0
 
-  widget:connect_signal("mouse::enter", function()
-    if widget.bg ~= hover_color then
-      old_bg = widget.bg
-    end
+  local original_color = gcolor.to_rgba_string(widget.bg) --[[@as string]]
 
-    widget.bg = hover_color
-  end)
+  if transition_duration > 0 then
+    local timed = rubato.timed({
+      duration = transition_duration,
+      subscribed = function(pos)
+        local col = hcolor.blend(original_color, hover_color, pos)
+        widget.bg = col
+      end,
+    })
 
-  widget:connect_signal("mouse::leave", function()
-    if old_bg then
-      widget.bg = old_bg
-    end
-  end)
-end
+    widget:connect_signal("mouse::enter", function()
+      timed.target = 1
+    end)
 
---- Add a hover background to a widget
---- @param widget table A widget
---- @param normal_color string A color
---- @param hover_color string A color
---- @param transition number A transition duration
-function M.add_hover_background_fade(widget, normal_color, hover_color, transition)
-  local timed = rubato.timed({
-    duration = transition,
-    subscribed = function(pos)
-      local col = hcolor.gradient(normal_color, hover_color, pos)
-      widget.bg = col
-    end,
-  })
+    widget:connect_signal("mouse::leave", function()
+      timed.target = 0
+    end)
+  else
+    widget:connect_signal("mouse::enter", function()
+      widget.bg = hover_color
+    end)
 
-  widget:connect_signal("mouse::enter", function()
-    timed.target = 1
-  end)
-
-  widget:connect_signal("mouse::leave", function()
-    timed.target = 0
-  end)
+    widget:connect_signal("mouse::leave", function()
+      widget.bg = original_color
+    end)
+  end
 end
 
 --- Add a hover cursor to a widget

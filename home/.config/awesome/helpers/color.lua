@@ -1,78 +1,116 @@
 local M = {}
 
-local minmax = function(n, min, max)
-  return math.max(math.min(n, max), min)
+---Clamp a value to the rgb color range (0-255)
+---@param x number a value
+local function clamp(x)
+  return math.max(0, math.min(255, x))
 end
 
---- Convert Hex to Decimal
---- @param hex string a hexadecimal value
-local hex_to_decimal = function(hex)
-  return tonumber(hex, 16)
+---Convert Hex to Decimal
+---@param value string A hexadecimal value
+---@return integer value Value as decimal
+local function hex_to_decimal(value)
+  return tonumber(value, 16)
 end
 
---- Convert Decimal to Hex
---- @param decimal number a hexadecimal value
-local decimal_to_hex = function(decimal)
-  return string.format("%02x", decimal)
+---Convert Decimal to Hex
+---@param value integer A decimal value
+---@return string value Value as hexacedimal
+local function decimal_to_hex(value)
+  return string.format("%02x", value)
 end
 
-function M.rgb_to_hex(color)
-  local r = minmax(color.r or color[1], 0, 255)
-  local g = minmax(color.g or color[2], 0, 255)
-  local b = minmax(color.b or color[3], 0, 255)
+---@param color table
+---@return string
+local function rgba_to_hex(color)
+  local r = clamp(color.r)
+  local g = clamp(color.g)
+  local b = clamp(color.b)
+  local a = color.a and clamp(color.a) or 255
 
-  return "#" .. string.format("%02x%02x%02x", math.floor(r), math.floor(g), math.floor(b))
+  return "#" .. decimal_to_hex(r) .. decimal_to_hex(g) .. decimal_to_hex(b) .. (a < 255 and decimal_to_hex(a) or "")
 end
 
-function M.hex_to_rgb(color)
+---@param color string
+---@return table
+local function hex_to_rgba(color)
   color = color:gsub("#", "")
+
+  local len = color:len()
 
   return {
     r = hex_to_decimal(color:sub(1, 2)),
     g = hex_to_decimal(color:sub(3, 4)),
     b = hex_to_decimal(color:sub(5, 6)),
+    a = len == 8 and hex_to_decimal(color:sub(7, 8)) or 255,
   }
 end
 
-function M.gradient(color1, color2, phase)
-  local rgb1 = M.hex_to_rgb(color1)
-  local rgb2 = M.hex_to_rgb(color2)
+---Blend two colors together at a phase
+---@param color1 string A color in hexadecimal
+---@param color2 string A color in hexadecimal
+---@param phase number A number between 0-1
+---@return string color The resulting color in hexadecimal
+function M.blend(color1, color2, phase)
+  local rgba1 = hex_to_rgba(color1)
+  local rgba2 = hex_to_rgba(color2)
 
-  local r = math.ceil(rgb1.r * (1 - phase) + rgb2.r * phase)
-  local g = math.ceil(rgb1.g * (1 - phase) + rgb2.g * phase)
-  local b = math.ceil(rgb1.b * (1 - phase) + rgb2.b * phase)
+  local function blend_channel(c1, c2)
+    return math.ceil(c1 * (1 - phase) + c2 * phase)
+  end
 
-  return M.rgb_to_hex({ r, g, b })
+  return rgba_to_hex({
+    r = blend_channel(rgba1.r, rgba2.r),
+    g = blend_channel(rgba1.g, rgba2.g),
+    b = blend_channel(rgba1.b, rgba2.b),
+    a = blend_channel(rgba1.a, rgba2.a),
+  })
 end
 
--- Lightens a given hex color by the specified amount
+---Lightens the given hex color by the specified amount
+---@param color string A color in hexadecimal
+---@param amount number A number between 0-1
+---@return string color The resulting color in hexadecimal
 function M.lighten(color, amount)
-  local rgb = M.hex_to_rgb(color)
-  local r = rgb.r
-  local g = rgb.g
-  local b = rgb.b
+  local rgba = hex_to_rgba(color)
 
-  r = r + math.floor(2.55 * amount)
-  g = g + math.floor(2.55 * amount)
-  b = b + math.floor(2.55 * amount)
-  r = r > 255 and 255 or r
-  g = g > 255 and 255 or g
-  b = b > 255 and 255 or b
+  local function lighten(c)
+    return clamp(c + (255 - c) * amount)
+  end
 
-  return M.rgb_to_hex({ r, g, b })
+  return rgba_to_hex({
+    r = lighten(rgba.r),
+    g = lighten(rgba.g),
+    b = lighten(rgba.b),
+    a = rgba.a,
+  })
 end
 
--- Darkens a given hex color by the specified amount
+---Darkens the given hex color by the specified amount
+---@param color string A color in hexadecimal
+---@param amount number A number between 0-1
+---@return string color The resulting color in hexadecimal
 function M.darken(color, amount)
-  local rgb = M.hex_to_rgb(color)
-  local r = rgb.r
-  local g = rgb.g
-  local b = rgb.b
+  local rgba = hex_to_rgba(color)
 
-  r = math.max(0, r - math.floor(r * (amount / 100)))
-  g = math.max(0, g - math.floor(g * (amount / 100)))
-  b = math.max(0, b - math.floor(b * (amount / 100)))
-  return M.rgb_to_hex({ r, g, b })
+  local function darken(c)
+    return clamp(c * (1 - amount))
+  end
+
+  return rgba_to_hex({
+    r = darken(rgba.r),
+    g = darken(rgba.g),
+    b = darken(rgba.b),
+    a = rgba.a,
+  })
+end
+
+---Apply an opacity to a color
+---@param color string A color in hexadecimal
+---@param opacity number A number between 0-1
+---@return string color The resulting color in #RRGGBBAA
+function M.opacity(color, opacity)
+  return color .. decimal_to_hex(clamp(math.floor((opacity * 255) + 0.5)))
 end
 
 return M
