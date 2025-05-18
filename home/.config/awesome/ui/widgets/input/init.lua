@@ -5,6 +5,8 @@ local gtable = require("gears.table")
 local gtimer = require("gears.timer")
 local wibox = require("wibox")
 
+local helpers = require("helpers")
+
 local prompt = require("ui.widgets.input.prompt")
 
 local input = { mt = {} }
@@ -47,13 +49,13 @@ local function new(args)
 
   -- TODO: scroll instead of ellipsis on overflow
   local textbox = wibox.widget.textbox()
-  local placeholder = wibox.widget.textbox(args.placeholder)
+  local placeholder = wibox.widget.textbox(helpers.ui.colorize_text(args.placeholder, beautiful.fg_placeholder))
 
   local cursor = wibox.widget({
     forced_width = dpi(1),
     forced_height = dpi(14),
     point = { x = 0, y = dpi(2) },
-    bg = beautiful.colors.text,
+    bg = beautiful.fg_normal,
     widget = wibox.container.background,
   })
 

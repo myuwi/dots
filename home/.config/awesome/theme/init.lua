@@ -2,6 +2,8 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local gfs = require("gears.filesystem")
 
+local hcolor = require("helpers.color")
+
 local theme_path = gfs.get_configuration_dir() .. "theme/"
 
 local theme = {}
@@ -20,7 +22,7 @@ local colors = require("theme.colors")
 theme.colors = colors
 
 theme.bg_normal = colors.base
-theme.bg_focus = colors.overlay
+theme.bg_focus = hcolor.opacity(colors.muted, 0.15)
 theme.bg_urgent = colors.urgent
 theme.bg_minimize = colors.transparent
 theme.bg_bar = colors.base
@@ -29,7 +31,12 @@ theme.bg_systray = theme.bg_bar
 theme.fg_normal = colors.text
 theme.fg_focus = colors.text
 theme.fg_urgent = colors.text
-theme.fg_minimize = colors.text .. "66"
+theme.fg_minimize = colors.muted
+theme.fg_unfocus = colors.muted
+theme.fg_placeholder = colors.muted
+
+theme.bg_button = theme.bg_focus
+theme.bg_button_hover = hcolor.opacity(colors.muted, 0.25)
 
 -- Gaps
 theme.useless_gap = dpi(6)
@@ -66,8 +73,8 @@ theme.tasklist_plain_task_name = true
 theme.systray_icon_spacing = dpi(6)
 
 -- Window Switcher
-theme.window_switcher_hover = colors.overlay
-theme.window_switcher_focus = colors.surface
+theme.window_switcher_hover = hcolor.opacity(colors.muted, 0.25)
+theme.window_switcher_focus = theme.bg_focus
 theme.window_switcher_inactive = colors.transparent
 
 -- Notifications

@@ -27,14 +27,14 @@ local function button(args)
       right = dpi(8),
       widget = wibox.container.margin,
     },
-    bg = beautiful.colors.overlay,
+    bg = beautiful.bg_button,
     forced_height = dpi(28),
     shape = helpers.shape.rounded_rect(beautiful.border_radius),
     buttons = args.buttons,
     widget = wibox.container.background,
   })
 
-  helpers.ui.add_hover_background(widget, helpers.color.lighten(beautiful.colors.overlay, 0.05), 0.05)
+  helpers.ui.add_hover_background(widget, beautiful.bg_button_hover, 0.15)
 
   return widget
 end

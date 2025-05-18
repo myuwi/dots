@@ -25,7 +25,7 @@ local visible_apps = {}
 local last_focused_client = nil
 
 local text_input = widget.input({
-  placeholder = helpers.ui.colorize_text("Search...", beautiful.colors.muted),
+  placeholder = "Search...",
 })
 
 -- TODO: extract as a reusable scrollable list widget?
@@ -99,7 +99,7 @@ end
 local function redraw_highlights()
   for i, c in ipairs(app_list.children) do
     local index = i + scroll_offset
-    c.bg = index == selected_index and beautiful.colors.surface or beautiful.colors.transparent
+    c.bg = index == selected_index and beautiful.bg_focus or beautiful.colors.transparent
   end
 end
 
@@ -132,7 +132,7 @@ local function create_app_entry(app, i)
       bottom = dpi(6),
       widget = wibox.container.margin,
     },
-    bg = i == selected_index and beautiful.colors.surface or beautiful.colors.transparent,
+    bg = i == selected_index and beautiful.bg_focus or beautiful.colors.transparent,
     shape = helpers.shape.rounded_rect(dpi(4)),
     widget = wibox.container.background,
   })
@@ -156,10 +156,10 @@ local function format_no_results(text)
   local no_results_format = 'No results for "%s"'
 
   local escaped = gstring.xml_escape(text) --[[@as string]]
-  local input_text = helpers.ui.colorize_text(escaped, beautiful.colors.text)
+  local input_text = helpers.ui.colorize_text(escaped, beautiful.fg_normal)
   local formatted = no_results_format:format(input_text)
 
-  return helpers.ui.colorize_text(formatted, beautiful.colors.muted)
+  return helpers.ui.colorize_text(formatted, beautiful.fg_unfocus)
 end
 
 -- TODO(perf): reuse elements instead of discarding them on every render
