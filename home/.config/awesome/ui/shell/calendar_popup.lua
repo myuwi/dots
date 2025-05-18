@@ -38,3 +38,5 @@ local function show()
 end
 
 awesome.connect_signal("shell::calendar_popup::show", show)
+
+return calendar_popup
