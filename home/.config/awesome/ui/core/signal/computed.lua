@@ -1,40 +1,14 @@
 local signal = require("ui.core.signal")
+local effect = require("ui.core.signal.effect")
 
 local function computed(fn)
-  local result = signal(nil)
+  local sig = signal(nil)
 
-  local observer = {
-    ---@type table<Signal, fun()>
-    dependents = {},
-  }
+  effect(function()
+    sig.value = fn()
+  end)
 
-  local function run()
-    -- Unsubscribe from previous signals
-    for _, unsubscribe in pairs(observer.dependents) do
-      unsubscribe()
-    end
-
-    -- Reset dependents
-    observer.dependents = {}
-
-    -- Track dependencies
-    _G.current_signal_observer = {
-      register = function(sig)
-        if not observer.dependents[sig] then
-          observer.dependents[sig] = sig:subscribe(run, false)
-        end
-      end,
-    }
-
-    -- Recalculate value
-    result.value = fn()
-
-    _G.current_signal_observer = nil
-  end
-
-  run()
-
-  return result
+  return sig
 end
 
 return computed

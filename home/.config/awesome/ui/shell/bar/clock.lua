@@ -5,6 +5,7 @@ local wibox = require("wibox")
 
 local hshape = require("helpers.shape")
 
+local effect = require("ui.core.signal.effect")
 local computed = require("ui.core.signal.computed")
 local observe = require("ui.core.signal.observe")
 
@@ -15,12 +16,6 @@ local clock = function(s)
   local bg = computed(function()
     return calendar_visible.value and calendar_popup.screen == s and beautiful.bg_focus or nil
   end)
-
-  local clock_buttons = {
-    awful.button({}, 1, function()
-      awesome.emit_signal("shell::calendar_popup::show")
-    end),
-  }
 
   local clock_widget = wibox.widget({
     {
@@ -35,13 +30,17 @@ local clock = function(s)
       right = dpi(6),
       widget = wibox.container.margin,
     },
-    buttons = clock_buttons,
+    buttons = {
+      awful.button({}, 1, function()
+        awesome.emit_signal("shell::calendar_popup::show")
+      end),
+    },
     shape = hshape.rounded_rect(4),
     widget = wibox.container.background,
   })
 
-  bg:subscribe(function(val)
-    clock_widget.bg = val
+  effect(function()
+    clock_widget.bg = bg.value
   end)
 
   return clock_widget
