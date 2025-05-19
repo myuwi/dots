@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
-local layoutbox = function(s)
+local function layoutbox(s)
   local layoutbox_widget = wibox.widget({
     {
       {

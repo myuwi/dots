@@ -13,7 +13,7 @@ local observe = require("ui.core.signal.observe")
 local calendar_popup = require("ui.shell.calendar_popup")
 local calendar_visible = observe(calendar_popup, "visible")
 
-local clock = function(s)
+local function clock(s)
   local bg = computed(function()
     return calendar_visible.value and calendar_popup.screen == s and beautiful.bg_focus or nil
   end)

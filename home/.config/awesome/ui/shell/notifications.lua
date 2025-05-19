@@ -144,12 +144,12 @@ naughty.connect_signal("request::display", function(n)
 
   local timeout = n.timeout
 
-  -- Stop notification from disappearing when it is hovered
-  local notif_mouse_enter = function()
+  -- Stop notification from disappearing when hovered
+  local function notif_mouse_enter()
     n:reset_timeout(86400) -- a long time
   end
 
-  local notif_mouse_leave = function()
+  local function notif_mouse_leave()
     n:reset_timeout(timeout)
   end
 

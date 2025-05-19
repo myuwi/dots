@@ -7,7 +7,7 @@ local helpers = require("helpers")
 
 local fit = require("ui.layout.fit")
 
-local tasklist = function(s)
+local function tasklist(s)
   local tasklist_buttons = {
     awful.button({}, 1, function(c)
       if c == client.focus then

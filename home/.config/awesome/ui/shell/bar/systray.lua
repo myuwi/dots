@@ -2,7 +2,7 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
-local systray = function()
+local function systray()
   local systray_widget = wibox.widget({
     {
       screen = screen.primary,

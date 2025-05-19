@@ -27,7 +27,7 @@ function battery_status()
   return status_text .. capacity .. "%"
 end
 
-local battery = function()
+local function battery()
   local status = battery_status()
   if status == nil then
     return nil

@@ -5,7 +5,7 @@ local wibox = require("wibox")
 
 local helpers = require("helpers")
 
-local taglist = function(s)
+local function taglist(s)
   local taglist_buttons = {
     awful.button({}, 1, function(t)
       t:view_only()
