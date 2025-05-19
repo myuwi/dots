@@ -44,7 +44,7 @@ awful.screen.connect_for_each_screen(function(s)
               widget = wibox.container.margin,
             } or nil,
             battery(),
-            clock(),
+            clock(s),
             spacing = beautiful.bar_spacing,
             layout = wibox.layout.fixed.horizontal,
           },
