@@ -10,41 +10,211 @@ local wibox = require("wibox")
 local helpers = require("helpers")
 local widget = require("ui.widgets")
 
+local signal = require("ui.core.signal")
+local computed = require("ui.core.signal.computed")
+local effect = require("ui.core.signal.effect")
+local map = require("ui.core.signal.map")
+
 local launcher = {}
 
 local gtk_theme = Gtk.IconTheme.new()
 Gtk.IconTheme.set_custom_theme(gtk_theme, beautiful.icon_theme)
 
-local selected_index = 1
-local scroll_offset = 0
 local page_size = 6
 
-local all_apps = {}
-local visible_apps = {}
+-- Signals
+
+local query = signal("")
+local selected_index = signal(1)
+local scroll_position = signal(0)
+
+local all_apps = signal({})
+
+local function filter_apps(apps, query_text)
+  if query_text == "" then
+    return apps
+  end
+
+  local filtered_apps = helpers.table.filter(apps, function(app)
+    return app:get_name():lower():find(query_text:lower(), 1, true)
+      or helpers.table.any(app:get_keywords(), function(keyword)
+        return keyword:lower():find(query_text:lower(), 1, true)
+      end)
+  end)
+
+  table.sort(filtered_apps, function(a, b)
+    local a_name = a:get_name():lower()
+    local b_name = b:get_name():lower()
+
+    local a_match = a_name:find(query_text:lower(), 1, true) ~= nil
+    local b_match = b_name:find(query_text:lower(), 1, true) ~= nil
+
+    if a_match == b_match then
+      return a_name < b_name
+    end
+
+    return a_match
+  end)
+
+  return filtered_apps
+end
+
+-- TODO: batch(fn)
+local filtered_apps = computed(function()
+  return filter_apps(all_apps.value, query.value)
+end)
+
+local function clamp_selection()
+  scroll_position.value = math.min(math.max(#filtered_apps.value - page_size, 0), scroll_position.value)
+  selected_index.value = math.min(math.max(selected_index.value, 1), #filtered_apps.value)
+end
+
+effect(clamp_selection)
+
+-- Functions
+
+local function launch(app)
+  if not app then
+    return
+  end
+
+  local cmd = app:get_commandline():gsub("%%[fFuU]", "")
+
+  if app:get_boolean("Terminal") then
+    cmd = "alacritty -e " .. cmd
+  end
+
+  awful.spawn(cmd, false)
+end
+
+local function move_selection(amount)
+  local new_index = selected_index.value + amount
+  selected_index.value = ((new_index - 1) % #filtered_apps.value) + 1
+
+  -- Make sure scroll follows selection
+  scroll_position.value =
+    math.min(math.max(scroll_position.value, selected_index.value - page_size), selected_index.value - 1)
+end
+
+local function scroll_list(amount)
+  local min_scroll_offset = 0
+  local max_scroll_offset = #filtered_apps.value - math.min(page_size, #filtered_apps.value)
+  local new_offset = math.min(math.max(scroll_position.value + amount, min_scroll_offset), max_scroll_offset)
+
+  -- Update only if needed
+  if new_offset ~= scroll_position.value then
+    scroll_position.value = new_offset
+  end
+end
 
 local last_focused_client = nil
+
+-- Widgets
 
 local text_input = widget.input({
   placeholder = "Search...",
 })
 
--- TODO: extract as a reusable scrollable list widget?
-local app_list = wibox.widget({
-  spacing = dpi(6),
-  layout = wibox.layout.fixed.vertical,
-})
+---@param text string
+local function format_no_results(text)
+  local no_results_format = 'No results for "%s"'
 
-local no_results_text = wibox.widget({
-  text = "",
-  valign = "center",
-  forced_height = dpi(18),
-  widget = wibox.widget.textbox,
-})
+  local escaped = gstring.xml_escape(text) --[[@as string]]
+  local input_text = helpers.ui.colorize_text(escaped, beautiful.fg_normal)
+  local formatted = no_results_format:format(input_text)
 
-local no_results = wibox.widget({
-  no_results_text,
+  return helpers.ui.colorize_text(formatted, beautiful.fg_unfocus)
+end
+
+local no_results = widget.new({
+  {
+    markup = map(query, format_no_results),
+    valign = "center",
+    forced_height = dpi(18),
+    widget = wibox.widget.textbox,
+  },
+  -- TODO: Get rid of this prop
+  no_implicit_destroy = true,
   margins = dpi(12),
   widget = wibox.container.margin,
+})
+
+local function create_entry(app, i)
+  local icon = gtk_theme:lookup_by_gicon(app:get_icon(), dpi(30), 0)
+
+  if icon then
+    icon = icon:get_filename()
+  end
+
+  local entry = widget.new({
+    {
+      {
+        {
+          image = icon,
+          forced_width = dpi(30),
+          forced_height = dpi(30),
+          widget = wibox.widget.imagebox,
+        },
+        {
+          text = app:get_name(),
+          widget = wibox.widget.textbox,
+        },
+        spacing = dpi(9),
+        layout = wibox.layout.fixed.horizontal,
+      },
+      top = dpi(6),
+      left = dpi(9),
+      right = dpi(9),
+      bottom = dpi(6),
+      widget = wibox.container.margin,
+    },
+    bg = computed(function()
+      return i == selected_index.value and beautiful.bg_focus or beautiful.colors.transparent
+    end),
+    buttons = {
+      awful.button({ "Any" }, 1, function()
+        launch(app)
+        launcher.hide()
+      end),
+    },
+    shape = helpers.shape.rounded_rect(dpi(4)),
+    widget = wibox.container.background,
+  })
+
+  entry:connect_signal("mouse::enter", function()
+    selected_index.value = i
+  end)
+
+  return entry
+end
+
+-- TODO(perf): reuse elements instead of discarding them on every render?
+local function create_entries(apps)
+  if #apps <= 0 then
+    return no_results
+  end
+
+  local children = {}
+  local num_visible_apps = math.min(page_size, #apps)
+
+  for i = 1 + scroll_position.value, num_visible_apps + scroll_position.value do
+    local app = apps[i]
+
+    -- FIXME: Make it so this if isn't needed (by batching signals?)
+    if app then
+      local entry = create_entry(app, i)
+      children[#children + 1] = entry
+    end
+  end
+
+  return children
+end
+
+-- TODO: extract as a reusable scrollable list widget?
+local app_list = widget.new({
+  children = map(filtered_apps, create_entries),
+  spacing = dpi(6),
+  layout = wibox.layout.fixed.vertical,
 })
 
 local launcher_widget_max_height = 0
@@ -78,132 +248,7 @@ local launcher_widget = widget.popup({
   },
 })
 
----@param i integer
-local function launch_at_index(i)
-  local app = visible_apps[i]
-
-  if not app then
-    return
-  end
-
-  local cmd = app:get_commandline():gsub("%%[fFuU]", "")
-
-  if app:get_boolean("Terminal") then
-    cmd = "alacritty -e " .. cmd
-  end
-
-  awful.spawn(cmd, false)
-  launcher.hide()
-end
-
-local function redraw_highlights()
-  for i, c in ipairs(app_list.children) do
-    local index = i + scroll_offset
-    c.bg = index == selected_index and beautiful.bg_focus or beautiful.colors.transparent
-  end
-end
-
-local function create_app_entry(app, i)
-  local icon = gtk_theme:lookup_by_gicon(app:get_icon(), dpi(30), 0)
-
-  if icon then
-    icon = icon:get_filename()
-  end
-
-  local entry = wibox.widget({
-    {
-      {
-        {
-          image = icon,
-          forced_width = dpi(30),
-          forced_height = dpi(30),
-          widget = wibox.widget.imagebox,
-        },
-        {
-          text = app:get_name(),
-          widget = wibox.widget.textbox,
-        },
-        spacing = dpi(9),
-        layout = wibox.layout.fixed.horizontal,
-      },
-      top = dpi(6),
-      left = dpi(9),
-      right = dpi(9),
-      bottom = dpi(6),
-      widget = wibox.container.margin,
-    },
-    bg = i == selected_index and beautiful.bg_focus or beautiful.colors.transparent,
-    shape = helpers.shape.rounded_rect(dpi(4)),
-    widget = wibox.container.background,
-  })
-
-  entry.buttons = {
-    awful.button({ "Any" }, 1, function()
-      launch_at_index(i)
-    end),
-  }
-
-  entry:connect_signal("mouse::enter", function()
-    selected_index = i
-    redraw_highlights()
-  end)
-
-  return entry
-end
-
----@param text string
-local function format_no_results(text)
-  local no_results_format = 'No results for "%s"'
-
-  local escaped = gstring.xml_escape(text) --[[@as string]]
-  local input_text = helpers.ui.colorize_text(escaped, beautiful.fg_normal)
-  local formatted = no_results_format:format(input_text)
-
-  return helpers.ui.colorize_text(formatted, beautiful.fg_unfocus)
-end
-
--- TODO(perf): reuse elements instead of discarding them on every render
-local function draw_app_list(apps)
-  app_list:reset()
-
-  if #apps > 0 then
-    local num_visible_apps = math.min(page_size, #apps)
-
-    for i = 1 + scroll_offset, num_visible_apps + scroll_offset do
-      local app = apps[i]
-      local entry = create_app_entry(app, i)
-      app_list:add(entry)
-    end
-  else
-    app_list:add(no_results)
-    no_results_text.markup = format_no_results(text_input.text)
-  end
-
-  launcher_widget:_apply_size_now()
-end
-
-local function move_selection(amount)
-  local new_index = selected_index + amount
-  selected_index = ((new_index - 1) % #visible_apps) + 1
-
-  -- Make sure scroll follows selection
-  scroll_offset = math.min(math.max(scroll_offset, selected_index - page_size), selected_index - 1)
-
-  draw_app_list(visible_apps)
-end
-
-local function scroll_list(amount)
-  local min_scroll_offset = 0
-  local max_scroll_offset = #visible_apps - math.min(page_size, #visible_apps)
-  local new_offset = math.min(math.max(scroll_offset + amount, min_scroll_offset), max_scroll_offset)
-
-  -- Update only if needed
-  if new_offset ~= scroll_offset then
-    scroll_offset = new_offset
-
-    draw_app_list(visible_apps)
-  end
-end
+-- Controls
 
 -- TODO: declarative keybind handling?
 text_input.keypressed_callback = function(mods, key)
@@ -212,7 +257,9 @@ text_input.keypressed_callback = function(mods, key)
   end
 
   if key == "Return" then
-    launch_at_index(selected_index)
+    local app = filtered_apps.value[selected_index.value]
+    launch(app)
+    launcher.hide()
   end
 
   local shift = mods[1] == "Shift"
@@ -224,6 +271,10 @@ text_input.keypressed_callback = function(mods, key)
   end
 end
 
+text_input.changed_callback = function(text)
+  query.value = text
+end
+
 app_list.buttons = {
   awful.button({}, 4, function()
     scroll_list(-1)
@@ -233,47 +284,7 @@ app_list.buttons = {
   end),
 }
 
-local function filter_apps(apps, text)
-  if text == "" then
-    return apps
-  end
-
-  local filtered_apps = helpers.table.filter(apps, function(app)
-    return app:get_name():lower():find(text:lower(), 1, true)
-      or helpers.table.any(app:get_keywords(), function(keyword)
-        return keyword:lower():find(text:lower(), 1, true)
-      end)
-  end)
-
-  table.sort(filtered_apps, function(a, b)
-    local a_name = a:get_name():lower()
-    local b_name = b:get_name():lower()
-
-    local a_match = a_name:find(text:lower(), 1, true) ~= nil
-    local b_match = b_name:find(text:lower(), 1, true) ~= nil
-
-    if a_match == b_match then
-      return a_name < b_name
-    end
-
-    return a_match
-  end)
-
-  return filtered_apps
-end
-
-local function clamp_selection()
-  scroll_offset = math.min(math.max(#visible_apps - page_size, 0), scroll_offset)
-  selected_index = math.min(math.max(selected_index, 1), #visible_apps)
-end
-
-local function set_filter(text)
-  visible_apps = filter_apps(all_apps, text)
-  clamp_selection()
-  draw_app_list(visible_apps)
-end
-
-text_input.changed_callback = set_filter
+-- Setup
 
 -- TODO: Should this be a backdrop instead?
 local click_away_handler = helpers.ui.create_click_away_handler(launcher_widget, false)
@@ -283,8 +294,7 @@ function launcher.hide()
   last_focused_client = nil
   click_away_handler.detach()
 
-  all_apps = {}
-  visible_apps = {}
+  all_apps.value = {}
 
   text_input:unfocus()
 end
@@ -295,8 +305,8 @@ function launcher.cancel()
 end
 
 function launcher.show()
-  scroll_offset = 0
-  selected_index = 1
+  scroll_position.value = 0
+  selected_index.value = 1
 
   local new_apps = helpers.table.filter(Gio.DesktopAppInfo.get_all(), function(app)
     return not app:get_nodisplay()
@@ -306,8 +316,7 @@ function launcher.show()
     return a:get_name():lower() < b:get_name():lower()
   end)
 
-  all_apps = new_apps
-  visible_apps = all_apps
+  all_apps.value = new_apps
 
   last_focused_client = client.focus
   client.focus = nil
@@ -315,8 +324,6 @@ function launcher.show()
 
   text_input:reset()
   text_input:focus()
-
-  draw_app_list(visible_apps)
 
   launcher_widget.visible = true
 end

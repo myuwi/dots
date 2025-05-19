@@ -5,7 +5,7 @@ local wibox = require("wibox")
 
 local hshape = require("helpers.shape")
 
-local widget = require("ui.core.widget")
+local widget = require("ui.widgets")
 
 local computed = require("ui.core.signal.computed")
 local observe = require("ui.core.signal.observe")

@@ -24,14 +24,16 @@ local function set_children(self, new_children)
     new_children = { new_children }
   end
 
-  for _, value in ipairs(self.children) do
-    for _, value_new in ipairs(new_children) do
-      if value == value_new then
-        goto continue
+  for _, child in ipairs(self.children) do
+    if not rawget(child, "no_implicit_destroy") then
+      for _, child_new in ipairs(new_children) do
+        if child == child_new then
+          goto continue
+        end
       end
-    end
 
-    value:emit_signal("destroy")
+      child:emit_signal("destroy")
+    end
 
     ::continue::
   end
