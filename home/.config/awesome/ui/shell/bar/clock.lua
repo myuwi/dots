@@ -4,9 +4,10 @@ local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
 local hshape = require("helpers.shape")
-local bind = require("ui.core.bind")
+local observe = require("ui.core.signal.observe")
 
 local calendar_popup = require("ui.shell.calendar_popup")
+local calendar_visible = observe(calendar_popup, "visible")
 
 local clock = function()
   local clock_buttons = {
@@ -33,7 +34,7 @@ local clock = function()
     widget = wibox.container.background,
   })
 
-  bind(calendar_popup, "visible", function(visible)
+  calendar_visible:subscribe(function(visible)
     clock_widget.bg = visible and beautiful.bg_focus or nil
   end)
 

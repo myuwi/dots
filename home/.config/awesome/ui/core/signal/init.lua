@@ -13,6 +13,7 @@ Signal.__type = "Signal"
 
 function Signal:subscribe(cb)
   table.insert(self._subs, cb)
+
   cb(self._value)
 
   return function()
@@ -35,10 +36,11 @@ end
 
 function Signal.mt:__newindex(key, new_value)
   if key == "value" then
-    if new_value ~= value then
-      value = new_value
+    if new_value ~= self._value then
+      self._value = new_value
+
       for _, cb in ipairs(self._subs) do
-        cb(value)
+        cb(self._value)
       end
     end
   else
@@ -57,17 +59,19 @@ local function new(initial_value)
   return setmetatable(ret, Signal.mt)
 end
 
----Signal Module
-local M = {}
+---@class SignalModule
+---@field is_signal fun(obj: any): boolean
+---@field private mt table
+local M = { mt = {} }
 
 function M.is_signal(v)
   return type(v) == "table" and v.__type == Signal.__type
 end
 
+function M.mt:__call(...)
+  return new(...)
+end
+
 ---@overload fun(initial_value: unknown): Signal
-local module = setmetatable(M, {
-  __call = function(...)
-    return new(...)
-  end,
-})
+local module = setmetatable(M, M.mt)
 return module
