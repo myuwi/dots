@@ -2,20 +2,21 @@ local gtable = require("gears.table")
 
 _G.current_signal_observer = nil
 
+---@alias SignalCallbackFn fun(value: unknown): nil
+
 ---@class Signal
 ---@field value unknown
----@field subscribe fun(self: Signal, callback: fun(value: unknown), immediate?: boolean): fun()
 ---@field private mt table
----@field private _subs table<fun(value: unknown), true>
+---@field private _subs table<SignalCallbackFn, true>
 ---@field private _value any
 ---@field private __type "Signal"
 local Signal = { mt = {} }
 
 Signal.__type = "Signal"
 
----@param callback fun(value: unknown) A callback function to invoke when the signal's value changes
----@param immediate boolean invoke the callback immediately
----@return fun()
+---@param callback SignalCallbackFn A callback function to invoke when the signal's value changes
+---@param immediate? boolean Invoke the callback immediately (default: true)
+---@return fun(): nil unsubscribe A function to unsubscribe the callback from the signal
 function Signal:subscribe(callback, immediate)
   immediate = immediate == nil and true or immediate
 
@@ -30,7 +31,7 @@ function Signal:subscribe(callback, immediate)
   end
 end
 
----@param callback fun(value: unknown) A callback function to unsubscribe from the signal
+---@param callback SignalCallbackFn A callback function to unsubscribe from the signal
 function Signal:unsubscribe(callback)
   self._subs[callback] = nil
 end
@@ -73,12 +74,14 @@ local function new(initial_value)
 end
 
 ---@class SignalModule
----@field is_signal fun(obj: any): boolean
 ---@field private mt table
 local M = { mt = {} }
 
-function M.is_signal(v)
-  return type(v) == "table" and v.__type == Signal.__type
+---Checks if the given value is a signal
+---@param value any
+---@return boolean
+function M.is_signal(value)
+  return type(value) == "table" and value.__type == Signal.__type
 end
 
 function M.mt:__call(...)

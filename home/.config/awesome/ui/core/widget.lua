@@ -69,9 +69,10 @@ function Widget.new(args)
 
   local children = {}
 
+  -- TODO: reactive children?
   for key, value in pairs(args) do
     if Signal.is_signal(value) then
-      -- TODO: reactive children?
+      ---@cast value Signal
       if type(key) == "string" then
         local unsub = value:subscribe(function(v)
           new_widget[key] = v
