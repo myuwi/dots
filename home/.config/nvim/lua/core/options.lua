@@ -9,6 +9,7 @@ vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
 vim.opt.breakindent = true
 vim.opt.linebreak = true
+vim.g.markdown_recommended_style = 0
 
 -- Line numbers
 vim.opt.number = true
