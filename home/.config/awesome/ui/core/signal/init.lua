@@ -1,6 +1,5 @@
 local gtable = require("gears.table")
-
-_G.current_signal_observer = nil
+local context = require("ui.core.signal.internal.context")
 
 ---@alias SignalCallbackFn fun(value: unknown): nil
 
@@ -26,9 +25,17 @@ function Signal:subscribe(callback, immediate)
     callback(self._value)
   end
 
-  return function()
+  local function unsubscribe()
     self:unsubscribe(callback)
   end
+
+  -- Register cleanup in current reactive scope (if any)
+  local current_scope = context.current()
+  if current_scope then
+    current_scope:on_cleanup(unsubscribe)
+  end
+
+  return unsubscribe
 end
 
 ---@param callback SignalCallbackFn A callback function to unsubscribe from the signal
@@ -38,8 +45,9 @@ end
 
 function Signal.mt:__index(key)
   if key == "value" then
-    if _G.current_signal_observer then
-      _G.current_signal_observer.register(self)
+    local current_scope = context.current()
+    if current_scope and current_scope.invalidate_callback then
+      self:subscribe(current_scope.invalidate_callback, false)
     end
 
     return self._value

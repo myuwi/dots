@@ -1,34 +1,37 @@
+local context = require("ui.core.signal.internal.context")
+
 local function effect(fn)
-  local observer = {
-    ---@type table<Signal, fun()>
-    dependents = {},
-  }
+  ---@type Scope
+  local local_scope
 
   local function run()
-    -- Unsubscribe from previous signals
-    for _, unsubscribe in pairs(observer.dependents) do
-      unsubscribe()
+    -- Cleanup the previous local scope
+    if local_scope then
+      local_scope:cleanup()
     end
 
-    -- Reset dependents
-    observer.dependents = {}
+    -- Reset and push local scope
+    local_scope = context.create(run)
+    context.push(local_scope)
 
-    -- Track dependencies
-    _G.current_signal_observer = {
-      register = function(sig)
-        if not observer.dependents[sig] then
-          observer.dependents[sig] = sig:subscribe(run, false)
-        end
-      end,
-    }
+    local effect_cleanup = fn()
 
-    -- Run closure
-    fn()
+    if type(effect_cleanup) == "function" then
+      local_scope:on_cleanup(effect_cleanup)
+    end
 
-    _G.current_signal_observer = nil
+    context.pop()
   end
 
   run()
+
+  -- Register cleanup in parent scope if any
+  local parent_scope = context.current()
+  if parent_scope then
+    parent_scope:on_cleanup(function()
+      local_scope:cleanup()
+    end)
+  end
 end
 
 return effect
