@@ -14,10 +14,6 @@ local calendar_popup = require("ui.shell.calendar_popup")
 local calendar_visible = observe(calendar_popup, "visible")
 
 local function clock(s)
-  local bg = computed(function()
-    return calendar_visible.value and calendar_popup.screen == s and beautiful.bg_focus or nil
-  end)
-
   local clock_widget = widget.new({
     {
       {
@@ -31,7 +27,9 @@ local function clock(s)
       right = dpi(6),
       widget = wibox.container.margin,
     },
-    bg = bg,
+    bg = computed(function()
+      return calendar_visible.value and calendar_popup.screen == s and beautiful.bg_focus or nil
+    end),
     buttons = {
       awful.button({}, 1, function()
         awesome.emit_signal("shell::calendar_popup::show")
