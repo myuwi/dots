@@ -4,33 +4,60 @@ local dpi = beautiful.xresources.apply_dpi
 local gears = require("gears")
 local wibox = require("wibox")
 
+local signal = require("ui.core.signal")
+local effect = require("ui.core.signal.effect")
+local computed = require("ui.core.signal.computed")
+local map = require("ui.core.signal.map")
+
 local widget = require("ui.widgets")
 
-local volume_icon = wibox.widget({
-  image = beautiful.icon_path .. "volume_up.svg",
-  stylesheet = "* { fill:" .. beautiful.fg_normal .. " }",
-  forced_width = dpi(20),
-  forced_height = dpi(20),
+local volume = signal(0)
+local muted = signal(false)
+local hovered = signal(false)
+
+local function get_volume_svg()
+  if muted.value then
+    return "volume-x.svg"
+  end
+
+  if volume.value >= 50 then
+    return "volume-2.svg"
+  elseif volume.value >= 15 then
+    return "volume-1.svg"
+  elseif volume.value > 0 then
+    return "volume.svg"
+  else
+    return "volume-x.svg"
+  end
+end
+
+local volume_icon = widget.new({
+  image = computed(function()
+    return beautiful.icon_path .. get_volume_svg()
+  end),
+  stylesheet = "* { color:" .. beautiful.fg_normal .. " }",
+  forced_width = dpi(18),
+  forced_height = dpi(18),
   widget = wibox.widget.imagebox,
 })
 
-local volume_bar = wibox.widget({
+local volume_bar = widget.new({
   shape = gears.shape.rounded_bar,
   bar_shape = gears.shape.rounded_bar,
   color = beautiful.fg_focus,
   background_color = beautiful.bg_focus,
   max_value = 100,
-  value = 0,
+  value = volume,
   forced_height = dpi(6),
   widget = wibox.widget.progressbar,
 })
 
-local volume_text = wibox.widget({
-  text = "50",
+local volume_text = widget.new({
+  text = map(volume, tostring),
   halign = "center",
   valign = "center",
-  forced_width = dpi(20),
-  forced_height = dpi(20),
+  forced_width = dpi(18),
+  forced_height = dpi(18),
   widget = wibox.widget.textbox,
 })
 
@@ -76,17 +103,21 @@ volume_widget.buttons = {
   end),
 }
 
--- Keep widget visible while hovered
-local hovered = false
-
 volume_widget:connect_signal("mouse::enter", function()
-  hovered = true
-  hide_volume_widget:stop()
+  hovered.value = true
 end)
 
 volume_widget:connect_signal("mouse::leave", function()
-  hovered = false
-  hide_volume_widget:again()
+  hovered.value = false
+end)
+
+-- Keep widget visible while hovered
+effect(function()
+  if hovered.value then
+    hide_volume_widget:stop()
+  else
+    hide_volume_widget:again()
+  end
 end)
 
 local volume_script = "wpctl get-volume @DEFAULT_SINK@"
@@ -97,32 +128,20 @@ local function get_audio_status(callback)
     local volume_str = stdout:match("([%d.]+)")
     local muted_str = stdout:match("MUTED")
 
-    local volume = math.floor(tonumber(volume_str) * 100)
-    local muted = muted_str ~= nil
+    local v = math.floor(tonumber(volume_str) * 100)
+    local m = muted_str ~= nil
 
-    callback(volume, muted)
+    callback(v, m)
   end)
 end
 
 awesome.connect_signal("signal::volume", function()
-  get_audio_status(function(volume, muted)
-    if not muted then
-      if volume >= 50 then
-        volume_icon.image = beautiful.icon_path .. "volume_up.svg"
-      elseif volume > 0 then
-        volume_icon.image = beautiful.icon_path .. "volume_down.svg"
-      else
-        volume_icon.image = beautiful.icon_path .. "volume_mute.svg"
-      end
-    else
-      volume_icon.image = beautiful.icon_path .. "volume_off.svg"
-    end
-
-    volume_bar.value = volume
-    volume_text.text = tostring(volume)
+  get_audio_status(function(v, m)
+    volume.value = v
+    muted.value = m
 
     if volume_widget.visible then
-      if not hovered then
+      if not hovered.value then
         hide_volume_widget:again()
       end
     else
