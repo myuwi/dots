@@ -188,7 +188,7 @@ end
 
 -- TODO(perf): reuse elements instead of discarding them on every render?
 local function create_entries(apps)
-  if #apps <= 0 then
+  if #apps <= 0 and query.value ~= "" then
     return no_results
   end
 
