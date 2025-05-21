@@ -112,7 +112,7 @@ local last_focused_client = nil
 -- Widgets
 
 local text_input = widget.input({
-  placeholder = "Search...",
+  placeholder = "Search for apps...",
 })
 
 ---@param text string
