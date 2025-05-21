@@ -133,8 +133,6 @@ local no_results = widget.new({
     forced_height = dpi(18),
     widget = wibox.widget.textbox,
   },
-  -- TODO: Get rid of this prop
-  no_implicit_destroy = true,
   margins = dpi(12),
   widget = wibox.container.margin,
 })

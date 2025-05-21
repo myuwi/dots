@@ -4,6 +4,7 @@ local dpi = beautiful.xresources.apply_dpi
 local wibox = require("wibox")
 
 local hshape = require("helpers.shape")
+local window = require("ui.core.window")
 
 ---@class (exact) PopupArgs
 ---@field forced_width integer?
@@ -22,7 +23,8 @@ local function popup(args)
   local s = args.screen or screen.primary
   local widget = args.widget
 
-  local w = awful.popup({
+  return window.new({
+    window = awful.popup,
     screen = s,
     ontop = true,
     visible = false,
@@ -43,8 +45,6 @@ local function popup(args)
       widget = wibox.container.background,
     },
   })
-
-  return w
 end
 
 return popup

@@ -4,6 +4,8 @@ local wibox = require("wibox")
 
 local helpers = require("helpers")
 
+local window = require("ui.core.window")
+
 local taglist = require("ui.shell.bar.taglist")
 local tasklist = require("ui.shell.bar.tasklist")
 local systray = require("ui.shell.bar.systray")
@@ -15,7 +17,8 @@ awful.screen.connect_for_each_screen(function(s)
   local bar_margin = beautiful.bar_gap
   local bar_position = beautiful.bar_position
 
-  s.bar = awful.wibar({
+  s.bar = window.new({
+    window = awful.wibar,
     position = bar_position,
     screen = s,
     height = beautiful.bar_height,

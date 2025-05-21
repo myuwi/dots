@@ -36,6 +36,11 @@ function M.current()
   return scope_stack[#scope_stack]
 end
 
+---@return Scope[]
+function M.dump()
+  return scope_stack
+end
+
 ---@param invalidate_callback fun()
 ---@return Scope
 function M.create(invalidate_callback)
