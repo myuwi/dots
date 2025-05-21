@@ -1,5 +1,6 @@
 local context = require("ui.core.signal.internal.context")
 
+---@param fn fun(): fun()?
 local function effect(fn)
   ---@type Scope
   local local_scope

@@ -1,13 +1,16 @@
 local signal = require("ui.core.signal")
 
-local function observe(source, property)
-  local s = signal(nil)
+---@param emitter table
+---@param property string
+---@return Signal
+local function observe(emitter, property)
+  local sig = signal(nil)
 
-  source:connect_signal("property::" .. property, function()
-    s.value = source[property]
+  emitter:connect_signal("property::" .. property, function()
+    sig.value = emitter[property]
   end)
 
-  return s
+  return sig
 end
 
 return observe

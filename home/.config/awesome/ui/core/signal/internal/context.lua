@@ -1,7 +1,7 @@
 local gtable = require("gears.table")
 
 ---@class Scope
----@field invalidate_callback? fun(sig: Signal): nil
+---@field invalidate? fun(sig: Signal): nil
 ---@field private _dependencies table<Signal, fun()>
 ---@field private _cleanups (fun())[]
 local Scope = {}
@@ -41,13 +41,13 @@ function M.dump()
   return scope_stack
 end
 
----@param invalidate_callback fun()
+---@param invalidate_callback? fun()
 ---@return Scope
 function M.create(invalidate_callback)
   local ret = {
+    invalidate = invalidate_callback,
     _dependencies = {},
     _cleanups = {},
-    invalidate_callback = invalidate_callback,
   }
 
   gtable.crush(ret, Scope, true)

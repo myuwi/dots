@@ -46,8 +46,8 @@ end
 function Signal.mt:__index(key)
   if key == "value" then
     local current_scope = context.current()
-    if current_scope and current_scope.invalidate_callback then
-      self:subscribe(current_scope.invalidate_callback, false)
+    if current_scope and current_scope.invalidate then
+      self:subscribe(current_scope.invalidate, false)
     end
 
     return self._value
