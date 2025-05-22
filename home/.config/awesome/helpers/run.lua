@@ -3,7 +3,7 @@ local awful = require("awful")
 local M = {}
 
 local script = [[
-  pgrep -U $USER -x $(basename "%s" | cut -d ' ' -f 1 | cut -c 1-15) || \
+  pgrep -U $USER -x $(basename "%s" | cut -d ' ' -f 1 | cut -c 1-15) >/dev/null || \
     (nohup %s >/dev/null 2>&1 &)
 ]]
 
