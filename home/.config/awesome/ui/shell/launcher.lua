@@ -85,6 +85,7 @@ local function launch(app)
   end
 
   awful.spawn(cmd, false)
+  launcher.hide()
 end
 
 local function move_selection(amount)
@@ -172,7 +173,6 @@ local function create_entry(app, i)
     buttons = {
       awful.button({ "Any" }, 1, function()
         launch(app)
-        launcher.hide()
       end),
     },
     shape = helpers.shape.rounded_rect(dpi(4)),
@@ -257,7 +257,6 @@ text_input.keypressed_callback = function(mods, key)
   if key == "Return" then
     local app = filtered_apps.value[selected_index.value]
     launch(app)
-    launcher.hide()
   end
 
   local shift = mods[1] == "Shift"
