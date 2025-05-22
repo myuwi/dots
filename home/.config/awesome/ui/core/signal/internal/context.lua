@@ -43,7 +43,7 @@ end
 
 ---@param invalidate_callback? fun()
 ---@return Scope
-function M.create(invalidate_callback)
+function M.new(invalidate_callback)
   local ret = {
     invalidate = invalidate_callback,
     _dependencies = {},

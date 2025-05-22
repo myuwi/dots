@@ -1,25 +1,41 @@
 local gtable = require("gears.table")
 local context = require("ui.core.signal.internal.context")
 
----@alias SignalCallbackFn fun(value: unknown): nil
+---@alias OnSubscribeCallback fun(): nil
+---@alias SignalCallback fun(value: unknown): nil
 
 ---@class Signal
 ---@field value unknown
 ---@field private mt table
----@field private _subs table<SignalCallbackFn, true>
+---@field private _on_subscribe_callbacks OnSubscribeCallback[]
+---@field private _subscribers SignalCallback[]
 ---@field private _value any
 ---@field private __type "Signal"
 local Signal = { mt = {} }
 
 Signal.__type = "Signal"
 
----@param callback SignalCallbackFn A callback function to invoke when the signal's value changes
+---@return boolean # A boolean value indicating whether this signal has active subscribers
+function Signal:has_subscribers()
+  return #self._subscribers > 0
+end
+
+---@param callback OnSubscribeCallback Add a new callback to call when a new subscription is made (called before invoking subscribe callback)
+function Signal:on_subscribe(callback)
+  table.insert(self._on_subscribe_callbacks, callback)
+end
+
+---@param callback SignalCallback A callback function to invoke when the signal's value changes
 ---@param immediate? boolean Invoke the callback immediately (default: true)
 ---@return fun(): nil unsubscribe A function to unsubscribe the callback from the signal
 function Signal:subscribe(callback, immediate)
   immediate = immediate == nil and true or immediate
 
-  self._subs[callback] = true
+  table.insert(self._subscribers, callback)
+
+  for _, subscribe_callback in ipairs(self._on_subscribe_callbacks) do
+    subscribe_callback()
+  end
 
   if immediate then
     callback(self._value)
@@ -38,9 +54,14 @@ function Signal:subscribe(callback, immediate)
   return unsubscribe
 end
 
----@param callback SignalCallbackFn A callback function to unsubscribe from the signal
+---@param callback SignalCallback A callback function to unsubscribe from the signal
 function Signal:unsubscribe(callback)
-  self._subs[callback] = nil
+  for i, fn in ipairs(self._subscribers) do
+    if fn == callback then
+      table.remove(self._subscribers, i)
+      break
+    end
+  end
 end
 
 function Signal.mt:__index(key)
@@ -56,13 +77,15 @@ function Signal.mt:__index(key)
   end
 end
 
+local unpack = unpack or table.unpack
 function Signal.mt:__newindex(key, new_value)
   if key == "value" then
     if new_value ~= self._value then
       self._value = new_value
 
-      for cb, _ in pairs(self._subs) do
-        cb(self._value)
+      local subs_copy = { unpack(self._subscribers) }
+      for _, notify_callback in ipairs(subs_copy) do
+        notify_callback(self._value)
       end
     end
   else
@@ -74,7 +97,11 @@ end
 ---@param initial_value any
 ---@return Signal
 local function new(initial_value)
-  local ret = { _value = initial_value, _subs = {} }
+  local ret = {
+    _value = initial_value,
+    _on_subscribe_callbacks = {},
+    _subscribers = {},
+  }
 
   gtable.crush(ret, Signal, true)
 

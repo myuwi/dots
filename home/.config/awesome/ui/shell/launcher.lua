@@ -292,9 +292,10 @@ function launcher.hide()
   last_focused_client = nil
   click_away_handler.detach()
 
-  all_apps.value = {}
-
+  text_input:reset()
   text_input:unfocus()
+
+  all_apps.value = {}
 end
 
 function launcher.cancel()
@@ -320,7 +321,6 @@ function launcher.show()
   client.focus = nil
   click_away_handler.attach(launcher.cancel)
 
-  text_input:reset()
   text_input:focus()
 
   launcher_widget.visible = true

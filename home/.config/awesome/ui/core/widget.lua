@@ -78,15 +78,21 @@ function Widget.new(args)
   local signals = {}
 
   -- Create a scope to automagically clean up signal subscriptions
+  ---@type Scope?
   local local_scope
-  local function attach()
-    -- Clean up just in case
+
+  local function cleanup()
     if local_scope then
       local_scope:cleanup()
     end
+  end
+
+  local function attach()
+    -- Clean up just in case
+    cleanup()
 
     -- Reset and push local scope
-    local_scope = context.create(nil)
+    local_scope = context.new(nil)
     context.push(local_scope)
 
     for _, v in ipairs(signals) do
@@ -140,7 +146,7 @@ function Widget.new(args)
 
     if num_attached == 0 then
       new_widget.attached = false
-      local_scope:cleanup()
+      cleanup()
 
       for _, value in ipairs(new_widget.children) do
         value:emit_signal("detach")
@@ -151,11 +157,7 @@ function Widget.new(args)
   -- TODO: Is this needed?
   local parent_scope = context.current()
   if parent_scope then
-    parent_scope:on_cleanup(function()
-      if local_scope then
-        local_scope:cleanup()
-      end
-    end)
+    parent_scope:on_cleanup(cleanup)
   end
 
   return new_widget
