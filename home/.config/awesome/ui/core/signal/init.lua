@@ -80,7 +80,7 @@ end
 local unpack = unpack or table.unpack
 function Signal.mt:__newindex(key, new_value)
   if key == "value" then
-    if new_value ~= self._value then
+    if self._value ~= new_value then
       self._value = new_value
 
       local subs_copy = { unpack(self._subscribers) }
