@@ -57,20 +57,39 @@ function M.any(tbl, predicate)
   return false
 end
 
---- @param tbl table Table to stringify
-function M.stringify(tbl)
+local function stringify_impl(tbl, depth, current_depth)
   if type(tbl) ~= "table" then
     return tostring(tbl)
   end
 
+  if next(tbl) == nil then
+    return "{}"
+  end
+
+  if current_depth >= depth then
+    return "{ ... }"
+  end
+
   local s = "{ "
   for k, v in pairs(tbl) do
-    if type(k) ~= "number" then
-      k = '"' .. tostring(k) .. '"'
+    local key = type(k) == "number" and k or '"' .. tostring(k) .. '"'
+    local value
+
+    if type(v) == "string" then
+      value = '"' .. v .. '"'
+    else
+      value = stringify_impl(v, depth, current_depth + 1)
     end
-    s = s .. "[" .. k .. "] = " .. M.stringify(v) .. ", "
+
+    s = s .. "[" .. key .. "] = " .. value .. ", "
   end
   return s .. "}"
+end
+
+--- @param tbl any Table to stringify
+--- @param depth? integer Maximum recursion depth (default: 3)
+function M.stringify(tbl, depth)
+  return stringify_impl(tbl, depth or 3, 0)
 end
 
 return M
