@@ -66,7 +66,7 @@ end)
 
 local function clamp_selection()
   scroll_position.value = math.min(math.max(#filtered_apps.value - page_size, 0), scroll_position.value)
-  selected_index.value = math.min(math.max(selected_index.value, 1), #filtered_apps.value)
+  selected_index.value = math.max(math.min(selected_index.value, #filtered_apps.value), 1)
 end
 
 effect(clamp_selection)
