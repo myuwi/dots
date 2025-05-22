@@ -168,7 +168,7 @@ local function create_entry(app, i)
       widget = wibox.container.margin,
     },
     bg = computed(function()
-      return i == selected_index.value and beautiful.bg_focus or beautiful.colors.transparent
+      return i == selected_index.value and beautiful.bg_focus or nil
     end),
     buttons = {
       awful.button({ "Any" }, 1, function()

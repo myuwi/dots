@@ -24,7 +24,7 @@ theme.colors = colors
 theme.bg_normal = colors.base
 theme.bg_focus = hcolor.opacity(colors.muted, 0.15)
 theme.bg_urgent = colors.urgent
-theme.bg_minimize = colors.transparent
+theme.bg_minimize = nil
 theme.bg_bar = colors.base
 theme.bg_systray = theme.bg_bar
 
@@ -73,9 +73,9 @@ theme.tasklist_plain_task_name = true
 theme.systray_icon_spacing = dpi(6)
 
 -- Window Switcher
-theme.window_switcher_hover = hcolor.opacity(colors.muted, 0.25)
 theme.window_switcher_focus = theme.bg_focus
-theme.window_switcher_inactive = colors.transparent
+theme.window_switcher_hover = hcolor.opacity(colors.muted, 0.25)
+theme.window_switcher_inactive = nil
 
 -- Notifications
 theme.notification_width = dpi(360)
