@@ -77,30 +77,11 @@ function Widget.new(args)
   ---@type { signal: Signal, callback: fun(v) }[]
   local signals = {}
 
-  -- Create a scope to automagically clean up signal subscriptions
-  ---@type Scope?
-  local local_scope
-
-  local function cleanup()
-    if local_scope then
-      local_scope:cleanup()
-    end
-  end
-
-  local function attach()
-    -- Clean up just in case
-    cleanup()
-
-    -- Reset and push local scope
-    local_scope = context.new(nil)
-    context.push(local_scope)
-
+  local attach, cleanup = context.with_reactive_scope(function()
     for _, v in ipairs(signals) do
       v.signal:subscribe(v.callback)
     end
-
-    context.pop()
-  end
+  end)
 
   local children = {}
 
@@ -153,12 +134,6 @@ function Widget.new(args)
       end
     end
   end)
-
-  -- TODO: Is this needed?
-  local parent_scope = context.current()
-  if parent_scope then
-    parent_scope:on_cleanup(cleanup)
-  end
 
   return new_widget
 end

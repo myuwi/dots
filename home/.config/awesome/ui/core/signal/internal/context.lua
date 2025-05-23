@@ -55,4 +55,54 @@ function M.new(invalidate_callback)
   return ret
 end
 
+---@param callback fun(scope: Scope): nil
+---@param should_run? fun(): boolean
+---@return fun() run
+---@return fun() callback
+---@return fun() is_dirty
+function M.with_reactive_scope(callback, should_run)
+  ---@type Scope?
+  local current_scope
+  local dirty = true
+
+  local function cleanup()
+    if current_scope then
+      current_scope:cleanup()
+    end
+  end
+
+  local function run()
+    if should_run and not should_run() then
+      dirty = true
+      return
+    end
+
+    dirty = false
+
+    -- Perform cleanup on the local scope
+    cleanup()
+
+    -- Reset and push local scope
+    current_scope = M.new(run)
+    M.push(current_scope)
+
+    -- Run callback within the reactive scope
+    callback(current_scope)
+
+    M.pop()
+  end
+
+  local function is_dirty()
+    return dirty
+  end
+
+  -- Register cleanup in parent scope if any
+  local parent_scope = M.current()
+  if parent_scope then
+    parent_scope:on_cleanup(cleanup)
+  end
+
+  return run, cleanup, is_dirty
+end
+
 return M

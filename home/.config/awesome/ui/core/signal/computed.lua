@@ -7,49 +7,21 @@ local signal = require("ui.core.signal")
 ---@return Signal
 local function computed(fn)
   local sig = signal(nil)
-  local dirty = true
 
-  ---@type Scope?
-  local local_scope
-
-  local function cleanup()
-    if local_scope then
-      local_scope:cleanup()
-    end
+  local function should_run()
+    return sig:has_subscribers()
   end
 
-  local function run()
-    if not sig:has_subscribers() then
-      dirty = true
-      return
-    end
-
-    dirty = false
-
-    -- Perform cleanup on the local scope
-    cleanup()
-
-    -- Reset and push local scope
-    local_scope = context.new(run)
-    context.push(local_scope)
-
+  local run, _, is_dirty = context.with_reactive_scope(function()
     sig.value = fn()
-
-    context.pop()
-  end
+  end, should_run)
 
   -- Activate when someone subscribes
   sig:on_subscribe(function()
-    if dirty then
+    if is_dirty() then
       run()
     end
   end)
-
-  -- Register cleanup in parent scope if any
-  local parent_scope = context.current()
-  if parent_scope then
-    parent_scope:on_cleanup(cleanup)
-  end
 
   return sig
 end
