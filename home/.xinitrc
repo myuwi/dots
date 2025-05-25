@@ -1,3 +1,3 @@
 #!/bin/sh
 xrdb -merge ~/.Xresources
-exec awesome >>~/.cache/awesome/stdout 2>>~/.cache/awesome/stderr
+exec awesome >>/tmp/awesome.log 2>&1
