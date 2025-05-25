@@ -6,12 +6,11 @@ local context = require("ui.core.signal.internal.context")
 
 ---@class Signal
 ---@field value unknown
----@field private mt table
 ---@field private _on_subscribe_callbacks OnSubscribeCallback[]
 ---@field private _subscribers SignalCallback[]
 ---@field private _value any
 ---@field private __type "Signal"
-local Signal = { mt = {} }
+local Signal = {}
 
 Signal.__type = "Signal"
 
@@ -64,32 +63,26 @@ function Signal:unsubscribe(callback)
   end
 end
 
-function Signal.mt:__index(key)
-  if key == "value" then
-    local current_scope = context.current()
-    if current_scope and current_scope.invalidate then
-      self:subscribe(current_scope.invalidate, false)
-    end
-
-    return self._value
-  else
-    return rawget(self, key)
+---@private
+function Signal:get_value()
+  local current_scope = context.current()
+  if current_scope and current_scope.invalidate then
+    self:subscribe(current_scope.invalidate, false)
   end
+
+  return self._value
 end
 
 local unpack = unpack or table.unpack
-function Signal.mt:__newindex(key, new_value)
-  if key == "value" then
-    if self._value ~= new_value then
-      self._value = new_value
+---@private
+function Signal:set_value(value)
+  if self._value ~= value then
+    self._value = value
 
-      local subs_copy = { unpack(self._subscribers) }
-      for _, notify_callback in ipairs(subs_copy) do
-        notify_callback(self._value)
-      end
+    local subs_copy = { unpack(self._subscribers) }
+    for _, notify_callback in ipairs(subs_copy) do
+      notify_callback(self._value)
     end
-  else
-    rawset(self, key, new_value)
   end
 end
 
@@ -105,7 +98,24 @@ local function new(initial_value)
 
   gtable.crush(ret, Signal, true)
 
-  return setmetatable(ret, Signal.mt)
+  setmetatable(ret, {
+    __index = function(self, key)
+      if rawget(self, "get_" .. key) then
+        return self["get_" .. key](self)
+      else
+        return rawget(self, key)
+      end
+    end,
+    __newindex = function(self, key, value)
+      if rawget(self, "set_" .. key) then
+        self["set_" .. key](self, value)
+      else
+        rawset(self, key, value)
+      end
+    end,
+  })
+
+  return ret
 end
 
 ---@class SignalModule
