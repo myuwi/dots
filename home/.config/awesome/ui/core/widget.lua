@@ -3,6 +3,7 @@ local wibox = require("wibox")
 
 local Signal = require("ui.core.signal")
 local context = require("ui.core.signal.internal.context")
+local util = require("ui.core.util")
 
 ---@class Widget
 local Widget = {}
@@ -12,13 +13,6 @@ local function is_widget(obj)
   return type(obj) == "table" and (obj.widget or obj.layout or rawget(obj, "is_widget"))
 end
 
-local function wrap(w, name, fn)
-  local old_fn = w[name]
-  w[name] = function(_, ...)
-    old_fn(w, fn(w, ...))
-  end
-end
-
 local function set_children(self, new_children)
   if not new_children then
     new_children = {}
@@ -26,7 +20,7 @@ local function set_children(self, new_children)
     new_children = { new_children }
   end
 
-  if self.attached then
+  if self._private.mount_count and self._private.mount_count > 0 then
     for _, child in ipairs(new_children) do
       for _, child_old in ipairs(self.children) do
         if child == child_old then
@@ -34,7 +28,7 @@ local function set_children(self, new_children)
         end
       end
 
-      child:emit_signal("attach")
+      child:emit_signal("mount")
 
       ::continue::
     end
@@ -46,7 +40,7 @@ local function set_children(self, new_children)
         end
       end
 
-      child:emit_signal("detach")
+      child:emit_signal("unmount")
 
       ::continue::
     end
@@ -63,21 +57,21 @@ function Widget.new(args)
 
   args.widget = args.widget or args.layout
 
-  local new_widget = wibox.widget.base.make_widget_declarative({
+  local widget = wibox.widget.base.make_widget_declarative({
     widget = args.widget,
   })
 
   args.widget, args.layout = nil, nil
 
-  gtable.crush(new_widget, Widget, true)
+  gtable.crush(widget, Widget, true)
 
   -- TODO: special handling for add, reset, etc.?
-  wrap(new_widget, "set_children", set_children)
+  util.wrap(widget, "set_children", set_children)
 
   ---@type { signal: Signal, callback: fun(v) }[]
   local signals = {}
 
-  local attach, cleanup = context.with_reactive_scope(function()
+  local mount, cleanup = context.with_reactive_scope(function()
     for _, v in ipairs(signals) do
       v.signal:subscribe(v.callback)
     end
@@ -93,49 +87,47 @@ function Widget.new(args)
         signals[#signals + 1] = {
           signal = value,
           callback = function(v)
-            new_widget[key] = v
+            widget[key] = v
           end,
         }
       end
     elseif is_widget(value) then
       children[#children + 1] = Widget.new(value)
     else
-      new_widget[key] = value
+      widget[key] = value
     end
   end
 
-  new_widget.children = children
+  widget.children = children
 
-  -- Keep track of how many times this widget (instance) is shown on the UI
-  local num_attached = 0
+  -- Keep track of how many times this widget (instance) is shown on the UI to (un)subscribe signals
+  widget._private.mount_count = 0
 
-  new_widget:connect_signal("attach", function()
-    if num_attached == 0 then
-      new_widget.attached = true
-      attach()
-
-      for _, value in ipairs(new_widget.children) do
-        value:emit_signal("attach")
-      end
+  widget:connect_signal("mount", function()
+    if widget._private.mount_count == 0 then
+      mount()
     end
 
-    num_attached = num_attached + 1
+    widget._private.mount_count = widget._private.mount_count + 1
+
+    for _, value in ipairs(widget.children) do
+      value:emit_signal("mount")
+    end
   end)
 
-  new_widget:connect_signal("detach", function()
-    num_attached = num_attached - 1
+  widget:connect_signal("unmount", function()
+    widget._private.mount_count = widget._private.mount_count - 1
 
-    if num_attached == 0 then
-      new_widget.attached = false
+    if widget._private.mount_count == 0 then
       cleanup()
+    end
 
-      for _, value in ipairs(new_widget.children) do
-        value:emit_signal("detach")
-      end
+    for _, value in ipairs(widget.children) do
+      value:emit_signal("unmount")
     end
   end)
 
-  return new_widget
+  return widget
 end
 
 return Widget

@@ -113,6 +113,10 @@ end)
 
 -- Keep widget visible while hovered
 effect(function()
+  if not volume_widget.visible then
+    return
+  end
+
   if hovered.value then
     hide_volume_widget:stop()
   else
