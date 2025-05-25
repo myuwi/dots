@@ -17,6 +17,13 @@ local function set_visible(w, visible)
     end
   end
 
+  -- Hacky way to avoid popup not updating its position for one frame after it is made visible
+  -- Possibly due to this https://github.com/awesomeWM/awesome/blob/8b1f8958b46b3e75618bc822d512bb4d449a89aa/lib/awful/popup.lua#L115
+  -- TODO: Is this okay to use?
+  if w._apply_size_now then
+    w:_apply_size_now()
+  end
+
   w.drawin.visible = visible
 end
 
