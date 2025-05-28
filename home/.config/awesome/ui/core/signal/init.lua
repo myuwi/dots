@@ -1,17 +1,16 @@
 local gtable = require("gears.table")
 local context = require("ui.core.signal.internal.context")
 
----@alias OnSubscribeCallback fun(): nil
----@alias SignalCallback fun(value: unknown): nil
+---@alias SignalCallback fun(): nil
 
 ---@class Signal
 ---@field value unknown
----@field private _on_subscribe_callbacks OnSubscribeCallback[]
----@field private _subscribers SignalCallback[]
+---@field private _on_subscribe_callbacks SignalCallback[]
+---@field private _subscribers Scope[]
 ---@field private _value any
----@field private __type "Signal"
 local Signal = {}
 
+---@private
 Signal.__type = "Signal"
 
 ---@return boolean # A boolean value indicating whether this signal has active subscribers
@@ -19,44 +18,26 @@ function Signal:has_subscribers()
   return #self._subscribers > 0
 end
 
----@param callback OnSubscribeCallback Add a new callback to call when a new subscription is made (called before invoking subscribe callback)
+---@param callback SignalCallback Add a new callback to call when a new subscription is made (called before invoking subscribe callback)
 function Signal:on_subscribe(callback)
   table.insert(self._on_subscribe_callbacks, callback)
 end
 
----@param callback SignalCallback A callback function to invoke when the signal's value changes
----@param immediate? boolean Invoke the callback immediately (default: true)
----@return fun(): nil unsubscribe A function to unsubscribe the callback from the signal
-function Signal:subscribe(callback, immediate)
-  immediate = immediate == nil and true or immediate
-
-  table.insert(self._subscribers, callback)
+---@private
+---@param eval_context Scope The eval context to subscribe to
+function Signal:_subscribe(eval_context)
+  table.insert(self._subscribers, eval_context)
 
   for _, subscribe_callback in ipairs(self._on_subscribe_callbacks) do
     subscribe_callback()
   end
-
-  if immediate then
-    callback(self._value)
-  end
-
-  local function unsubscribe()
-    self:unsubscribe(callback)
-  end
-
-  -- Register cleanup in current reactive scope (if any)
-  local current_scope = context.current()
-  if current_scope then
-    current_scope:on_cleanup(unsubscribe)
-  end
-
-  return unsubscribe
 end
 
----@param callback SignalCallback A callback function to unsubscribe from the signal
-function Signal:unsubscribe(callback)
+---@private
+---@param eval_context Scope The eval context to unsubscribe from
+function Signal:_unsubscribe(eval_context)
   for i, fn in ipairs(self._subscribers) do
-    if fn == callback then
+    if fn == eval_context then
       table.remove(self._subscribers, i)
       break
     end
@@ -70,34 +51,24 @@ end
 
 ---@private
 function Signal:get_value()
-  local current_scope = context.current()
-
-  if current_scope and current_scope.invalidate then
-    -- TODO: Optimize
-    for _, fn in ipairs(self._subscribers) do
-      if fn == current_scope.invalidate then
-        goto found
-      end
-    end
-
-    self:subscribe(current_scope.invalidate, false)
-
-    ::found::
-  end
-
+  context.add_dependency(self)
   return self._value
 end
 
 local unpack = unpack or table.unpack
 ---@private
+function Signal:_notify()
+  local subs_copy = { unpack(self._subscribers) }
+  for _, node in ipairs(subs_copy) do
+    node:_notify()
+  end
+end
+
+---@private
 function Signal:set_value(value)
   if self._value ~= value then
     self._value = value
-
-    local subs_copy = { unpack(self._subscribers) }
-    for _, notify_callback in ipairs(subs_copy) do
-      notify_callback(self._value)
-    end
+    self:_notify()
   end
 end
 

@@ -1,58 +1,63 @@
-local gtable = require("gears.table")
-
 ---@class Scope
----@field invalidate? fun(sig: Signal): nil
----@field private _dependencies table<Signal, fun()>
----@field private _cleanups (fun())[]
+---@field private _cleanup? fun(): nil
+---@field private _notify_callback? fun(): nil
+---@field private _sources Signal[]
+---@field private _children Scope[]
 local Scope = {}
+Scope.__index = Scope
 
-function Scope:on_cleanup(callback)
-  table.insert(self._cleanups, callback)
+---@param signal Signal
+function Scope:add_source(signal)
+  table.insert(self._sources, signal)
+
+  ---@diagnostic disable-next-line: invisible
+  signal:_subscribe(self)
+end
+
+---@param child Scope
+function Scope:add_child(child)
+  table.insert(self._children, child)
 end
 
 function Scope:cleanup()
-  for _, cleanup in ipairs(self._cleanups or {}) do
-    cleanup()
+  while #self._sources > 0 do
+    ---@type Signal
+    local sig = table.remove(self._sources, 1)
+    ---@diagnostic disable-next-line: invisible
+    sig:_unsubscribe(self)
+  end
+
+  while #self._children > 0 do
+    ---@type Scope
+    local child = table.remove(self._children, 1)
+    child:_notify()
+  end
+
+  if self._cleanup then
+    self._cleanup()
   end
 end
 
----@type Scope[]
-local scope_stack = {}
+function Scope:_notify()
+  self._notify_callback()
+end
 
+---@type Scope?
+local eval_context = nil
+
+---@class Context
 local M = {}
 
----@param scope Scope
-function M.push(scope)
-  table.insert(scope_stack, scope)
-end
-
----@return Scope?
-function M.pop()
-  return table.remove(scope_stack)
-end
-
----@return Scope?
-function M.current()
-  return scope_stack[#scope_stack]
-end
-
----@return Scope[]
-function M.dump()
-  return scope_stack
-end
-
----@param invalidate_callback? fun()
+---@param notify_callback? fun()
 ---@return Scope
-function M.new(invalidate_callback)
+local function new_scope(notify_callback)
   local ret = {
-    invalidate = invalidate_callback,
-    _dependencies = {},
-    _cleanups = {},
+    _notify_callback = notify_callback,
+    _sources = {},
+    _children = {},
   }
 
-  gtable.crush(ret, Scope, true)
-
-  return ret
+  return setmetatable(ret, Scope)
 end
 
 ---@param callback fun(scope: Scope): nil
@@ -61,14 +66,12 @@ end
 ---@return fun() callback
 ---@return fun() is_dirty
 function M.with_reactive_scope(callback, should_run)
-  ---@type Scope?
+  ---@type Scope
   local current_scope
   local dirty = true
 
   local function cleanup()
-    if current_scope then
-      current_scope:cleanup()
-    end
+    current_scope:cleanup()
   end
 
   local function run()
@@ -82,27 +85,46 @@ function M.with_reactive_scope(callback, should_run)
     -- Perform cleanup on the local scope
     cleanup()
 
-    -- Reset and push local scope
-    current_scope = M.new(run)
-    M.push(current_scope)
+    local prev = eval_context
+
+    eval_context = current_scope
+    current_scope = eval_context
 
     -- Run callback within the reactive scope
-    callback(current_scope)
+    callback(eval_context)
 
-    M.pop()
+    eval_context = prev
   end
 
   local function is_dirty()
     return dirty
   end
 
+  current_scope = new_scope(run)
+
   -- Register cleanup in parent scope if any
-  local parent_scope = M.current()
-  if parent_scope then
-    parent_scope:on_cleanup(cleanup)
+  if eval_context then
+    eval_context:add_child(current_scope)
   end
 
   return run, cleanup, is_dirty
+end
+
+---@param signal Signal
+function M.add_dependency(signal)
+  if not eval_context then
+    return
+  end
+
+  -- TODO: Optimize
+  ---@diagnostic disable-next-line: invisible
+  for _, scope in ipairs(signal._subscribers) do
+    if scope == eval_context then
+      return
+    end
+  end
+
+  eval_context:add_source(signal)
 end
 
 return M

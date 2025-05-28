@@ -2,7 +2,7 @@ local gtable = require("gears.table")
 local wibox = require("wibox")
 
 local Signal = require("ui.core.signal")
-local context = require("ui.core.signal.internal.context")
+local effect = require("ui.core.signal.effect")
 local util = require("ui.core.util")
 
 ---@class Widget
@@ -68,14 +68,28 @@ function Widget.new(args)
   -- TODO: special handling for add, reset, etc.?
   util.wrap(widget, "set_children", set_children)
 
-  ---@type { signal: Signal, callback: fun(v) }[]
+  ---@type table<string, Signal>
   local signals = {}
 
-  local mount, cleanup = context.with_reactive_scope(function()
-    for _, v in ipairs(signals) do
-      v.signal:subscribe(v.callback)
+  local function attach_signals()
+    local effect_cleanups = {}
+
+    for k, sig in pairs(signals) do
+      effect_cleanups[k] = effect(function()
+        widget[k] = sig.value
+      end)
     end
-  end)
+
+    local function detach_signals()
+      for _, dispose in pairs(effect_cleanups) do
+        dispose()
+      end
+    end
+
+    return detach_signals
+  end
+
+  local cleanup
 
   local children = {}
 
@@ -84,12 +98,7 @@ function Widget.new(args)
     if Signal.is_signal(value) then
       ---@cast value Signal
       if type(key) == "string" then
-        signals[#signals + 1] = {
-          signal = value,
-          callback = function(v)
-            widget[key] = v
-          end,
-        }
+        signals[key] = value
       end
     elseif is_widget(value) then
       children[#children + 1] = Widget.new(value)
@@ -105,7 +114,7 @@ function Widget.new(args)
 
   widget:connect_signal("mount", function()
     if widget._private.mount_count == 0 then
-      mount()
+      cleanup = attach_signals()
     end
 
     widget._private.mount_count = widget._private.mount_count + 1
@@ -118,8 +127,9 @@ function Widget.new(args)
   widget:connect_signal("unmount", function()
     widget._private.mount_count = widget._private.mount_count - 1
 
-    if widget._private.mount_count == 0 then
+    if widget._private.mount_count == 0 and cleanup then
       cleanup()
+      cleanup = nil
     end
 
     for _, value in ipairs(widget.children) do
