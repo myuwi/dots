@@ -71,8 +71,18 @@ end
 ---@private
 function Signal:get_value()
   local current_scope = context.current()
+
   if current_scope and current_scope.invalidate then
+    -- TODO: Optimize
+    for _, fn in ipairs(self._subscribers) do
+      if fn == current_scope.invalidate then
+        goto found
+      end
+    end
+
     self:subscribe(current_scope.invalidate, false)
+
+    ::found::
   end
 
   return self._value
