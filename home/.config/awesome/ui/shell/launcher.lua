@@ -59,14 +59,14 @@ local function filter_apps(apps, query_text)
   return filtered_apps
 end
 
--- TODO: batch(fn)
+-- TODO: batch / dedupe effects
 local filtered_apps = computed(function()
   return filter_apps(all_apps.value, query.value)
 end)
 
 local function clamp_selection()
-  scroll_position.value = math.min(math.max(#filtered_apps.value - page_size, 0), scroll_position.value)
-  selected_index.value = math.max(math.min(selected_index.value, #filtered_apps.value), 1)
+  scroll_position.value = math.min(math.max(#filtered_apps.value - page_size, 0), scroll_position:peek())
+  selected_index.value = math.max(math.min(selected_index:peek(), #filtered_apps.value), 1)
 end
 
 effect(clamp_selection)
@@ -188,7 +188,7 @@ end
 
 -- TODO(perf): reuse elements instead of discarding them on every render?
 local function create_entries(apps)
-  if #apps <= 0 and query.value ~= "" then
+  if #apps <= 0 then
     return no_results
   end
 

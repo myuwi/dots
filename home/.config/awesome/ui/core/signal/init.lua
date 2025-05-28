@@ -63,6 +63,11 @@ function Signal:unsubscribe(callback)
   end
 end
 
+---Peek the signal's current value without subscribing to it
+function Signal:peek()
+  return self._value
+end
+
 ---@private
 function Signal:get_value()
   local current_scope = context.current()
