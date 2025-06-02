@@ -1,130 +1,127 @@
----@class Scope
----@field private _cleanup? fun(): nil
----@field private _notify_callback? fun(): nil
----@field private _sources Signal[]
----@field private _children Scope[]
-local Scope = {}
-Scope.__index = Scope
+---@diagnostic disable: invisible
+---@class Source
+---@field value unknown
+---@field private _subscribers Subscriber[]
 
----@param signal Signal
-function Scope:add_source(signal)
-  table.insert(self._sources, signal)
+---@class Subscriber
+---@field private _dirty boolean
+---@field private _disposed boolean
+---@field private _parent Subscriber
+---@field private _children Subscriber[]
+---@field private _sources Source[]
+---@field private _dispose fun()
+---@field private _cleanup? fun()
 
-  ---@diagnostic disable-next-line: invisible
-  signal:_subscribe(self)
-end
+---@type Subscriber?
+local active_scope = nil
+local batch_depth = 0
 
----@param child Scope
-function Scope:add_child(child)
-  table.insert(self._children, child)
-end
-
-function Scope:cleanup()
-  while #self._sources > 0 do
-    ---@type Signal
-    local sig = table.remove(self._sources, 1)
-    ---@diagnostic disable-next-line: invisible
-    sig:_unsubscribe(self)
-  end
-
-  while #self._children > 0 do
-    ---@type Scope
-    local child = table.remove(self._children, 1)
-    child:_notify()
-  end
-
-  if self._cleanup then
-    self._cleanup()
-  end
-end
-
-function Scope:_notify()
-  self._notify_callback()
-end
-
----@type Scope?
-local eval_context = nil
+---@type Effect[]
+local effect_queue = {}
 
 ---@class Context
 local M = {}
 
----@param notify_callback? fun()
----@return Scope
-local function new_scope(notify_callback)
-  local ret = {
-    _notify_callback = notify_callback,
-    _sources = {},
-    _children = {},
-  }
+---@param node Subscriber | nil
+---@return fun()
+---@nodiscard
+function M.start_scope(node)
+  local prev = active_scope
+  active_scope = node
 
-  return setmetatable(ret, Scope)
+  return function()
+    active_scope = prev
+  end
 end
 
----@param callback fun(scope: Scope): nil
----@param should_run? fun(): boolean
----@return fun() run
----@return fun() callback
----@return fun() is_dirty
-function M.with_reactive_scope(callback, should_run)
-  ---@type Scope
-  local current_scope
-  local dirty = true
+function M.link(dep, sub)
+  table.insert(sub._sources, dep)
+  table.insert(dep._subscribers, sub)
+end
 
-  local function cleanup()
-    current_scope:cleanup()
-  end
-
-  local function run()
-    if should_run and not should_run() then
-      dirty = true
-      return
+function M.unlink(dep, sub)
+  for i, s in ipairs(dep._subscribers) do
+    if s == sub then
+      table.remove(dep._subscribers, i)
+      break
     end
-
-    dirty = false
-
-    -- Perform cleanup on the local scope
-    cleanup()
-
-    local prev = eval_context
-
-    eval_context = current_scope
-    current_scope = eval_context
-
-    -- Run callback within the reactive scope
-    callback(eval_context)
-
-    eval_context = prev
   end
-
-  local function is_dirty()
-    return dirty
-  end
-
-  current_scope = new_scope(run)
-
-  -- Register cleanup in parent scope if any
-  if eval_context then
-    eval_context:add_child(current_scope)
-  end
-
-  return run, cleanup, is_dirty
 end
 
----@param signal Signal
-function M.add_dependency(signal)
-  if not eval_context then
+---@param source Source
+function M.add_dependency(source)
+  if not active_scope then
     return
   end
 
-  -- TODO: Optimize
-  ---@diagnostic disable-next-line: invisible
-  for _, scope in ipairs(signal._subscribers) do
-    if scope == eval_context then
+  -- TODO: Optimize with a hashmap etc.
+  -- Don't allow duplicates sources
+  for _, s in ipairs(active_scope._sources) do
+    if source == s then
       return
     end
   end
 
-  eval_context:add_source(signal)
+  table.insert(active_scope._sources, source)
+  table.insert(source._subscribers, active_scope)
+end
+
+---@param scope Subscriber
+function M.add_child(scope)
+  if active_scope then
+    table.insert(active_scope._children, scope)
+    scope._parent = active_scope
+  end
+end
+
+---@param scope Subscriber
+function M.clear_scope(scope)
+  while #scope._sources > 0 do
+    ---@type Signal
+    local source = table.remove(scope._sources, 1)
+
+    for i, s in ipairs(source._subscribers) do
+      if s == scope then
+        table.remove(source._subscribers, i)
+        break
+      end
+    end
+  end
+
+  while #scope._children > 0 do
+    ---@type Subscriber
+    local child_scope = table.remove(scope._children, 1)
+    child_scope:_dispose()
+  end
+
+  if scope._cleanup then
+    scope._cleanup()
+    scope._cleanup = nil
+  end
+end
+
+---@param effect Effect
+function M.queue_effect(effect)
+  table.insert(effect_queue, effect)
+end
+
+function end_batch()
+  batch_depth = batch_depth - 1
+
+  if batch_depth > 0 then
+    return
+  end
+
+  while #effect_queue > 0 do
+    ---@type Effect
+    local effect = table.remove(effect_queue, 1)
+    effect:_callback()
+  end
+end
+
+function M.start_batch()
+  batch_depth = batch_depth + 1
+  return end_batch
 end
 
 return M

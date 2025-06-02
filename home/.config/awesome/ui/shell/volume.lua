@@ -16,18 +16,16 @@ local muted = signal(false)
 local hovered = signal(false)
 
 local function get_volume_svg()
-  if muted.value then
+  if muted.value or volume.value == 0 then
     return "volume-x.svg"
   end
 
   if volume.value >= 50 then
     return "volume-2.svg"
-  elseif volume.value >= 15 then
+  elseif volume.value >= 20 then
     return "volume-1.svg"
-  elseif volume.value > 0 then
-    return "volume.svg"
   else
-    return "volume-x.svg"
+    return "volume.svg"
   end
 end
 

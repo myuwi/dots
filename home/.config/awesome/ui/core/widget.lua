@@ -3,6 +3,7 @@ local wibox = require("wibox")
 
 local Signal = require("ui.core.signal")
 local effect = require("ui.core.signal.effect")
+local untracked = require("ui.core.signal.untracked")
 local util = require("ui.core.util")
 
 ---@class Widget
@@ -71,22 +72,16 @@ function Widget.new(args)
   ---@type table<string, Signal>
   local signals = {}
 
-  local function attach_signals()
-    local effect_cleanups = {}
-
-    for k, sig in pairs(signals) do
-      effect_cleanups[k] = effect(function()
-        widget[k] = sig.value
+  local function bind_signals()
+    return untracked(function()
+      return effect(function()
+        for k, sig in pairs(signals) do
+          effect(function()
+            widget[k] = sig.value
+          end)
+        end
       end)
-    end
-
-    local function detach_signals()
-      for _, dispose in pairs(effect_cleanups) do
-        dispose()
-      end
-    end
-
-    return detach_signals
+    end)
   end
 
   local cleanup
@@ -114,7 +109,9 @@ function Widget.new(args)
 
   widget:connect_signal("mount", function()
     if widget._private.mount_count == 0 then
-      cleanup = attach_signals()
+      if next(signals) ~= nil then
+        cleanup = bind_signals()
+      end
     end
 
     widget._private.mount_count = widget._private.mount_count + 1

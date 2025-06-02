@@ -59,7 +59,6 @@ local function filter_apps(apps, query_text)
   return filtered_apps
 end
 
--- TODO: batch / dedupe effects
 local filtered_apps = computed(function()
   return filter_apps(all_apps.value, query.value)
 end)
@@ -89,6 +88,10 @@ local function launch(app)
 end
 
 local function move_selection(amount)
+  if #filtered_apps.value == 0 then
+    return
+  end
+
   local new_index = selected_index.value + amount
   selected_index.value = ((new_index - 1) % #filtered_apps.value) + 1
 
@@ -197,12 +200,8 @@ local function create_entries(apps)
 
   for i = 1 + scroll_position.value, num_visible_apps + scroll_position.value do
     local app = apps[i]
-
-    -- FIXME: Make it so this if isn't needed (by batching signals?)
-    if app then
-      local entry = create_entry(app, i)
-      children[#children + 1] = entry
-    end
+    local entry = create_entry(app, i)
+    children[#children + 1] = entry
   end
 
   return children
