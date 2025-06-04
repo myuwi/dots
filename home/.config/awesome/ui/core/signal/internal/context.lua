@@ -34,20 +34,6 @@ function M.start_scope(node)
   end
 end
 
-function M.link(dep, sub)
-  table.insert(sub._sources, dep)
-  table.insert(dep._subscribers, sub)
-end
-
-function M.unlink(dep, sub)
-  for i, s in ipairs(dep._subscribers) do
-    if s == sub then
-      table.remove(dep._subscribers, i)
-      break
-    end
-  end
-end
-
 ---@param source Source
 function M.add_dependency(source)
   if not active_scope then
