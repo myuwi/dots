@@ -1,4 +1,4 @@
-local context = require("ui.core.signal.internal.context")
+local context = require("ui.core.signal._context")
 
 ---@param fn fun(): any
 ---@return unknown

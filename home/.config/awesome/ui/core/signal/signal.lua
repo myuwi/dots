@@ -1,5 +1,5 @@
 local gtable = require("gears.table")
-local context = require("ui.core.signal.internal.context")
+local context = require("ui.core.signal._context")
 
 ---@class (exact) Signal: Source
 ---@field value unknown
