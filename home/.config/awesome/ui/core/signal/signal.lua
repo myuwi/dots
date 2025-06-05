@@ -1,11 +1,12 @@
 local gtable = require("gears.table")
 local context = require("ui.core.signal.internal.context")
 
----@class Signal : Source
----@field private _value any
+---@class (exact) Signal: Source
+---@field value unknown
+---@field peek fun(self: self): unknown
+---@field protected _value any
 local Signal = {}
 
----@private
 Signal.__type = "Signal"
 
 ---@private
@@ -26,6 +27,8 @@ function Signal:_notify()
   end
 end
 
+function Signal:_refresh() end
+
 ---Peek the signal's current value without subscribing to it
 function Signal:peek()
   return self._value
@@ -41,6 +44,7 @@ end
 function Signal:set_value(value)
   if self._value ~= value then
     self._value = value
+    self._version = self._version + 1
     local end_batch = context.start_batch()
     self:_notify()
     end_batch()
@@ -53,6 +57,7 @@ end
 local function signal(initial_value)
   local ret = {
     _value = initial_value,
+    _version = 0,
     _subscribers = {},
   }
 

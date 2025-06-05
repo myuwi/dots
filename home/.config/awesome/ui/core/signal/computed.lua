@@ -1,30 +1,21 @@
 local gtable = require("gears.table")
 local context = require("ui.core.signal.internal.context")
 
----@class Computed : Signal, Subscriber
----@field private _value any
+---@class (exact) Computed: Signal, Subscriber
 ---@field private _fn fun()
 local Computed = {}
 
----@private
 Computed.__type = "Computed"
 
----@private
+--TODO: rename?
 function Computed:_dispose()
-  if self._disposed then
-    return
-  end
-
-  self._disposed = true
-  context.clear_scope(self)
+  context.cleanup_sub(self)
 end
 
----@private
 function Computed:_notify()
   self._dirty = true
 end
 
----@private
 function Computed:_refresh()
   if not self._dirty then
     return
@@ -32,13 +23,20 @@ function Computed:_refresh()
 
   self._dirty = false
 
-  -- TODO: check if sources changed
+  if not context.should_recompute(self) then
+    return
+  end
 
-  context.clear_scope(self)
+  context.cleanup_sub(self)
 
   local end_scope = context.start_scope(self)
 
-  self._value = self._fn()
+  local new_value = self._fn()
+
+  if self._value ~= new_value then
+    self._value = new_value
+    self._version = self._version + 1
+  end
 
   end_scope()
 end
@@ -67,8 +65,9 @@ end
 local function computed(fn)
   local ret = {
     _fn = fn,
+    _version = 0,
     _dirty = true,
-    _disposed = false,
+    _first_run = true,
     _subscribers = {},
     _children = {},
     _sources = {},

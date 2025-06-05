@@ -1,14 +1,15 @@
 local context = require("ui.core.signal.internal.context")
+local batch = require("ui.core.signal.batch")
+local untracked = require("ui.core.signal.untracked")
 
 ---@alias EffectFn fun(): fun()?
 
----@class Effect : Subscriber
+---@class (exact) Effect: Subscriber
 ---@field private _fn EffectFn
 ---@field private _cleanup? fun()
+---@field private _disposed boolean
 local Effect = {}
-Effect.__index = Effect
 
----@private
 Effect.__type = "Effect"
 
 function Effect:_dispose()
@@ -17,7 +18,17 @@ function Effect:_dispose()
   end
 
   self._disposed = true
-  context.clear_scope(self)
+
+  context.cleanup_sub(self)
+
+  if self._cleanup then
+    batch(function()
+      untracked(function()
+        self._cleanup()
+        self._cleanup = nil
+      end)
+    end)
+  end
 end
 
 function Effect:_notify()
@@ -36,9 +47,11 @@ function Effect:_callback()
 
   self._dirty = false
 
-  -- TODO: check if sources changed
+  if not context.should_recompute(self) then
+    return
+  end
 
-  context.clear_scope(self)
+  context.cleanup_sub(self)
 
   local end_batch = context.start_batch()
   local end_scope = context.start_scope(self)
@@ -55,12 +68,13 @@ local function effect(fn)
   local ret = {
     _fn = fn,
     _dirty = true,
+    _first_run = true,
     _disposed = false,
     _children = {},
     _sources = {},
   }
 
-  setmetatable(ret, Effect)
+  setmetatable(ret, { __index = Effect })
 
   context.add_child(ret)
 
