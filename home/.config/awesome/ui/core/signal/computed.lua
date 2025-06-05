@@ -29,16 +29,12 @@ function Computed:_refresh()
 
   context.cleanup_sub(self)
 
-  local end_scope = context.start_scope(self)
-
-  local new_value = self._fn()
+  local new_value = context.with_scope(self, self._fn)
 
   if self._value ~= new_value then
     self._value = new_value
     self._version = self._version + 1
   end
-
-  end_scope()
 end
 
 ---Peek the signal's current value without subscribing to it

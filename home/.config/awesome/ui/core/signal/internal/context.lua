@@ -24,19 +24,20 @@ local batch_depth = 0
 ---@type Effect[]
 local effect_queue = {}
 
----@class Context
 local M = {}
 
----@param sub Subscriber | nil
----@return fun() end_scope
----@nodiscard
-function M.start_scope(sub)
+---@param scope Subscriber | nil
+---@param fn fun(): any
+---@return unknown
+function M.with_scope(scope, fn)
   local prev = active_scope
-  active_scope = sub
+  active_scope = scope
 
-  return function()
-    active_scope = prev
-  end
+  local val = fn()
+
+  active_scope = prev
+
+  return val
 end
 
 ---@param source Source
@@ -87,11 +88,17 @@ function M.queue_effect(effect)
   table.insert(effect_queue, effect)
 end
 
-function end_batch()
+---@param fn fun(): any
+---@return unknown
+function M.with_batch(fn)
+  batch_depth = batch_depth + 1
+
+  local val = fn()
+
   batch_depth = batch_depth - 1
 
   if batch_depth > 0 then
-    return
+    return val
   end
 
   while #effect_queue > 0 do
@@ -99,13 +106,8 @@ function end_batch()
     local effect = table.remove(effect_queue, 1)
     effect:_callback()
   end
-end
 
----@return fun() end_batch
----@nodiscard
-function M.start_batch()
-  batch_depth = batch_depth + 1
-  return end_batch
+  return val
 end
 
 ---@param sub Subscriber

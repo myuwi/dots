@@ -1,6 +1,4 @@
 local context = require("ui.core.signal.internal.context")
-local batch = require("ui.core.signal.batch")
-local untracked = require("ui.core.signal.untracked")
 
 ---@alias EffectFn fun(): fun()?
 
@@ -22,12 +20,10 @@ function Effect:_dispose()
   context.cleanup_sub(self)
 
   if self._cleanup then
-    batch(function()
-      untracked(function()
-        self._cleanup()
-        self._cleanup = nil
-      end)
+    context.with_batch(function()
+      context.with_scope(nil, self._cleanup)
     end)
+    self._cleanup = nil
   end
 end
 
@@ -53,13 +49,9 @@ function Effect:_callback()
 
   context.cleanup_sub(self)
 
-  local end_batch = context.start_batch()
-  local end_scope = context.start_scope(self)
-
-  self._cleanup = self._fn()
-
-  end_scope()
-  end_batch()
+  context.with_batch(function()
+    self._cleanup = context.with_scope(self, self._fn)
+  end)
 end
 
 ---@param fn EffectFn

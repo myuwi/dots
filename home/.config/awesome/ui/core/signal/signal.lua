@@ -45,9 +45,10 @@ function Signal:set_value(value)
   if self._value ~= value then
     self._value = value
     self._version = self._version + 1
-    local end_batch = context.start_batch()
-    self:_notify()
-    end_batch()
+
+    context.with_batch(function()
+      self:_notify()
+    end)
   end
 end
 
