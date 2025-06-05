@@ -6,123 +6,114 @@ local wibox = require("wibox")
 local helpers = require("helpers")
 local widget = require("ui.widgets")
 
+local signal = require("ui.core.signal")
+local computed = require("ui.core.signal.computed")
+local map = require("ui.core.signal.map")
+
 local backdrop = require("ui.shell.backdrop")
 
 -- Somewhat replicates the Windows behavior
 -- https://en.wikipedia.org/wiki/Alt-Tab#Behavior
 
-local alt_tab_index = 1
-local hover_index
+local icon_size = dpi(60)
+local icon_padding = dpi(12)
+local outside_padding = dpi(12)
+local icon_text_spacing = dpi(6)
+local text_height = dpi(12)
+
+local alt_tab_index = signal(1)
+local hover_index = signal(nil)
+local visible_clients = signal({})
 local window_switcher_keygrabber
-local visible_clients
 local last_focused_client
 
-local client_icons = wibox.widget({
-  spacing = dpi(6),
-  layout = wibox.layout.fixed.horizontal,
-})
-
-local window_switcher_box = widget.popup({
-  placement = awful.placement.centered,
-  widget = client_icons,
-})
-
+---@param index integer
 local function activate_client_at_index(index)
-  local c = visible_clients[index]
+  local c = visible_clients.value[index]
 
   c:emit_signal("request::activate", "window_switcher", {
     raise = true,
   })
 end
 
-local function redraw_highlights()
-  for i, c in ipairs(client_icons.children) do
-    if i == hover_index then
-      c.bg = beautiful.window_switcher_hover
-    elseif i == alt_tab_index then
-      c.bg = beautiful.window_switcher_focus
-    else
-      c.bg = beautiful.window_switcher_inactive
-    end
-  end
-end
-
-local function draw_client_icons()
-  local icon_size = dpi(60)
-  local icon_padding = dpi(12)
-  local outside_padding = dpi(12)
-  local icon_text_spacing = dpi(6)
-  local text_height = dpi(12)
-
-  client_icons:reset()
-
-  for i, c in ipairs(visible_clients) do
-    local client_icon = wibox.widget({
+---@param c table
+---@param i integer
+local function create_icon(c, i)
+  local client_icon = widget.new({
+    {
       {
         {
           {
-            {
-              client = c,
-              forced_height = icon_size,
-              forced_width = icon_size,
-              widget = awful.widget.clienticon,
-            },
-            margins = icon_padding,
-            widget = wibox.container.margin,
+            client = c,
+            forced_height = icon_size,
+            forced_width = icon_size,
+            widget = awful.widget.clienticon,
           },
-          {
-            text = c.name,
-            halign = "center",
-            valign = "center",
-            forced_height = text_height,
-            widget = wibox.widget.textbox,
-          },
-          spacing = icon_text_spacing,
-          forced_width = icon_size + icon_padding * 2,
-          layout = wibox.layout.fixed.vertical,
+          margins = icon_padding,
+          widget = wibox.container.margin,
         },
-        margins = outside_padding,
-        widget = wibox.container.margin,
+        {
+          text = c.name,
+          halign = "center",
+          valign = "center",
+          forced_height = text_height,
+          widget = wibox.widget.textbox,
+        },
+        spacing = icon_text_spacing,
+        forced_width = icon_size + icon_padding * 2,
+        layout = wibox.layout.fixed.vertical,
       },
-      shape = helpers.shape.rounded_rect(beautiful.border_radius),
-      bg = alt_tab_index == i and beautiful.window_switcher_focus or beautiful.window_switcher_inactive,
-      widget = wibox.container.background,
-    })
-
-    client_icon:connect_signal("mouse::enter", function()
-      hover_index = i
-      redraw_highlights()
-    end)
-
-    client_icon:connect_signal("mouse::leave", function()
-      hover_index = nil
-      redraw_highlights()
-    end)
-
-    client_icon.buttons = {
+      margins = outside_padding,
+      widget = wibox.container.margin,
+    },
+    shape = helpers.shape.rounded_rect(beautiful.border_radius),
+    bg = computed(function()
+      if i == hover_index.value then
+        return beautiful.window_switcher_hover
+      elseif i == alt_tab_index.value then
+        return beautiful.window_switcher_focus
+      else
+        return beautiful.window_switcher_inactive
+      end
+    end),
+    buttons = {
       awful.button({ "Any" }, 1, function()
         activate_client_at_index(i)
         window_switcher_keygrabber:stop()
       end),
-    }
+    },
+    widget = wibox.container.background,
+  })
 
-    client_icons:add(client_icon)
-  end
+  client_icon:connect_signal("mouse::enter", function()
+    hover_index.value = i
+  end)
 
-  -- Hacky way to avoid popup not updating its position for one frame after it is made visible
-  -- Possible due to this https://github.com/awesomeWM/awesome/blob/8b1f8958b46b3e75618bc822d512bb4d449a89aa/lib/awful/popup.lua#L115
-  -- TODO: Is this okay to use?
-  window_switcher_box:_apply_size_now()
+  client_icon:connect_signal("mouse::leave", function()
+    hover_index.value = nil
+  end)
+
+  return client_icon
 end
 
-local function cycle_selection(amount)
-  if amount == 0 then
-    return
+local function create_client_icons(clients)
+  local icons = {}
+
+  for i, c in ipairs(clients) do
+    icons[i] = create_icon(c, i)
   end
 
-  local new_index = alt_tab_index + amount
-  alt_tab_index = (new_index - 1) % #visible_clients + 1
+  return icons
 end
+
+local window_switcher_widget = widget.popup({
+  placement = awful.placement.centered,
+  widget = {
+    spacing = dpi(6),
+    children = map(visible_clients, create_client_icons),
+    layout = wibox.layout.fixed.horizontal,
+  },
+})
 
 local function cancel()
   if window_switcher_keygrabber ~= nil then
@@ -132,11 +123,20 @@ local function cancel()
 end
 
 local function hide()
-  visible_clients = nil
+  visible_clients.value = {}
   last_focused_client = nil
   window_switcher_keygrabber = nil
-  window_switcher_box.visible = false
+  window_switcher_widget.visible = false
   backdrop.detach()
+end
+
+local function cycle_selection(amount)
+  if amount == 0 then
+    return
+  end
+
+  local new_index = alt_tab_index.value + amount
+  alt_tab_index.value = (new_index - 1) % #visible_clients.value + 1
 end
 
 local function filter_function(c)
@@ -146,12 +146,12 @@ end
 local function show(a)
   local cycle_amount = a or 1
   local clients = client.get(nil, true)
-  visible_clients = helpers.table.filter(clients, filter_function)
+  visible_clients.value = helpers.table.filter(clients, filter_function)
 
-  if #visible_clients == 0 then
+  if #visible_clients.value == 0 then
     return
-  elseif #visible_clients == 1 then
-    visible_clients[1]:emit_signal("request::activate", "window_switcher", {
+  elseif #visible_clients.value == 1 then
+    visible_clients.value[1]:emit_signal("request::activate", "window_switcher", {
       raise = true,
     })
     return
@@ -161,11 +161,9 @@ local function show(a)
     keybindings = {
       awful.key({ modkey }, "Tab", function()
         cycle_selection(1)
-        redraw_highlights()
       end),
       awful.key({ modkey, "Shift" }, "Tab", function()
         cycle_selection(-1)
-        redraw_highlights()
       end),
       awful.key({ modkey }, "Escape", cancel),
     },
@@ -173,14 +171,14 @@ local function show(a)
     stop_event = "release",
     stop_callback = function(_, stop_key)
       if stop_key == "Super_L" then
-        activate_client_at_index(alt_tab_index)
+        activate_client_at_index(alt_tab_index.value)
       end
 
       hide()
     end,
   })
 
-  alt_tab_index = 1
+  alt_tab_index.value = 1
 
   if client.focus == nil and cycle_amount > 0 then
     cycle_amount = cycle_amount - 1
@@ -193,13 +191,10 @@ local function show(a)
   last_focused_client = client.focus
   client.focus = nil
 
-  draw_client_icons()
-
   backdrop.attach(cancel)
 
   window_switcher_keygrabber:start()
-  window_switcher_box.screen = screen.primary
-  window_switcher_box.visible = true
+  window_switcher_widget.visible = true
 end
 
 awesome.connect_signal("shell::window_switcher::show", show)
