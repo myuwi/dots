@@ -7,3 +7,15 @@ vim.api.nvim_create_autocmd("VimEnter", {
     end
   end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {
+    "qf",
+    "help",
+    "man",
+  },
+  callback = function(event)
+    vim.bo[event.buf].buflisted = false
+    vim.api.nvim_buf_set_keymap(event.buf, "n", "q", "<cmd>close<cr>", { silent = true })
+  end,
+})
