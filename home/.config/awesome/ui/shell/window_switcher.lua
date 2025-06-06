@@ -22,7 +22,6 @@ local icon_text_spacing = dpi(6)
 local text_height = dpi(12)
 
 local alt_tab_index = signal(1)
-local hover_index = signal(nil)
 local visible_clients = signal({})
 local window_switcher_keygrabber
 local last_focused_client
@@ -39,6 +38,7 @@ end
 ---@param c table
 ---@param i integer
 local function create_icon(c, i)
+  local hovered = signal(false)
   local client_icon = widget.new({
     {
       {
@@ -66,9 +66,8 @@ local function create_icon(c, i)
       margins = outside_padding,
       widget = wibox.container.margin,
     },
-    shape = helpers.shape.rounded_rect(beautiful.border_radius),
     bg = computed(function()
-      if i == hover_index.value then
+      if hovered.value then
         return beautiful.window_switcher_hover
       elseif i == alt_tab_index.value then
         return beautiful.window_switcher_focus
@@ -76,22 +75,19 @@ local function create_icon(c, i)
         return beautiful.window_switcher_inactive
       end
     end),
-    buttons = {
-      awful.button({ "Any" }, 1, function()
-        activate_client_at_index(i)
-        window_switcher_keygrabber:stop()
-      end),
-    },
+    on_click = function()
+      activate_client_at_index(i)
+      window_switcher_keygrabber:stop()
+    end,
+    on_mouse_enter = function()
+      hovered.value = true
+    end,
+    on_mouse_leave = function()
+      hovered.value = false
+    end,
+    shape = helpers.shape.rounded_rect(beautiful.border_radius),
     widget = wibox.container.background,
   })
-
-  client_icon:connect_signal("mouse::enter", function()
-    hover_index.value = i
-  end)
-
-  client_icon:connect_signal("mouse::leave", function()
-    hover_index.value = nil
-  end)
 
   return client_icon
 end

@@ -1,10 +1,12 @@
-local gtable = require("gears.table")
+local awful = require("awful")
 local wibox = require("wibox")
 
 local Signal = require("ui.core.signal")
 local effect = require("ui.core.signal.effect")
 local untracked = require("ui.core.signal.untracked")
 local util = require("ui.core.util")
+
+local htable = require("helpers.table")
 
 ---@class Widget
 local Widget = {}
@@ -50,6 +52,36 @@ local function set_children(self, new_children)
   return new_children
 end
 
+---@type table[]?
+local click_targets
+
+wibox.connect_signal("button::press", function(_, _, _, button)
+  if button == 1 then
+    click_targets = mouse.current_widgets
+  end
+end)
+
+local function release_handler(...)
+  ---@type table[]?
+  local release_targets = mouse.current_widgets
+
+  if click_targets and release_targets then
+    for i = #release_targets, 1, -1 do
+      local target = release_targets[i]
+      if target._private.clickable and target == click_targets[i] then
+        target:emit_signal("click", ...)
+      end
+    end
+  end
+
+  click_targets = nil
+end
+
+awful.mouse.append_global_mousebinding(awful.button({}, 1, nil, release_handler))
+-- TODO: does seemingly nothing
+-- client.connect_signal("button::release", release_handler)
+wibox.connect_signal("button::release", release_handler)
+
 -- TODO: Add typedef
 function Widget.new(args)
   if rawget(args, "is_widget") then
@@ -63,8 +95,6 @@ function Widget.new(args)
   })
 
   args.widget, args.layout = nil, nil
-
-  gtable.crush(widget, Widget, true)
 
   -- TODO: special handling for add, reset, etc.?
   util.wrap(widget, "set_children", set_children)
@@ -97,6 +127,19 @@ function Widget.new(args)
       end
     elseif is_widget(value) then
       children[#children + 1] = Widget.new(value)
+    elseif key == "on_wheel_up" then
+      widget:add_button(awful.button({ "Any" }, 4, value))
+    elseif key == "on_wheel_down" then
+      widget:add_button(awful.button({ "Any" }, 5, value))
+    elseif key:find("^on_") then
+      -- e.g. "on_mouse_enter" -> "mouse::enter"
+      local event_name = key:gsub("^on_", ""):gsub("_", "::", 1)
+
+      if event_name == "click" then
+        widget._private.clickable = true
+      end
+
+      widget:connect_signal(event_name, value)
     else
       widget[key] = value
     end

@@ -126,7 +126,7 @@ local volume_script = "wpctl get-volume @DEFAULT_SINK@"
 
 --- @param callback fun(volume: integer, muted: boolean)
 local function get_audio_status(callback)
-  awful.spawn.easy_async_with_shell(volume_script, function(stdout)
+  awful.spawn.easy_async(volume_script, function(stdout)
     local volume_str = stdout:match("([%d.]+)")
     local muted_str = stdout:match("MUTED")
 

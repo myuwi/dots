@@ -173,18 +173,15 @@ local function create_entry(app, i)
     bg = computed(function()
       return i == selected_index.value and beautiful.bg_focus or nil
     end),
-    buttons = {
-      awful.button({ "Any" }, 1, function()
-        launch(app)
-      end),
-    },
+    on_click = function()
+      launch(app)
+    end,
+    on_mouse_enter = function()
+      selected_index.value = i
+    end,
     shape = helpers.shape.rounded_rect(dpi(4)),
     widget = wibox.container.background,
   })
-
-  entry:connect_signal("mouse::enter", function()
-    selected_index.value = i
-  end)
 
   return entry
 end
@@ -210,6 +207,12 @@ end
 -- TODO: extract as a reusable scrollable list widget?
 local app_list = widget.new({
   children = map(filtered_apps, create_entries),
+  on_wheel_up = function()
+    scroll_list(-1)
+  end,
+  on_wheel_down = function()
+    scroll_list(1)
+  end,
   spacing = dpi(6),
   layout = wibox.layout.fixed.vertical,
 })
@@ -270,15 +273,6 @@ end
 text_input.changed_callback = function(text)
   query.value = text
 end
-
-app_list.buttons = {
-  awful.button({}, 4, function()
-    scroll_list(-1)
-  end),
-  awful.button({}, 5, function()
-    scroll_list(1)
-  end),
-}
 
 -- Setup
 
