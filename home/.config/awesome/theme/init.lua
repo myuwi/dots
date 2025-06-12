@@ -24,14 +24,14 @@ theme.colors = colors
 theme.bg_normal = colors.base
 theme.bg_focus = hcolor.opacity(colors.muted, 0.15)
 theme.bg_urgent = colors.urgent
-theme.bg_minimize = nil
+theme.bg_minimized = nil
 theme.bg_bar = colors.base
 theme.bg_systray = theme.bg_bar
 
 theme.fg_normal = colors.text
 theme.fg_focus = colors.text
 theme.fg_urgent = colors.text
-theme.fg_minimize = colors.muted
+theme.fg_minimized = colors.muted
 theme.fg_unfocus = colors.muted
 theme.fg_placeholder = colors.muted
 

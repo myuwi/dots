@@ -1,15 +1,33 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
-local wibox = require("wibox")
 
-local helpers = require("helpers")
+local signal = require("ui.core.signal")
+local computed = require("ui.core.signal.computed")
+local bind = require("ui.core.signal.bind")
 
-local fit = require("ui.layout.fit")
+local Container = require("ui.widgets").Container
+local ClientIcon = require("ui.widgets").ClientIcon
+local Row = require("ui.widgets").Row
+local RowFit = require("ui.widgets").RowFit
+local Text = require("ui.widgets").Text
 
-local function tasklist(s)
-  local tasklist_buttons = {
-    awful.button({}, 1, function(c)
+local tbl = require("helpers.table")
+local throttle = require("helpers.fn").throttle
+
+local function get_clients(s)
+  local clients = client.get()
+  clients = tbl.filter(clients, function(c)
+    return not (c.skip_taskbar or c.hidden or c.type == "splash" or c.type == "dock" or c.type == "desktop")
+      and awful.widget.tasklist.filter.currenttags(c, s)
+  end)
+
+  return clients
+end
+
+local function tasklist_buttons(c)
+  return {
+    awful.button({}, 1, function()
       if c == client.focus then
         c.minimized = true
       else
@@ -19,45 +37,66 @@ local function tasklist(s)
       end
     end),
   }
+end
 
-  local tasklist_widget = awful.widget.tasklist({
-    screen = s,
-    filter = awful.widget.tasklist.filter.currenttags,
-    buttons = tasklist_buttons,
-    layout = {
-      layout = fit.horizontal,
-      max_widget_size = dpi(480),
-      spacing = dpi(4),
-    },
-    style = {
-      shape = helpers.shape.rounded_rect(4),
-    },
-    widget_template = {
-      {
-        {
-          {
-            awful.widget.clienticon,
-            left = dpi(4),
-            widget = wibox.container.margin,
-          },
-          {
-            {
-              id = "text_role",
-              widget = wibox.widget.textbox,
+local client_signals = {
+  "tagged",
+  "untagged",
+  "list",
+  "property::icon",
+  "property::name",
+  "property::minimized",
+  "property::hidden",
+  "property::skip_taskbar",
+}
+
+local function tasklist(s)
+  local clients = signal({})
+
+  local update_clients = throttle(function()
+    clients.value = get_clients(s)
+  end)
+
+  for _, client_signal in ipairs(client_signals) do
+    client.connect_signal(client_signal, update_clients)
+  end
+  awful.tag.attached_connect_signal(nil, "property::selected", update_clients)
+  awful.tag.attached_connect_signal(nil, "property::activated", update_clients)
+
+  local tasklist_widget = RowFit {
+    spacing = dpi(4),
+    max_widget_size = dpi(480),
+
+    children = computed(function()
+      return tbl.map(clients.value, function(c)
+        local active = bind(c, "active")
+        local minimized = bind(c, "minimized")
+        local urgent = bind(c, "urgent")
+
+        return Container {
+          bg = computed(function()
+            return active.value and beautiful.bg_focus or urgent.value and beautiful.bg_urgent or nil
+          end),
+          fg = computed(function()
+            return minimized.value and beautiful.fg_minimized or nil
+          end),
+          padding = { x = dpi(8), y = dpi(4) },
+          radius = dpi(4),
+          buttons = tasklist_buttons(c),
+
+          Row {
+            spacing = dpi(6),
+            ClientIcon {
+              client = c,
             },
-            right = dpi(4),
-            widget = wibox.container.margin,
+            Text {
+              text = bind(c, "name"),
+            },
           },
-          spacing = dpi(6),
-          layout = wibox.layout.fixed.horizontal,
-        },
-        margins = dpi(4),
-        widget = wibox.container.margin,
-      },
-      id = "background_role",
-      widget = wibox.container.background,
-    },
-  })
+        }
+      end)
+    end),
+  }
 
   return tasklist_widget
 end

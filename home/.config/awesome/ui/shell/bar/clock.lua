@@ -5,10 +5,10 @@ local Container = require("ui.widgets").Container
 local TextClock = require("ui.widgets").TextClock
 
 local computed = require("ui.core.signal.computed")
-local observe = require("ui.core.signal.observe")
+local bind = require("ui.core.signal.bind")
 
 local calendar_popup = require("ui.shell.calendar_popup")
-local calendar_visible = observe(calendar_popup, "visible")
+local calendar_visible = bind(calendar_popup, "visible")
 
 local function clock(s)
   local clock_widget = Container {

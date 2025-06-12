@@ -4,7 +4,7 @@ local signal = require("ui.core.signal")
 ---@param property string
 ---@return Signal
 local function observe(emitter, property)
-  local sig = signal(nil)
+  local sig = signal(emitter[property])
 
   emitter:connect_signal("property::" .. property, function()
     sig.value = emitter[property]
