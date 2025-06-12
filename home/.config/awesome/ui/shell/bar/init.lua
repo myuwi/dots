@@ -1,10 +1,10 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
-local wibox = require("wibox")
 
-local helpers = require("helpers")
-
-local window = require("ui.core.window")
+local Window = require("ui.window")
+local Container = require("ui.widgets").Container
+local Row = require("ui.widgets").Row
+local RowAlign = require("ui.widgets").RowAlign
 
 local taglist = require("ui.shell.bar.taglist")
 local tasklist = require("ui.shell.bar.tasklist")
@@ -17,50 +17,43 @@ awful.screen.connect_for_each_screen(function(s)
   local bar_margin = beautiful.bar_gap
   local bar_position = beautiful.bar_position
 
-  s.bar = window.new({
+  s.bar = Window {
     window = awful.wibar,
-    position = bar_position,
     screen = s,
+    position = bar_position,
+    bg = beautiful.colors.transparent,
     height = beautiful.bar_height,
     width = beautiful.bar_width,
-    bg = beautiful.colors.transparent,
     margins = {
       top = bar_position == "top" and bar_margin or 0,
       left = bar_margin,
       right = bar_margin,
       bottom = bar_position == "bottom" and bar_margin or 0,
     },
-    widget = {
-      {
-        {
-          taglist(s),
-          {
-            tasklist(s),
-            left = beautiful.bar_spacing,
-            right = beautiful.bar_spacing,
-            widget = wibox.container.margin,
-          },
-          {
-            is_primary and {
-              systray(),
-              right = beautiful.bar_spacing,
-              widget = wibox.container.margin,
-            } or nil,
-            battery(),
-            clock(s),
-            spacing = beautiful.bar_spacing,
-            layout = wibox.layout.fixed.horizontal,
-          },
-          layout = wibox.layout.align.horizontal,
-        },
-        margins = beautiful.bar_padding,
-        widget = wibox.container.margin,
-      },
+
+    Container {
       bg = beautiful.bg_bar,
       border_color = beautiful.border_color,
       border_width = beautiful.border_width,
-      shape = helpers.shape.rounded_rect(beautiful.border_radius),
-      widget = wibox.container.background,
+      radius = beautiful.border_radius,
+      padding = beautiful.bar_padding,
+
+      RowAlign {
+        taglist(s),
+        Container {
+          padding = { x = beautiful.bar_spacing },
+          tasklist(s),
+        },
+        Row {
+          spacing = beautiful.bar_spacing,
+          is_primary and Container {
+            padding = { right = beautiful.bar_spacing },
+            systray(),
+          } or nil,
+          battery(),
+          clock(s),
+        },
+      },
     },
-  })
+  }
 end)

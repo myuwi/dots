@@ -1,7 +1,9 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
-local gears = require("gears")
-local wibox = require("wibox")
+local gsurface = require("gears.surface")
+
+local Window = require("ui.window")
+local Image = require("ui.widgets").Image
 
 tag.connect_signal("request::default_layouts", function()
   awful.layout.append_default_layouts({
@@ -19,15 +21,16 @@ screen.connect_signal("request::wallpaper", function(s)
   if beautiful.wallpaper then
     local geo = s.geometry
 
-    awful.wallpaper({
+    Window {
+      window = awful.wallpaper,
       screen = s,
-      widget = {
-        image = gears.surface.crop_surface({
+
+      Image {
+        image = gsurface.crop_surface({
           ratio = geo.width / geo.height,
-          surface = gears.surface.load_uncached(beautiful.wallpaper),
+          surface = gsurface.load_uncached(beautiful.wallpaper),
         }),
-        widget = wibox.widget.imagebox,
       },
-    })
+    }
   end
 end)

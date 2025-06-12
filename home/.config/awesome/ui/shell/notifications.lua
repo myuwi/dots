@@ -3,10 +3,17 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local gsurface = require("gears.surface")
 local naughty = require("naughty")
-local wibox = require("wibox")
 
 local helpers = require("helpers")
-local widget = require("ui.widgets")
+
+local Window = require("ui.window")
+local Button = require("ui.widgets").Button
+local Container = require("ui.widgets").Container
+local Column = require("ui.widgets").Column
+local Row = require("ui.widgets").Row
+local RowFlex = require("ui.widgets").RowFlex
+local Image = require("ui.widgets").Image
+local Text = require("ui.widgets").Text
 
 naughty.config.defaults.app_name = "Notification"
 naughty.config.defaults.ontop = true
@@ -36,111 +43,84 @@ naughty.connect_signal("request::display", function(n)
     notification_body_width = notification_body_width - dpi(60) - dpi(12)
   end
 
-  local notification_body = wibox.widget({
+  local notification_body = Text {
     text = n.message,
     ellipsize = "none",
     valign = "top",
-    widget = wibox.widget.textbox,
-  })
+  }
 
   notification_body.forced_height = notification_body:get_height_for_width(notification_body_width, screen.primary)
 
   -- FIXME: Race condition (?) in "invoked" signal handler sometimes causes "dismissed_by_user"
   --        to be returned as the reason for dismissal even when action button is pressed
-  local actions = {
+  local actions = RowFlex {
+    spacing = dpi(6),
     children = helpers.table.map(n.actions, function(action)
-      local btn = widget.button({
+      local btn = Button {
         text = action:get_name(),
         buttons = {
           awful.button({}, 1, function()
             action:invoke(n)
           end),
         },
-      })
+      }
 
       return btn
     end),
-    spacing = dpi(6),
-    layout = wibox.layout.flex.horizontal,
   }
 
-  local notification_widget = naughty.layout.box({
+  local notification_widget = Window {
+    window = naughty.layout.box,
     notification = n,
     type = "notification",
     bg = beautiful.colors.transparent,
-    border_width = dpi(0),
-    widget_template = {
-      {
-        {
-          {
-            {
-              {
-                {
-                  image = n.icon,
-                  forced_width = dpi(18),
-                  forced_height = dpi(18),
-                  visible = n.icon ~= nil,
-                  widget = wibox.widget.imagebox,
-                },
-                {
-                  text = n.app_name,
-                  widget = wibox.widget.textbox,
-                },
-                spacing = dpi(6),
-                layout = wibox.layout.fixed.horizontal,
-              },
-              bottom = dpi(12),
-              widget = wibox.container.margin,
-            },
-            {
-              {
-                image = n.image,
-                forced_width = dpi(60),
-                forced_height = dpi(60),
-                clip_shape = helpers.shape.rounded_rect(dpi(3)),
-                visible = n.image ~= nil,
-                widget = wibox.widget.imagebox,
-              },
-              {
-                {
-                  {
-                    text = n.title,
-                    font = beautiful.font_name .. " Bold " .. beautiful.font_size,
-                    forced_height = dpi(18),
-                    widget = wibox.widget.textbox,
-                  },
-                  notification_body,
-                  spacing = dpi(3),
-                  layout = wibox.layout.fixed.vertical,
-                },
-                top = dpi(6),
-                bottom = dpi(6),
-                widget = wibox.container.margin,
-              },
-              spacing = dpi(12),
-              layout = wibox.layout.fixed.horizontal,
-            },
-            {
-              actions,
-              visible = n.actions and #n.actions > 0,
-              top = dpi(12),
-              widget = wibox.container.margin,
-            },
-            layout = wibox.layout.fixed.vertical,
-          },
-          margins = beautiful.notification_margin,
-          widget = wibox.container.margin,
-        },
-        bg = beautiful.bg_normal,
-        border_color = beautiful.border_color,
-        border_width = beautiful.border_width,
-        shape = helpers.shape.rounded_rect(beautiful.border_radius),
-        widget = wibox.container.background,
-      },
+    widget_template = Container {
+      bg = beautiful.bg_normal,
+      border_color = beautiful.border_color,
+      border_width = beautiful.border_width,
+      radius = beautiful.border_radius,
       forced_width = beautiful.notification_width,
-      layout = wibox.layout.fixed.vertical,
+      padding = beautiful.notification_margin,
+
+      Column {
+        spacing = dpi(12),
+        Row {
+          spacing = dpi(6),
+          Image {
+            image = n.icon,
+            forced_width = dpi(18),
+            forced_height = dpi(18),
+            visible = n.icon ~= nil,
+          },
+          Text { n.app_name },
+        },
+        Row {
+          spacing = dpi(12),
+          -- TODO: non-square images
+          Image {
+            image = n.image,
+            forced_width = dpi(60),
+            forced_height = dpi(60),
+            clip_shape = helpers.shape.rounded_rect(dpi(3)),
+            visible = n.image ~= nil,
+          },
+          Container {
+            padding = { y = dpi(6) },
+            Column {
+              spacing = dpi(3),
+              Text {
+                text = n.title,
+                font = beautiful.font_name .. " Bold " .. beautiful.font_size,
+                forced_height = dpi(18),
+              },
+              notification_body,
+            },
+          },
+        },
+        n.actions and #n.actions > 0 and actions or nil,
+      },
     },
-  })
+  }
 
   local timeout = n.timeout
 

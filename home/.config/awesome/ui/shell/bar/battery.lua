@@ -1,5 +1,5 @@
 local gtimer = require("gears.timer")
-local wibox = require("wibox")
+local Text = require("ui.widgets").Text
 
 function read_file(path)
   local file = io.open(path, "r")
@@ -33,19 +33,14 @@ local function battery()
     return nil
   end
 
-  local battery_text = wibox.widget.textbox(status)
+  local battery_widget = Text { status }
 
   gtimer({
     timeout = 5,
     autostart = true,
     callback = function()
-      battery_text:set_text(battery_status())
+      battery_widget:set_text(battery_status())
     end,
-  })
-
-  local battery_widget = wibox.widget({
-    battery_text,
-    widget = wibox.container.place,
   })
 
   return battery_widget

@@ -1,7 +1,16 @@
-return {
-  new = require("ui.core.widget").new,
-  button = require("ui.widgets.button"),
-  calendar = require("ui.widgets.calendar"),
-  input = require("ui.widgets.input"),
-  popup = require("ui.widgets.popup"),
-}
+local Widget = require("ui.core.widget")
+local tbl = require("helpers.table")
+
+---@overload fun(args): table
+local widgets = tbl.merge({
+  Button = require("ui.widgets.button"),
+  Calendar = require("ui.widgets.calendar"),
+  Input = require("ui.widgets.input"),
+}, require("ui.widgets.common"))
+
+---@diagnostic disable-next-line: param-type-mismatch
+return setmetatable(widgets, {
+  __call = function(_, w)
+    return Widget.new(w)
+  end,
+})

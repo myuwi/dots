@@ -1,11 +1,11 @@
 local awful = require("awful")
-local wibox = require("wibox")
+local Window = require("ui.window")
 
 local helpers = require("helpers")
 
 local backdrop = {}
 
-local backdrop_widget = wibox({
+local backdrop_widget = Window {
   screen = screen.primary,
   type = "utility",
   x = 0,
@@ -15,7 +15,7 @@ local backdrop_widget = wibox({
   bg = "#00000000",
   visible = false,
   ontop = true,
-})
+}
 
 local function update_backdrop_geometry()
   local coords = {}

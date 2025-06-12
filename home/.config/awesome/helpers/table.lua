@@ -92,4 +92,46 @@ function M.stringify(tbl, depth)
   return stringify_impl(tbl, depth or 3, 0)
 end
 
+function M.clone(tbl)
+  local t = {}
+
+  for key, value in pairs(tbl) do
+    t[key] = value
+  end
+
+  return t
+end
+
+function M.merge(...)
+  local t = {}
+
+  for _, source in ipairs({ ... }) do
+    for key, value in pairs(source) do
+      t[key] = value
+    end
+  end
+
+  return t
+end
+
+function M.pick(tbl, keys)
+  local t = {}
+
+  for _, key in ipairs(keys) do
+    t[key] = tbl[key]
+  end
+
+  return t
+end
+
+function M.take(tbl, keys)
+  local t = {}
+
+  for _, key in ipairs(keys) do
+    t[key], tbl[key] = tbl[key], nil
+  end
+
+  return t
+end
+
 return M

@@ -1,17 +1,16 @@
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
-local wibox = require("wibox")
+
+local Systray = require("ui.widgets").Systray
+local Center = require("ui.widgets").Center
 
 local function systray()
-  local systray_widget = wibox.widget({
-    {
+  local systray_widget = Center {
+    Systray {
       screen = screen.primary,
       base_size = dpi(16),
-      widget = wibox.widget.systray,
     },
-    valign = "center",
-    widget = wibox.container.place,
-  })
+  }
 
   return systray_widget
 end

@@ -6,9 +6,6 @@ local effect = require("ui.core.signal.effect")
 local untracked = require("ui.core.signal.untracked")
 local util = require("ui.core.util")
 
-local htable = require("helpers.table")
-
----@class Widget
 local Widget = {}
 
 ---@return boolean
@@ -77,7 +74,7 @@ local function release_handler(...)
   click_targets = nil
 end
 
-awful.mouse.append_global_mousebinding(awful.button({}, 1, nil, release_handler))
+awful.mouse.append_global_mousebinding(awful.button({ "Any" }, 1, nil, release_handler))
 -- TODO: does seemingly nothing
 -- client.connect_signal("button::release", release_handler)
 wibox.connect_signal("button::release", release_handler)
@@ -118,6 +115,8 @@ function Widget.new(args)
 
   local children = {}
 
+  -- TODO: reassigning signals
+  -- TODO: on_click_away?
   -- TODO: reactive children?
   for key, value in pairs(args) do
     if Signal.is_signal(value) then
@@ -125,13 +124,15 @@ function Widget.new(args)
       if type(key) == "string" then
         signals[key] = value
       end
+    elseif key == "children" then
+      children = value
     elseif is_widget(value) then
       children[#children + 1] = Widget.new(value)
     elseif key == "on_wheel_up" then
       widget:add_button(awful.button({ "Any" }, 4, value))
     elseif key == "on_wheel_down" then
       widget:add_button(awful.button({ "Any" }, 5, value))
-    elseif key:find("^on_") then
+    elseif type(key) == "string" and key:find("^on_") then
       -- e.g. "on_mouse_enter" -> "mouse::enter"
       local event_name = key:gsub("^on_", ""):gsub("_", "::", 1)
 

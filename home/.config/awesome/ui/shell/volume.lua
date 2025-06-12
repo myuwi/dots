@@ -2,14 +2,19 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local gears = require("gears")
-local wibox = require("wibox")
 
 local signal = require("ui.core.signal")
 local effect = require("ui.core.signal.effect")
 local computed = require("ui.core.signal.computed")
 local map = require("ui.core.signal.map")
 
-local widget = require("ui.widgets")
+local Window = require("ui.window")
+local Container = require("ui.widgets").Container
+local RowAlign = require("ui.widgets").RowAlign
+local Center = require("ui.widgets").Center
+local Image = require("ui.widgets").Image
+local ProgressBar = require("ui.widgets").ProgressBar
+local Text = require("ui.widgets").Text
 
 local volume = signal(0)
 local muted = signal(false)
@@ -29,17 +34,16 @@ local function get_volume_svg()
   end
 end
 
-local volume_icon = widget.new({
+local volume_icon = Image {
   image = computed(function()
     return beautiful.icon_path .. get_volume_svg()
   end),
   stylesheet = "* { color:" .. beautiful.fg_normal .. " }",
   forced_width = dpi(18),
   forced_height = dpi(18),
-  widget = wibox.widget.imagebox,
-})
+}
 
-local volume_bar = widget.new({
+local volume_bar = ProgressBar {
   shape = gears.shape.rounded_bar,
   bar_shape = gears.shape.rounded_bar,
   color = beautiful.fg_focus,
@@ -47,20 +51,18 @@ local volume_bar = widget.new({
   max_value = 100,
   value = volume,
   forced_height = dpi(6),
-  widget = wibox.widget.progressbar,
-})
+}
 
-local volume_text = widget.new({
+local volume_text = Text {
   text = map(volume, tostring),
   halign = "center",
   valign = "center",
   forced_width = dpi(18),
   forced_height = dpi(18),
-  widget = wibox.widget.textbox,
-})
+}
 
-local volume_widget = widget.popup({
-  margins = dpi(18),
+local volume_widget = Window.Popup({
+  padding = dpi(18),
   forced_width = dpi(288),
   placement = function(w)
     awful.placement.bottom(w, {
@@ -68,20 +70,14 @@ local volume_widget = widget.popup({
       honor_workarea = true,
     })
   end,
-  widget = {
+
+  RowAlign {
     volume_icon,
-    {
-      {
-        volume_bar,
-        valign = "center",
-        widget = wibox.container.place,
-      },
-      left = dpi(12),
-      right = dpi(12),
-      widget = wibox.container.margin,
+    Container {
+      padding = { x = dpi(12) },
+      Center { volume_bar },
     },
     volume_text,
-    layout = wibox.layout.align.horizontal,
   },
 })
 

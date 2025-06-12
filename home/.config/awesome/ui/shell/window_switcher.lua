@@ -1,10 +1,14 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
-local wibox = require("wibox")
 
 local helpers = require("helpers")
-local widget = require("ui.widgets")
+local Window = require("ui.window")
+local Container = require("ui.widgets").Container
+local Column = require("ui.widgets").Column
+local Row = require("ui.widgets").Row
+local ClientIcon = require("ui.widgets").ClientIcon
+local Text = require("ui.widgets").Text
 
 local signal = require("ui.core.signal")
 local computed = require("ui.core.signal.computed")
@@ -39,33 +43,7 @@ end
 ---@param i integer
 local function create_icon(c, i)
   local hovered = signal(false)
-  local client_icon = widget.new({
-    {
-      {
-        {
-          {
-            client = c,
-            forced_height = icon_size,
-            forced_width = icon_size,
-            widget = awful.widget.clienticon,
-          },
-          margins = icon_padding,
-          widget = wibox.container.margin,
-        },
-        {
-          text = c.name,
-          halign = "center",
-          valign = "center",
-          forced_height = text_height,
-          widget = wibox.widget.textbox,
-        },
-        spacing = icon_text_spacing,
-        forced_width = icon_size + icon_padding * 2,
-        layout = wibox.layout.fixed.vertical,
-      },
-      margins = outside_padding,
-      widget = wibox.container.margin,
-    },
+  local client_icon = Container {
     bg = computed(function()
       if hovered.value then
         return beautiful.window_switcher_hover
@@ -75,6 +53,8 @@ local function create_icon(c, i)
         return beautiful.window_switcher_inactive
       end
     end),
+    radius = beautiful.border_radius,
+    padding = outside_padding,
     on_click = function()
       activate_client_at_index(i)
       window_switcher_keygrabber:stop()
@@ -85,9 +65,29 @@ local function create_icon(c, i)
     on_mouse_leave = function()
       hovered.value = false
     end,
-    shape = helpers.shape.rounded_rect(beautiful.border_radius),
-    widget = wibox.container.background,
-  })
+
+    Column {
+      forced_width = icon_size + icon_padding * 2,
+      spacing = icon_text_spacing,
+
+      Container {
+        padding = icon_padding,
+
+        -- TODO: Image { src = c, ... }
+        ClientIcon {
+          client = c,
+          forced_height = icon_size,
+          forced_width = icon_size,
+        },
+      },
+      Text {
+        text = c.name,
+        halign = "center",
+        valign = "center",
+        forced_height = text_height,
+      },
+    },
+  }
 
   return client_icon
 end
@@ -102,14 +102,14 @@ local function create_client_icons(clients)
   return icons
 end
 
-local window_switcher_widget = widget.popup({
+local window_switcher_widget = Window.Popup {
   placement = awful.placement.centered,
-  widget = {
+
+  Row {
     spacing = dpi(6),
     children = map(visible_clients, create_client_icons),
-    layout = wibox.layout.fixed.horizontal,
   },
-})
+}
 
 local function cancel()
   if window_switcher_keygrabber ~= nil then

@@ -1,7 +1,7 @@
-local widget = require("ui.core.widget")
+local wibox = require("wibox")
+local Widget = require("ui.core.widget")
 local util = require("ui.core.util")
 
----@class Window
 local Window = {}
 
 local function set_visible(w, visible)
@@ -27,11 +27,13 @@ local function set_visible(w, visible)
   w.drawin.visible = visible
 end
 
+-- TODO: support widget_template
 function Window.new(args)
-  local window_constructor = args.window
+  local window_constructor = args.window or wibox
   args.window = nil
 
-  args.widget = widget.new(args.widget)
+  args.widget = args.widget and Widget.new(args.widget) or args[1] and Widget.new(args[1])
+  args[1] = nil
 
   if args.widget and args.visible ~= false then
     args.widget:emit_signal("mount")
@@ -45,4 +47,4 @@ function Window.new(args)
   return window
 end
 
-return Window
+return Window.new

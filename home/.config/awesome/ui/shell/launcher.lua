@@ -5,10 +5,16 @@ local gstring = require("gears.string")
 local lgi = require("lgi")
 local Gio = lgi.Gio
 local Gtk = lgi.require("Gtk", "3.0")
-local wibox = require("wibox")
 
 local helpers = require("helpers")
-local widget = require("ui.widgets")
+local Window = require("ui.window")
+local Input = require("ui.widgets").Input
+local Container = require("ui.widgets").Container
+local Column = require("ui.widgets").Column
+local Row = require("ui.widgets").Row
+
+local Image = require("ui.widgets").Image
+local Text = require("ui.widgets").Text
 
 local signal = require("ui.core.signal")
 local computed = require("ui.core.signal.computed")
@@ -115,9 +121,9 @@ local last_focused_client = nil
 
 -- Widgets
 
-local text_input = widget.input({
+local text_input = Input {
   placeholder = "Search for apps...",
-})
+}
 
 ---@param text string
 local function format_no_results(text)
@@ -130,16 +136,15 @@ local function format_no_results(text)
   return helpers.ui.colorize_text(formatted, beautiful.fg_unfocus)
 end
 
-local no_results = widget.new({
-  {
+local no_results = Container {
+  padding = dpi(12),
+
+  Text {
     markup = map(query, format_no_results),
     valign = "center",
     forced_height = dpi(18),
-    widget = wibox.widget.textbox,
   },
-  margins = dpi(12),
-  widget = wibox.container.margin,
-})
+}
 
 local function create_entry(app, i)
   local icon = gtk_theme:lookup_by_gicon(app:get_icon(), dpi(30), 0)
@@ -148,40 +153,29 @@ local function create_entry(app, i)
     icon = icon:get_filename()
   end
 
-  local entry = widget.new({
-    {
-      {
-        {
-          image = icon,
-          forced_width = dpi(30),
-          forced_height = dpi(30),
-          widget = wibox.widget.imagebox,
-        },
-        {
-          text = app:get_name(),
-          widget = wibox.widget.textbox,
-        },
-        spacing = dpi(9),
-        layout = wibox.layout.fixed.horizontal,
-      },
-      top = dpi(6),
-      left = dpi(9),
-      right = dpi(9),
-      bottom = dpi(6),
-      widget = wibox.container.margin,
-    },
+  local entry = Container {
     bg = computed(function()
       return i == selected_index.value and beautiful.bg_focus or nil
     end),
+    padding = { x = dpi(9), y = dpi(6) },
+    radius = dpi(4),
     on_click = function()
       launch(app)
     end,
     on_mouse_enter = function()
       selected_index.value = i
     end,
-    shape = helpers.shape.rounded_rect(dpi(4)),
-    widget = wibox.container.background,
-  })
+
+    Row {
+      spacing = dpi(9),
+      Image {
+        image = icon,
+        forced_width = dpi(30),
+        forced_height = dpi(30),
+      },
+      Text { app:get_name() },
+    },
+  }
 
   return entry
 end
@@ -205,21 +199,20 @@ local function create_entries(apps)
 end
 
 -- TODO: extract as a reusable scrollable list widget?
-local app_list = widget.new({
-  children = map(filtered_apps, create_entries),
+local app_list = Column {
+  spacing = dpi(6),
   on_wheel_up = function()
     scroll_list(-1)
   end,
   on_wheel_down = function()
     scroll_list(1)
   end,
-  spacing = dpi(6),
-  layout = wibox.layout.fixed.vertical,
-})
+  children = map(filtered_apps, create_entries),
+}
 
 local launcher_widget_max_height = 0
 
-local launcher_widget = widget.popup({
+local launcher_widget = Window.Popup {
   forced_width = dpi(576),
   -- TODO: A better way to do this
   placement = function(w)
@@ -235,18 +228,17 @@ local launcher_widget = widget.popup({
       },
     })
   end,
-  widget = {
-    {
+
+  Column {
+    spacing = dpi(12),
+    Container {
+      padding = dpi(12),
       text_input,
-      margins = dpi(12),
-      widget = wibox.container.margin,
     },
     -- TODO: scrollbar to indicate list position
     app_list,
-    spacing = dpi(12),
-    layout = wibox.layout.fixed.vertical,
   },
-})
+}
 
 -- Controls
 

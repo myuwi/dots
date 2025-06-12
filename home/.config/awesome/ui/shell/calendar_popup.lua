@@ -1,24 +1,22 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
-local wibox = require("wibox")
 
 local helpers = require("helpers")
-local widget = require("ui.widgets")
+local Calendar = require("ui.widgets").Calendar
+local Window = require("ui.window")
 
-local calendar = widget.calendar()
+local calendar = Calendar()
 
-local calendar_popup = widget.popup({
+local calendar_popup = Window.Popup {
   placement = function(w)
     awful.placement.top_right(w, {
       margins = beautiful.useless_gap * 2,
       honor_workarea = true,
     })
   end,
-  widget = {
-    calendar,
-    layout = wibox.layout.align.vertical,
-  },
-})
+
+  calendar,
+}
 
 -- TODO: Somehow whitelist clock widget in bar to avoid closing and reopening on click
 local click_away_handler = helpers.ui.create_click_away_handler(calendar_popup, true)
