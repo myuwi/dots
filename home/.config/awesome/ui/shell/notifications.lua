@@ -55,6 +55,7 @@ naughty.connect_signal("request::display", function(n)
   --        to be returned as the reason for dismissal even when action button is pressed
   local actions = RowFlex {
     spacing = dpi(6),
+    visible = n.actions and #n.actions > 0,
     children = helpers.table.map(n.actions, function(action)
       local btn = Button {
         text = action:get_name(),
@@ -117,7 +118,7 @@ naughty.connect_signal("request::display", function(n)
             },
           },
         },
-        n.actions and #n.actions > 0 and actions or nil,
+        actions,
       },
     },
   }

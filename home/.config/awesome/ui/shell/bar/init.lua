@@ -46,10 +46,7 @@ awful.screen.connect_for_each_screen(function(s)
         },
         Row {
           spacing = beautiful.bar_spacing,
-          is_primary and Container {
-            padding = { right = beautiful.bar_spacing },
-            systray(),
-          } or nil,
+          is_primary and systray() or nil,
           battery(),
           clock(s),
         },

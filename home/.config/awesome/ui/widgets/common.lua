@@ -1,6 +1,9 @@
 local awful = require("awful")
 local wibox = require("wibox")
+
 local Widget = require("ui.core.widget")
+local container = require("ui.widgets.container")
+local flex = require("ui.layout.flex")
 
 local function make_widget(widget_constructor, child_prop)
   return function(params)
@@ -14,9 +17,9 @@ end
 
 local common = {
   -- Layouts
-  Container = make_widget(require("ui.widgets.container")),
-  Column = make_widget(wibox.layout.fixed.vertical),
-  Row = make_widget(wibox.layout.fixed.horizontal),
+  Container = make_widget(container),
+  Column = make_widget(flex.vertical),
+  Row = make_widget(flex.horizontal),
   Center = make_widget(wibox.container.place),
 
   -- TODO: Replace with Flexible/Expanded widget
