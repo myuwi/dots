@@ -7,7 +7,9 @@ local wibox = require("wibox")
 
 local helpers = require("helpers")
 
-local prompt = require("ui.widgets.input.prompt")
+local prompt = require("ui.components.input.prompt")
+
+-- TODO: refactor into a proper primitive widget
 
 local input = { mt = {} }
 

@@ -2,8 +2,8 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 
 local helpers = require("helpers")
-local Calendar = require("ui.widgets").Calendar
 local Window = require("ui.window")
+local Calendar = require("ui.components").Calendar
 
 local calendar = Calendar()
 

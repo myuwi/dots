@@ -7,13 +7,13 @@ local naughty = require("naughty")
 local helpers = require("helpers")
 
 local Window = require("ui.window")
-local Button = require("ui.widgets").Button
 local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
 local RowFlex = require("ui.widgets").RowFlex
 local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
+local Button = require("ui.components").Button
 
 naughty.config.defaults.app_name = "Notification"
 naughty.config.defaults.ontop = true

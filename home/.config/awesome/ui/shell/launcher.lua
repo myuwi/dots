@@ -8,13 +8,12 @@ local Gtk = lgi.require("Gtk", "3.0")
 
 local helpers = require("helpers")
 local Window = require("ui.window")
-local Input = require("ui.widgets").Input
 local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
-
 local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
+local Input = require("ui.components").Input
 
 local signal = require("ui.core.signal")
 local computed = require("ui.core.signal.computed")
