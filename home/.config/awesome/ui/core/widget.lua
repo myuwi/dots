@@ -126,7 +126,7 @@ function Widget.new(args)
       end
     elseif key == "children" then
       children = value
-    elseif is_widget(value) then
+    elseif type(key) == "number" and is_widget(value) then
       children[#children + 1] = Widget.new(value)
     elseif key == "on_wheel_up" then
       widget:add_button(awful.button({ "Any" }, 4, value))
