@@ -1,6 +1,8 @@
 local gtable = require("gears.table")
 local context = require("ui.core.signal._context")
 
+-- TODO: getter, setter tuple instead of .value metatable?
+
 ---@class (exact) Signal: Source
 ---@field value unknown
 ---@field peek fun(self: self): unknown

@@ -1,12 +1,13 @@
 local base = require("wibox.widget.base")
 local fixed = require("wibox.layout.fixed")
+local gmath = require("gears.math")
 local gtable = require("gears.table")
 
 local flex = {}
 
--- TODO: implement flexible
+-- TODO: flexible expand prop
 
----Layout a flex layout. Each widget gets just the space it asks for.
+---Layout a flex layout. Each normal widget gets just the space it asks for, while flexible widgets may grow and shrink based on the available space.
 ---@param context table The context in which we are drawn.
 ---@param width number The available width.
 ---@param height number The available height.
@@ -22,63 +23,88 @@ function flex:layout(context, width, height)
   local spacing_widget = spacing ~= 0 and self._private.spacing_widget or nil
   local max_widget_size = self._private.max_widget_size or math.huge
 
-  local x, y = 0, 0
+  local fixed_size = 0
+  local flex_size = 0
+  local total_spacing = 0
 
-  for index, widget in pairs(self._private.widgets) do
-    local w, h, local_spacing = width - x, height - y, spoffset
+  for _, widget in pairs(self._private.widgets) do
+    local w, h = base.fit_widget(self, context, widget, width, height)
+    local main_size = is_y and h or w
+    main_size = math.min(main_size, max_widget_size)
 
-    -- Some widget might be zero sized either because this is their
-    -- minimum space or just because they are really empty. In this case,
-    -- they must still be added to the layout. Otherwise, if their size
-    -- change and this layout is resizable, they are lost "forever" until
-    -- a full relayout is called on this fixed layout object.
-    local zero = false
+    if main_size > 0 and (fixed_size > 0 or flex_size > 0) then
+      total_spacing = total_spacing + spoffset
+    end
 
-    if is_y then
-      h = select(2, base.fit_widget(self, context, widget, w, h))
-      h = math.min(h, max_widget_size)
-      zero = h == 0
+    local flexible = widget._private.flex ~= nil and widget._private.flex ~= 0
+    if flexible then
+      flex_size = flex_size + main_size
     else
-      w = select(1, base.fit_widget(self, context, widget, w, h))
-      w = math.min(w, max_widget_size)
-      zero = w == 0
+      fixed_size = fixed_size + main_size
     end
+  end
 
-    if zero then
-      local_spacing = 0
-    end
+  local flex_space = (is_y and height or width) - fixed_size - total_spacing
+  local flex_factor = flex_size ~= 0 and math.min(flex_space / flex_size, 1) or 1
 
-    -- Add the spacing and spacing widget (if needed)
-    if index > 1 then
+  -- TODO: Use the same strategy for sizing widgets as the fit layout? flex_strategy = "smart" prop?
+  local pos, pos_rounded = 0, 0
+  for _, widget in pairs(self._private.widgets) do
+    local w, h = base.fit_widget(self, context, widget, width, height)
+    local main_size = is_y and h or w
+    main_size = math.min(main_size, max_widget_size)
+
+    -- Add the spacing and spacing widget, and update spacing to pos (if needed)
+    if pos > 0 and main_size > 0 then
       if spacing_widget then
         table.insert(
           result,
           base.place_widget_at(
             spacing_widget,
-            is_x and (x + spinset) or x,
-            is_y and (y + spinset) or y,
-            is_x and abspace or w,
-            is_y and abspace or h
+            is_x and (pos_rounded + spinset) or 0,
+            is_y and (pos_rounded + spinset) or 0,
+            is_x and abspace or width,
+            is_y and abspace or height
           )
         )
       end
 
-      x = is_x and x + local_spacing or x
-      y = is_y and y + local_spacing or y
+      pos = pos + spoffset
+      pos_rounded = pos_rounded + spoffset
 
-      if x >= width or y >= height then
+      if is_x and pos >= width or is_y and pos >= height then
         break
       end
     end
 
+    local flexible = widget._private.flex ~= nil and widget._private.flex ~= 0
+    if flexible then
+      main_size = main_size * flex_factor
+    end
+
+    -- Disallow overflow
+    main_size = math.min(main_size, (is_y and height or width) - pos)
+
+    next_pos = pos + main_size
+    next_pos_rounded = gmath.round(next_pos)
+
     -- Place widget, even if it has zero width/height. Otherwise
     -- any layout change for zero-sized widget would become invisible.
-    table.insert(result, base.place_widget_at(widget, x, y, w, h))
+    table.insert(
+      result,
+      base.place_widget_at(
+        widget,
+        is_x and pos_rounded or 0,
+        is_y and pos_rounded or 0,
+        is_x and next_pos_rounded - pos_rounded or width,
+        is_y and next_pos_rounded - pos_rounded or height
+      )
+    )
 
-    x = is_x and x + w or x
-    y = is_y and y + h or y
+    pos = next_pos
+    pos_rounded = next_pos_rounded
 
-    if x >= width or y >= height then
+    if is_x and pos >= width or is_y and pos >= height then
       break
     end
   end
@@ -92,8 +118,8 @@ end
 ---@param orig_height number The available height.
 ---@return number, number
 function flex:fit(context, orig_width, orig_height)
-  local width_left, height_left = orig_width, orig_height
   local is_y = self._private.dir == "y"
+  local is_x = not is_y
   local spacing = self._private.spacing or 0
   local spoffset = math.max(spacing, 0)
   local max_widget_size = self._private.max_widget_size or math.huge
@@ -104,59 +130,57 @@ function flex:fit(context, orig_width, orig_height)
     return 0, 0
   end
 
-  local used_max = 0
+  local main_axis_left = is_y and orig_height or orig_width
+  local cross_axis_max = 0
   local fitted_widgets = 0
 
+  local flexible_size = 0
+
   for _, v in pairs(self._private.widgets) do
-    local w, h = base.fit_widget(self, context, v, width_left, height_left)
-    local max
+    local w, h =
+      base.fit_widget(self, context, v, is_x and main_axis_left or orig_width, is_y and main_axis_left or orig_height)
+    local main_axis = is_y and h or w
+    local cross_axis = is_y and w or h
+    local flexible = v._private.flex ~= nil
+    local expanded = v._private.expand
 
     -- Skip zero sized widgets
-    if (is_y and h == 0) or (not is_y and w == 0) then
+    if main_axis == 0 then
       goto continue
     end
 
     -- Add spacing if not the first visible widget
     if fitted_widgets > 0 then
-      if is_y then
-        height_left = height_left - spoffset
-      else
-        width_left = width_left - spoffset
-      end
+      main_axis_left = main_axis_left - spoffset
     end
 
-    if is_y then
-      max = w
-      height_left = height_left - math.min(h, max_widget_size)
+    if flexible then
+      flexible_size = flexible_size + (expanded and max_widget_size or math.min(main_axis, max_widget_size))
     else
-      max = h
-      width_left = width_left - math.min(w, max_widget_size)
+      main_axis_left = main_axis_left - math.min(main_axis, max_widget_size)
     end
 
-    if max > used_max then
-      used_max = max
+    if cross_axis > cross_axis_max then
+      cross_axis_max = cross_axis
     end
 
     fitted_widgets = fitted_widgets + 1
 
     -- Break early if there's no more room left
-    if width_left <= 0 or height_left <= 0 then
-      if is_y then
-        height_left = math.max(height_left, 0)
-      else
-        width_left = math.max(width_left, 0)
-      end
+    if main_axis_left <= 0 then
       break
     end
 
     ::continue::
   end
 
+  main_axis_left = math.max(main_axis_left - flexible_size, 0)
+
   if is_y then
-    return used_max, orig_height - height_left
+    return cross_axis_max, orig_height - main_axis_left
   end
 
-  return orig_width - width_left, used_max
+  return orig_width - main_axis_left, cross_axis_max
 end
 
 ---Set the maximum size the widgets in this layout will take.
@@ -171,6 +195,7 @@ end
 
 local function get_layout(dir, ...)
   local ret = fixed[dir](...)
+  ret.widget_name = "Flex"
 
   gtable.crush(ret, flex, true)
 

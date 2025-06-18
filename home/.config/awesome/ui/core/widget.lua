@@ -115,6 +115,7 @@ function Widget.new(args)
 
   local children = {}
 
+  -- TODO: function props to reactive signals?
   -- TODO: reassigning signals
   -- TODO: on_click_away?
   -- TODO: reactive children?

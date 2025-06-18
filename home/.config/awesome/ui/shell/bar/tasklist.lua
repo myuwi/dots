@@ -7,9 +7,9 @@ local computed = require("ui.core.signal.computed")
 local bind = require("ui.core.signal.bind")
 
 local Container = require("ui.widgets").Container
+local Flexible = require("ui.widgets").Flexible
 local ClientIcon = require("ui.widgets").ClientIcon
 local Row = require("ui.widgets").Row
-local RowFit = require("ui.widgets").RowFit
 local Text = require("ui.widgets").Text
 
 local tbl = require("helpers.table")
@@ -63,7 +63,7 @@ local function tasklist(s)
   awful.tag.attached_connect_signal(nil, "property::selected", update_clients)
   awful.tag.attached_connect_signal(nil, "property::activated", update_clients)
 
-  local tasklist_widget = RowFit {
+  local tasklist_widget = Row {
     spacing = dpi(4),
     max_widget_size = dpi(480),
 
@@ -73,24 +73,26 @@ local function tasklist(s)
         local minimized = bind(c, "minimized")
         local urgent = bind(c, "urgent")
 
-        return Container {
-          bg = computed(function()
-            return active.value and beautiful.bg_focus or urgent.value and beautiful.bg_urgent or nil
-          end),
-          fg = computed(function()
-            return minimized.value and beautiful.fg_minimized or nil
-          end),
-          padding = { x = dpi(8), y = dpi(4) },
-          radius = dpi(4),
-          buttons = tasklist_buttons(c),
+        return Flexible {
+          Container {
+            bg = computed(function()
+              return active.value and beautiful.bg_focus or urgent.value and beautiful.bg_urgent or nil
+            end),
+            fg = computed(function()
+              return minimized.value and beautiful.fg_minimized or nil
+            end),
+            padding = { x = dpi(8), y = dpi(4) },
+            radius = dpi(4),
+            buttons = tasklist_buttons(c),
 
-          Row {
-            spacing = dpi(6),
-            ClientIcon {
-              client = c,
-            },
-            Text {
-              text = bind(c, "name"),
+            Row {
+              spacing = dpi(6),
+              ClientIcon {
+                client = c,
+              },
+              Text {
+                text = bind(c, "name"),
+              },
             },
           },
         }

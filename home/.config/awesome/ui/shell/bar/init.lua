@@ -3,8 +3,8 @@ local beautiful = require("beautiful")
 
 local Window = require("ui.window")
 local Container = require("ui.widgets").Container
+local Expanded = require("ui.widgets").Expanded
 local Row = require("ui.widgets").Row
-local RowAlign = require("ui.widgets").RowAlign
 
 local taglist = require("ui.shell.bar.taglist")
 local tasklist = require("ui.shell.bar.tasklist")
@@ -38,10 +38,10 @@ awful.screen.connect_for_each_screen(function(s)
       radius = beautiful.border_radius,
       padding = beautiful.bar_padding,
 
-      RowAlign {
+      Row {
+        spacing = beautiful.bar_spacing,
         taglist(s),
-        Container {
-          padding = { x = beautiful.bar_spacing },
+        Expanded {
           tasklist(s),
         },
         Row {

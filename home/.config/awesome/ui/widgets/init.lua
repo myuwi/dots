@@ -3,6 +3,8 @@ local wibox = require("wibox")
 
 local Widget = require("ui.core.widget")
 local container = require("ui.widgets.container")
+local flexible = require("ui.widgets.flexible")
+local expanded = require("ui.widgets.expanded")
 local flex = require("ui.layout.flex")
 
 local function make_widget(widget_constructor, child_prop)
@@ -19,6 +21,8 @@ local widgets = {
   -- Single-Widget Containers
   Container = make_widget(container),
   Center = make_widget(wibox.container.place),
+  Flexible = make_widget(flexible),
+  Expanded = make_widget(expanded),
 
   -- Layouts
   Column = make_widget(flex.vertical),

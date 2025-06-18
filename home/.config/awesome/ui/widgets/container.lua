@@ -83,6 +83,7 @@ end
 -- TODO: margin
 local function new()
   local ret = wibox.container.background()
+  ret.widget_name = "Container"
 
   gtable.crush(ret, container, true)
 
