@@ -10,7 +10,7 @@ local Window = require("ui.window")
 local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
-local RowFlex = require("ui.widgets").RowFlex
+local Expanded = require("ui.widgets").Expanded
 local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
 local Button = require("ui.components").Button
@@ -36,33 +36,20 @@ naughty.connect_signal("request::icon", function(n, context, hints)
 end)
 
 naughty.connect_signal("request::display", function(n)
-  local notification_body_width = beautiful.notification_width - beautiful.notification_margin * 2
-
-  -- Adjust for icon width and spacing
-  if n.image ~= nil then
-    notification_body_width = notification_body_width - dpi(60) - dpi(12)
-  end
-
-  local notification_body = Text {
-    text = n.message,
-    ellipsize = "none",
-    valign = "top",
-  }
-
-  notification_body.forced_height = notification_body:get_height_for_width(notification_body_width, screen.primary)
-
   -- FIXME: Race condition (?) in "invoked" signal handler sometimes causes "dismissed_by_user"
   --        to be returned as the reason for dismissal even when action button is pressed
-  local actions = RowFlex {
+  local actions = Row {
     spacing = dpi(6),
     visible = n.actions and #n.actions > 0,
     children = helpers.table.map(n.actions, function(action)
-      local btn = Button {
-        text = action:get_name(),
-        buttons = {
-          awful.button({}, 1, function()
-            action:invoke(n)
-          end),
+      local btn = Expanded {
+        Button {
+          text = action:get_name(),
+          buttons = {
+            awful.button({}, 1, function()
+              action:invoke(n)
+            end),
+          },
         },
       }
 
@@ -114,7 +101,11 @@ naughty.connect_signal("request::display", function(n)
                 font = beautiful.font_name .. " Bold " .. beautiful.font_size,
                 forced_height = dpi(18),
               },
-              notification_body,
+              Text {
+                text = n.message,
+                ellipsize = "none",
+                valign = "top",
+              },
             },
           },
         },

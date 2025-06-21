@@ -28,11 +28,6 @@ local widgets = {
   Column = make_widget(flex.vertical),
   Row = make_widget(flex.horizontal),
 
-  -- TODO: Replace with Flexible/Expanded widget
-  RowAlign = make_widget(wibox.layout.align.horizontal),
-  RowFlex = make_widget(wibox.layout.flex.horizontal),
-  RowFit = make_widget(require("ui.layout.fit").horizontal),
-
   -- Widgets
   -- TODO: merge ClientIcon and Image
   ClientIcon = make_widget(awful.widget.clienticon, "client"),

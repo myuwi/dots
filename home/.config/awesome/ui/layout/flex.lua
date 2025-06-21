@@ -5,7 +5,8 @@ local gtable = require("gears.table")
 
 local flex = {}
 
--- TODO: flexible expand prop
+-- TODO: Use the same strategy for sizing widgets as the fit layout? flex_strategy = "smart" prop?
+-- TODO: align and justify props
 
 ---Layout a flex layout. Each normal widget gets just the space it asks for, while flexible widgets may grow and shrink based on the available space.
 ---@param context table The context in which we are drawn.
@@ -17,46 +18,59 @@ function flex:layout(context, width, height)
   local is_y = self._private.dir == "y"
   local is_x = not is_y
   local spacing = self._private.spacing or 0
-  local spoffset = math.max(spacing, 0)
-  local spinset = math.min(spacing, 0)
-  local abspace = math.abs(spacing)
   local spacing_widget = spacing ~= 0 and self._private.spacing_widget or nil
   local max_widget_size = self._private.max_widget_size or math.huge
 
+  -- Calculate flex sizes
   local fixed_size = 0
   local flex_size = 0
   local total_spacing = 0
+  local expanded_count = 0
 
   for _, widget in pairs(self._private.widgets) do
     local w, h = base.fit_widget(self, context, widget, width, height)
     local main_size = is_y and h or w
     main_size = math.min(main_size, max_widget_size)
 
-    if main_size > 0 and (fixed_size > 0 or flex_size > 0) then
-      total_spacing = total_spacing + spoffset
+    if spacing > 0 and main_size > 0 and (fixed_size > 0 or flex_size > 0) then
+      total_spacing = total_spacing + spacing
     end
 
-    local flexible = widget._private.flex ~= nil and widget._private.flex ~= 0
+    local flexible = widget.flex ~= nil and widget.flex ~= 0
+    local expanded = widget.expand
     if flexible then
       flex_size = flex_size + main_size
+      if expanded then
+        expanded_count = expanded_count + 1
+      end
     else
       fixed_size = fixed_size + main_size
     end
   end
 
   local flex_space = (is_y and height or width) - fixed_size - total_spacing
+  local empty_space = math.max((is_y and height or width) - fixed_size - flex_size - total_spacing, 0)
+
+  -- TODO: flex factor per widget based on widget's flex prop
   local flex_factor = flex_size ~= 0 and math.min(flex_space / flex_size, 1) or 1
 
-  -- TODO: Use the same strategy for sizing widgets as the fit layout? flex_strategy = "smart" prop?
+  -- Place widgets
   local pos, pos_rounded = 0, 0
-  for _, widget in pairs(self._private.widgets) do
+  for i, widget in pairs(self._private.widgets) do
     local w, h = base.fit_widget(self, context, widget, width, height)
     local main_size = is_y and h or w
     main_size = math.min(main_size, max_widget_size)
 
-    -- Add the spacing and spacing widget, and update spacing to pos (if needed)
-    if pos > 0 and main_size > 0 then
+    -- Add the spacing and spacing widget, and add spacing to pos (if needed)
+    if i > 1 then
+      local local_spacing = (pos > 0 and main_size > 0) and spacing or 0
+
+      -- Add spacing widget when defined
+      -- TODO: is it necessary to always add the spacing widget? fixed layout does this, but why?
       if spacing_widget then
+        local spinset = math.min(local_spacing, 0)
+        local abspace = math.abs(local_spacing)
+
         table.insert(
           result,
           base.place_widget_at(
@@ -69,20 +83,33 @@ function flex:layout(context, width, height)
         )
       end
 
-      pos = pos + spoffset
-      pos_rounded = pos_rounded + spoffset
+      -- Add spacing to pos if needed
+      if local_spacing > 0 then
+        pos = pos + local_spacing
+        pos_rounded = pos_rounded + local_spacing
 
-      if is_x and pos >= width or is_y and pos >= height then
-        break
+        if is_x and pos >= width or is_y and pos >= height then
+          break
+        end
       end
     end
 
-    local flexible = widget._private.flex ~= nil and widget._private.flex ~= 0
+    -- TODO: replace with grow and shrink props for more fine-grained control?
+    local flexible = widget.flex ~= nil and widget.flex ~= 0
+    local expanded = widget.expand
+
     if flexible then
-      main_size = main_size * flex_factor
+      if empty_space > 0 then
+        if expanded then
+          main_size = math.min(main_size + empty_space / expanded_count, max_widget_size)
+        end
+      else
+        main_size = main_size * flex_factor
+      end
     end
 
     -- Disallow overflow
+    -- TODO: Should this behavior be manually opted into by wrapping an element with `Flexible`? If yes, use unbounded main axis for size calc.
     main_size = math.min(main_size, (is_y and height or width) - pos)
 
     next_pos = pos + main_size
@@ -121,7 +148,6 @@ function flex:fit(context, orig_width, orig_height)
   local is_y = self._private.dir == "y"
   local is_x = not is_y
   local spacing = self._private.spacing or 0
-  local spoffset = math.max(spacing, 0)
   local max_widget_size = self._private.max_widget_size or math.huge
 
   -- when no widgets exist the function can be called with orig_width or
@@ -136,13 +162,18 @@ function flex:fit(context, orig_width, orig_height)
 
   local flexible_size = 0
 
-  for _, v in pairs(self._private.widgets) do
-    local w, h =
-      base.fit_widget(self, context, v, is_x and main_axis_left or orig_width, is_y and main_axis_left or orig_height)
+  for _, widget in pairs(self._private.widgets) do
+    local w, h = base.fit_widget(
+      self,
+      context,
+      widget,
+      is_x and main_axis_left or orig_width,
+      is_y and main_axis_left or orig_height
+    )
     local main_axis = is_y and h or w
     local cross_axis = is_y and w or h
-    local flexible = v._private.flex ~= nil
-    local expanded = v._private.expand
+    local flexible = widget.flex ~= nil
+    local expanded = widget.expand
 
     -- Skip zero sized widgets
     if main_axis == 0 then
@@ -150,8 +181,8 @@ function flex:fit(context, orig_width, orig_height)
     end
 
     -- Add spacing if not the first visible widget
-    if fitted_widgets > 0 then
-      main_axis_left = main_axis_left - spoffset
+    if fitted_widgets > 0 and spacing > 0 then
+      main_axis_left = main_axis_left - spacing
     end
 
     if flexible then

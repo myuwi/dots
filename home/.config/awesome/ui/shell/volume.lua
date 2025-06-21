@@ -9,8 +9,8 @@ local computed = require("ui.core.signal.computed")
 local map = require("ui.core.signal.map")
 
 local Window = require("ui.window")
-local Container = require("ui.widgets").Container
-local RowAlign = require("ui.widgets").RowAlign
+local Row = require("ui.widgets").Row
+local Expanded = require("ui.widgets").Expanded
 local Center = require("ui.widgets").Center
 local Image = require("ui.widgets").Image
 local ProgressBar = require("ui.widgets").ProgressBar
@@ -71,10 +71,10 @@ local volume_widget = Window.Popup({
     })
   end,
 
-  RowAlign {
+  Row {
+    spacing = dpi(12),
     volume_icon,
-    Container {
-      padding = { x = dpi(12) },
+    Expanded {
       Center { volume_bar },
     },
     volume_text,
