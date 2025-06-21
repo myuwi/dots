@@ -33,38 +33,40 @@ end
 
 function flexible:reset()
   self:set_widget(nil)
-  self:set_expand(false)
+  self:set_grow(0)
+  self:set_shrink(1)
 end
 
-function flexible:get_flex()
-  return self._private.flex
+function flexible:get_grow()
+  return self._private.grow
 end
 
-function flexible:set_flex(flex)
-  self._private.flex = flex
+function flexible:set_grow(grow)
+  self._private.grow = grow
 
   self:emit_signal("widget::layout_changed")
-  self:emit_signal("property::flex")
+  self:emit_signal("property::grow")
 end
 
-function flexible:get_expand()
-  return self._private.expand
+function flexible:get_shrink()
+  return self._private.shrink
 end
 
-function flexible:set_expand(expand)
-  self._private.expand = expand
+function flexible:set_shrink(shrink)
+  self._private.shrink = shrink
 
   self:emit_signal("widget::layout_changed")
-  self:emit_signal("property::expand")
+  self:emit_signal("property::shrink")
 end
 
-local function new(widget, flex, expand)
+-- TODO: basis prop?
+local function new(widget, grow, shrink)
   local ret = base.make_widget(nil, "Flexible", { enable_properties = true })
 
   gtable.crush(ret, flexible, true)
 
-  ret:set_flex(flex or 1)
-  ret:set_expand(expand or false)
+  ret:set_grow(grow or 0)
+  ret:set_shrink(shrink or 1)
 
   if widget then
     ret:set_widget(widget)

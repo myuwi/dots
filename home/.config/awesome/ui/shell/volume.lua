@@ -10,7 +10,7 @@ local map = require("ui.core.signal.map")
 
 local Window = require("ui.window")
 local Row = require("ui.widgets").Row
-local Expanded = require("ui.widgets").Expanded
+local Flexible = require("ui.widgets").Flexible
 local Center = require("ui.widgets").Center
 local Image = require("ui.widgets").Image
 local ProgressBar = require("ui.widgets").ProgressBar
@@ -74,7 +74,8 @@ local volume_widget = Window.Popup({
   Row {
     spacing = dpi(12),
     volume_icon,
-    Expanded {
+    Flexible {
+      grow = 1,
       Center { volume_bar },
     },
     volume_text,

@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 
 local Window = require("ui.window")
 local Container = require("ui.widgets").Container
-local Expanded = require("ui.widgets").Expanded
+local Flexible = require("ui.widgets").Flexible
 local Row = require("ui.widgets").Row
 
 local taglist = require("ui.shell.bar.taglist")
@@ -41,7 +41,8 @@ awful.screen.connect_for_each_screen(function(s)
       Row {
         spacing = beautiful.bar_spacing,
         taglist(s),
-        Expanded {
+        Flexible {
+          grow = 1,
           tasklist(s),
         },
         Row {

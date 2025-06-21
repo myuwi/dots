@@ -5,7 +5,7 @@ local gtable = require("gears.table")
 
 local flex = {}
 
--- TODO: Use the same strategy for sizing widgets as the fit layout? flex_strategy = "smart" prop?
+-- TODO: Use the same shrink strategy for sizing widgets as the fit layout? shrink_strategy = "smart" prop etc.?
 -- TODO: align and justify props
 
 ---Layout a flex layout. Each normal widget gets just the space it asks for, while flexible widgets may grow and shrink based on the available space.
@@ -25,7 +25,9 @@ function flex:layout(context, width, height)
   local fixed_size = 0
   local flex_size = 0
   local total_spacing = 0
-  local expanded_count = 0
+
+  local grow_count = 0
+  local shrink_count = 0
 
   for _, widget in pairs(self._private.widgets) do
     local w, h = base.fit_widget(self, context, widget, width, height)
@@ -36,23 +38,20 @@ function flex:layout(context, width, height)
       total_spacing = total_spacing + spacing
     end
 
-    local flexible = widget.flex ~= nil and widget.flex ~= 0
-    local expanded = widget.expand
+    local flexible = widget.widget_name == "Flexible"
     if flexible then
+      local grow = widget.grow or 0
+      local shrink = widget.shrink or 1
+
+      grow_count = grow_count + grow
+      shrink_count = shrink_count + shrink
       flex_size = flex_size + main_size
-      if expanded then
-        expanded_count = expanded_count + 1
-      end
     else
       fixed_size = fixed_size + main_size
     end
   end
 
-  local flex_space = (is_y and height or width) - fixed_size - total_spacing
-  local empty_space = math.max((is_y and height or width) - fixed_size - flex_size - total_spacing, 0)
-
-  -- TODO: flex factor per widget based on widget's flex prop
-  local flex_factor = flex_size ~= 0 and math.min(flex_space / flex_size, 1) or 1
+  local available_space = (is_y and height or width) - fixed_size - flex_size - total_spacing
 
   -- Place widgets
   local pos, pos_rounded = 0, 0
@@ -94,17 +93,21 @@ function flex:layout(context, width, height)
       end
     end
 
-    -- TODO: replace with grow and shrink props for more fine-grained control?
-    local flexible = widget.flex ~= nil and widget.flex ~= 0
-    local expanded = widget.expand
+    local flexible = widget.widget_name == "Flexible"
 
     if flexible then
-      if empty_space > 0 then
-        if expanded then
-          main_size = math.min(main_size + empty_space / expanded_count, max_widget_size)
+      local grow = widget.grow or 0
+      local shrink = widget.shrink or 1
+      local basis = main_size
+
+      if available_space > 0 then
+        if grow > 0 then
+          main_size = math.min(basis + (grow / grow_count) * available_space, max_widget_size)
         end
       else
-        main_size = main_size * flex_factor
+        if shrink > 0 then
+          main_size = basis - ((shrink / shrink_count) * -available_space)
+        end
       end
     end
 
@@ -172,8 +175,6 @@ function flex:fit(context, orig_width, orig_height)
     )
     local main_axis = is_y and h or w
     local cross_axis = is_y and w or h
-    local flexible = widget.flex ~= nil
-    local expanded = widget.expand
 
     -- Skip zero sized widgets
     if main_axis == 0 then
@@ -185,8 +186,11 @@ function flex:fit(context, orig_width, orig_height)
       main_axis_left = main_axis_left - spacing
     end
 
+    local flexible = widget.widget_name == "Flexible"
+    local grow = widget.grow and widget.grow > 0
+
     if flexible then
-      flexible_size = flexible_size + (expanded and max_widget_size or math.min(main_axis, max_widget_size))
+      flexible_size = flexible_size + (grow and max_widget_size or math.min(main_axis, max_widget_size))
     else
       main_axis_left = main_axis_left - math.min(main_axis, max_widget_size)
     end

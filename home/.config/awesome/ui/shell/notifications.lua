@@ -10,7 +10,7 @@ local Window = require("ui.window")
 local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
-local Expanded = require("ui.widgets").Expanded
+local Flexible = require("ui.widgets").Flexible
 local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
 local Button = require("ui.components").Button
@@ -42,7 +42,8 @@ naughty.connect_signal("request::display", function(n)
     spacing = dpi(6),
     visible = n.actions and #n.actions > 0,
     children = helpers.table.map(n.actions, function(action)
-      local btn = Expanded {
+      local btn = Flexible {
+        grow = 1,
         Button {
           text = action:get_name(),
           buttons = {
