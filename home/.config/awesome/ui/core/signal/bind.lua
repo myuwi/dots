@@ -3,7 +3,7 @@ local signal = require("ui.core.signal")
 ---@param emitter table
 ---@param property string
 ---@return Signal
-local function observe(emitter, property)
+local function bind(emitter, property)
   local sig = signal(emitter[property])
 
   emitter:connect_signal("property::" .. property, function()
@@ -13,4 +13,4 @@ local function observe(emitter, property)
   return sig
 end
 
-return observe
+return bind
