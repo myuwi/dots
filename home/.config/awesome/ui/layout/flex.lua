@@ -163,7 +163,7 @@ function flex:fit(context, orig_width, orig_height)
   local cross_axis_max = 0
   local fitted_widgets = 0
 
-  local flexible_size = 0
+  local shrinkable_size = 0
 
   for _, widget in pairs(self._private.widgets) do
     local w, h = base.fit_widget(
@@ -188,9 +188,11 @@ function flex:fit(context, orig_width, orig_height)
 
     local flexible = widget.widget_name == "Flexible"
     local grow = widget.grow and widget.grow > 0
+    local shrink = widget.shrink and widget.shrink > 0
 
-    if flexible then
-      flexible_size = flexible_size + (grow and max_widget_size or math.min(main_axis, max_widget_size))
+    -- Track "shrinkable" size separately from fixed size, as flexible widgets may shrink to reveal other widgets with a larger cross-axis
+    if flexible and shrink then
+      shrinkable_size = shrinkable_size + (grow and max_widget_size or math.min(main_axis, max_widget_size))
     else
       main_axis_left = main_axis_left - math.min(main_axis, max_widget_size)
     end
@@ -209,7 +211,7 @@ function flex:fit(context, orig_width, orig_height)
     ::continue::
   end
 
-  main_axis_left = math.max(main_axis_left - flexible_size, 0)
+  main_axis_left = math.max(main_axis_left - shrinkable_size, 0)
 
   if is_y then
     return cross_axis_max, orig_height - main_axis_left
