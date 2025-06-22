@@ -5,6 +5,7 @@ local gsurface = require("gears.surface")
 local naughty = require("naughty")
 
 local helpers = require("helpers")
+local tbl = require("helpers.table")
 
 local Window = require("ui.window")
 local Container = require("ui.widgets").Container
@@ -41,7 +42,8 @@ naughty.connect_signal("request::display", function(n)
   local actions = Row {
     spacing = dpi(6),
     visible = n.actions and #n.actions > 0,
-    children = helpers.table.map(n.actions, function(action)
+
+    tbl.map(n.actions, function(action)
       local btn = Flexible {
         grow = 1,
         Button {

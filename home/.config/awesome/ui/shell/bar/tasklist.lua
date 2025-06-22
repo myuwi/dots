@@ -67,7 +67,7 @@ local function tasklist(s)
     spacing = dpi(4),
     max_widget_size = dpi(480),
 
-    children = computed(function()
+    computed(function()
       return tbl.map(clients.value, function(c)
         local active = bind(c, "active")
         local minimized = bind(c, "minimized")

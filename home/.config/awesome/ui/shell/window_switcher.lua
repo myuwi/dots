@@ -2,7 +2,6 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local helpers = require("helpers")
 local Window = require("ui.window")
 local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
@@ -12,7 +11,8 @@ local Text = require("ui.widgets").Text
 
 local signal = require("ui.core.signal")
 local computed = require("ui.core.signal.computed")
-local map = require("ui.core.signal.map")
+
+local tbl = require("helpers.table")
 
 local backdrop = require("ui.shell.backdrop")
 
@@ -92,22 +92,14 @@ local function create_icon(c, i)
   return client_icon
 end
 
-local function create_client_icons(clients)
-  local icons = {}
-
-  for i, c in ipairs(clients) do
-    icons[i] = create_icon(c, i)
-  end
-
-  return icons
-end
-
 local window_switcher_widget = Window.Popup {
   placement = awful.placement.centered,
 
   Row {
     spacing = dpi(6),
-    children = map(visible_clients, create_client_icons),
+    computed(function()
+      return tbl.map(visible_clients.value, create_icon)
+    end),
   },
 }
 
@@ -142,7 +134,7 @@ end
 local function show(a)
   local cycle_amount = a or 1
   local clients = client.get(nil, true)
-  visible_clients.value = helpers.table.filter(clients, filter_function)
+  visible_clients.value = tbl.filter(clients, filter_function)
 
   if #visible_clients.value == 0 then
     return

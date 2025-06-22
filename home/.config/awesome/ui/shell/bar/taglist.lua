@@ -51,7 +51,7 @@ local function taglist(s)
       awful.tag.viewprev(s)
     end,
 
-    children = tbl.map(s.tags, function(t, i)
+    tbl.map(s.tags, function(t, i)
       local selected = bind(t, "selected")
       local urgent = bind(t, "urgent")
 

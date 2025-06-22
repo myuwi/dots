@@ -8,8 +8,9 @@ local flex = require("ui.layout.flex")
 
 local function make_widget(widget_constructor, child_prop)
   return function(params)
-    if child_prop then
+    if child_prop and params[1] then
       params[child_prop] = params[child_prop] or params[1]
+      params[1] = nil
     end
     params.widget = widget_constructor
     return Widget.new(params)

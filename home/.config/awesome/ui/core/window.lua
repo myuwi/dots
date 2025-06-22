@@ -27,7 +27,7 @@ local function set_visible(w, visible)
   w.drawin.visible = visible
 end
 
--- TODO: support widget_template
+-- TODO: support widget_template?
 function Window.new(args)
   local window_constructor = args.window or wibox
   args.window = nil

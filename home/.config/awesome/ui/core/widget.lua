@@ -6,6 +6,8 @@ local effect = require("ui.core.signal.effect")
 local untracked = require("ui.core.signal.untracked")
 local util = require("ui.core.util")
 
+local tbl = require("helpers.table")
+
 local Widget = {}
 
 ---@return boolean
@@ -13,12 +15,32 @@ local function is_widget(obj)
   return type(obj) == "table" and (obj.widget or obj.layout or rawget(obj, "is_widget"))
 end
 
+local function flatten(t)
+  local flat = {}
+
+  for _, v in pairs(t) do
+    if type(v) == "table" and not is_widget(v) then
+      for _, inner in pairs(flatten(v)) do
+        table.insert(flat, inner)
+      end
+    else
+      table.insert(flat, v)
+    end
+  end
+
+  return flat
+end
+
 local function set_children(self, new_children)
   if not new_children then
     new_children = {}
   elseif is_widget(new_children) then
     new_children = { new_children }
+  else
+    new_children = flatten(new_children)
   end
+
+  new_children = tbl.map(new_children, Widget.new)
 
   if self._private.mount_count and self._private.mount_count > 0 then
     for _, child in ipairs(new_children) do
@@ -104,7 +126,11 @@ function Widget.new(args)
       return effect(function()
         for k, sig in pairs(signals) do
           effect(function()
-            widget[k] = sig.value
+            if type(k) == "number" then
+              widget.children = sig.value
+            else
+              widget[k] = sig.value
+            end
           end)
         end
       end)
@@ -115,20 +141,18 @@ function Widget.new(args)
 
   local children = {}
 
+  -- TODO: better handling of reactive children
   -- TODO: function props to reactive signals?
   -- TODO: reassigning signals
   -- TODO: on_click_away?
-  -- TODO: reactive children?
   for key, value in pairs(args) do
     if Signal.is_signal(value) then
       ---@cast value Signal
-      if type(key) == "string" then
-        signals[key] = value
-      end
+      signals[key] = value
     elseif key == "children" then
       children = value
-    elseif type(key) == "number" and is_widget(value) then
-      children[#children + 1] = Widget.new(value)
+    elseif type(key) == "number" then
+      children[#children + 1] = value
     elseif key == "on_wheel_up" then
       widget:add_button(awful.button({ "Any" }, 4, value))
     elseif key == "on_wheel_down" then

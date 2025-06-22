@@ -206,7 +206,8 @@ local app_list = Column {
   on_wheel_down = function()
     scroll_list(1)
   end,
-  children = map(filtered_apps, create_entries),
+
+  map(filtered_apps, create_entries),
 }
 
 local launcher_widget_max_height = 0
