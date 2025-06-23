@@ -7,7 +7,7 @@ local function bind(emitter, property)
   local sig = signal(emitter[property])
 
   emitter:connect_signal("property::" .. property, function()
-    sig.value = emitter[property]
+    sig:set(emitter[property])
   end)
 
   return sig

@@ -21,13 +21,13 @@ local muted = signal(false)
 local hovered = signal(false)
 
 local function get_volume_svg()
-  if muted.value or volume.value == 0 then
+  if muted:get() or volume:get() == 0 then
     return "volume-x.svg"
   end
 
-  if volume.value >= 50 then
+  if volume:get() >= 50 then
     return "volume-2.svg"
-  elseif volume.value >= 20 then
+  elseif volume:get() >= 20 then
     return "volume-1.svg"
   else
     return "volume.svg"
@@ -99,11 +99,11 @@ volume_widget.buttons = {
 }
 
 volume_widget:connect_signal("mouse::enter", function()
-  hovered.value = true
+  hovered:set(true)
 end)
 
 volume_widget:connect_signal("mouse::leave", function()
-  hovered.value = false
+  hovered:set(false)
 end)
 
 -- Keep widget visible while hovered
@@ -112,7 +112,7 @@ effect(function()
     return
   end
 
-  if hovered.value then
+  if hovered:get() then
     hide_volume_widget:stop()
   else
     hide_volume_widget:again()
@@ -136,11 +136,11 @@ end
 
 awesome.connect_signal("signal::volume", function()
   get_audio_status(function(v, m)
-    volume.value = v
-    muted.value = m
+    volume:set(v)
+    muted:set(m)
 
     if volume_widget.visible then
-      if not hovered.value then
+      if not hovered:get() then
         hide_volume_widget:again()
       end
     else

@@ -65,12 +65,12 @@ local function filter_apps(apps, query_text)
 end
 
 local filtered_apps = computed(function()
-  return filter_apps(all_apps.value, query.value)
+  return filter_apps(all_apps:get(), query:get())
 end)
 
 local function clamp_selection()
-  scroll_position.value = math.min(math.max(#filtered_apps.value - page_size, 0), scroll_position:peek())
-  selected_index.value = math.max(math.min(selected_index:peek(), #filtered_apps.value), 1)
+  scroll_position:set(math.min(math.max(#filtered_apps:get() - page_size, 0), scroll_position:peek()))
+  selected_index:set(math.max(math.min(selected_index:peek(), #filtered_apps:get()), 1))
 end
 
 effect(clamp_selection)
@@ -93,26 +93,27 @@ local function launch(app)
 end
 
 local function move_selection(amount)
-  if #filtered_apps.value == 0 then
+  if #filtered_apps:get() == 0 then
     return
   end
 
-  local new_index = selected_index.value + amount
-  selected_index.value = ((new_index - 1) % #filtered_apps.value) + 1
+  local new_index = selected_index:get() + amount
+  selected_index:set(((new_index - 1) % #filtered_apps:get()) + 1)
 
   -- Make sure scroll follows selection
-  scroll_position.value =
-    math.min(math.max(scroll_position.value, selected_index.value - page_size), selected_index.value - 1)
+  scroll_position:set(
+    math.min(math.max(scroll_position:get(), selected_index:get() - page_size), selected_index:get() - 1)
+  )
 end
 
 local function scroll_list(amount)
   local min_scroll_offset = 0
-  local max_scroll_offset = #filtered_apps.value - math.min(page_size, #filtered_apps.value)
-  local new_offset = math.min(math.max(scroll_position.value + amount, min_scroll_offset), max_scroll_offset)
+  local max_scroll_offset = #filtered_apps:get() - math.min(page_size, #filtered_apps:get())
+  local new_offset = math.min(math.max(scroll_position:get() + amount, min_scroll_offset), max_scroll_offset)
 
   -- Update only if needed
-  if new_offset ~= scroll_position.value then
-    scroll_position.value = new_offset
+  if new_offset ~= scroll_position:get() then
+    scroll_position:set(new_offset)
   end
 end
 
@@ -154,7 +155,7 @@ local function create_entry(app, i)
 
   local entry = Container {
     bg = computed(function()
-      return i == selected_index.value and beautiful.bg_focus or nil
+      return i == selected_index:get() and beautiful.bg_focus or nil
     end),
     padding = { x = dpi(9), y = dpi(6) },
     radius = dpi(4),
@@ -162,7 +163,7 @@ local function create_entry(app, i)
       launch(app)
     end,
     on_mouse_enter = function()
-      selected_index.value = i
+      selected_index:set(i)
     end,
 
     Row {
@@ -188,7 +189,7 @@ local function create_entries(apps)
   local children = {}
   local num_visible_apps = math.min(page_size, #apps)
 
-  for i = 1 + scroll_position.value, num_visible_apps + scroll_position.value do
+  for i = 1 + scroll_position:get(), num_visible_apps + scroll_position:get() do
     local app = apps[i]
     local entry = create_entry(app, i)
     children[#children + 1] = entry
@@ -249,7 +250,7 @@ text_input.keypressed_callback = function(mods, key)
   end
 
   if key == "Return" then
-    local app = filtered_apps.value[selected_index.value]
+    local app = filtered_apps:get()[selected_index:get()]
     launch(app)
   end
 
@@ -263,7 +264,7 @@ text_input.keypressed_callback = function(mods, key)
 end
 
 text_input.changed_callback = function(text)
-  query.value = text
+  query:set(text)
 end
 
 -- Setup
@@ -279,7 +280,7 @@ function launcher.hide()
   text_input:reset()
   text_input:unfocus()
 
-  all_apps.value = {}
+  all_apps:set({})
 end
 
 function launcher.cancel()
@@ -288,8 +289,8 @@ function launcher.cancel()
 end
 
 function launcher.show()
-  scroll_position.value = 0
-  selected_index.value = 1
+  scroll_position:set(0)
+  selected_index:set(1)
 
   local new_apps = helpers.table.filter(Gio.DesktopAppInfo.get_all(), function(app)
     return not app:get_nodisplay()
@@ -299,7 +300,7 @@ function launcher.show()
     return a:get_name():lower() < b:get_name():lower()
   end)
 
-  all_apps.value = new_apps
+  all_apps:set(new_apps)
 
   last_focused_client = client.focus
   client.focus = nil

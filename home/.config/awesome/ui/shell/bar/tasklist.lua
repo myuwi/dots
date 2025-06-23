@@ -54,7 +54,7 @@ local function tasklist(s)
   local clients = signal({})
 
   local update_clients = throttle(function()
-    clients.value = get_clients(s)
+    clients:set(get_clients(s))
   end)
 
   for _, client_signal in ipairs(client_signals) do
@@ -68,7 +68,7 @@ local function tasklist(s)
     max_widget_size = dpi(480),
 
     computed(function()
-      return tbl.map(clients.value, function(c)
+      return tbl.map(clients:get(), function(c)
         local active = bind(c, "active")
         local minimized = bind(c, "minimized")
         local urgent = bind(c, "urgent")
@@ -76,10 +76,10 @@ local function tasklist(s)
         return Flexible {
           Container {
             bg = computed(function()
-              return active.value and beautiful.bg_focus or urgent.value and beautiful.bg_urgent or nil
+              return active:get() and beautiful.bg_focus or urgent:get() and beautiful.bg_urgent or nil
             end),
             fg = computed(function()
-              return minimized.value and beautiful.fg_minimized or nil
+              return minimized:get() and beautiful.fg_minimized or nil
             end),
             padding = { x = dpi(8), y = dpi(4) },
             radius = dpi(4),

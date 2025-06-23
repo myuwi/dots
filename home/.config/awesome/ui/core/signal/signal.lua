@@ -1,12 +1,6 @@
-local gtable = require("gears.table")
 local context = require("ui.core.signal._context")
 
--- TODO: getter, setter tuple instead of .value metatable?
-
 ---@class (exact) Signal: Source
----@field value unknown
----@field peek fun(self: self): unknown
----@field protected _value any
 local Signal = {}
 
 Signal.__type = "Signal"
@@ -36,14 +30,13 @@ function Signal:peek()
   return self._value
 end
 
----@private
-function Signal:get_value()
+function Signal:get()
   context.add_dependency(self)
   return self._value
 end
 
----@private
-function Signal:set_value(value)
+---@param value any
+function Signal:set(value)
   if self._value ~= value then
     self._value = value
     self._version = self._version + 1
@@ -64,24 +57,7 @@ local function signal(initial_value)
     _subscribers = {},
   }
 
-  gtable.crush(ret, Signal, true)
-
-  setmetatable(ret, {
-    __index = function(self, key)
-      if rawget(self, "get_" .. key) then
-        return self["get_" .. key](self)
-      else
-        return rawget(self, key)
-      end
-    end,
-    __newindex = function(self, key, value)
-      if rawget(self, "set_" .. key) then
-        self["set_" .. key](self, value)
-      else
-        rawset(self, key, value)
-      end
-    end,
-  })
+  setmetatable(ret, { __index = Signal })
 
   return ret
 end

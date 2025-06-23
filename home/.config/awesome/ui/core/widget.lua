@@ -118,7 +118,7 @@ function Widget.new(args)
   -- TODO: special handling for add, reset, etc.?
   util.wrap(widget, "set_children", set_children)
 
-  ---@type table<string, Signal>
+  ---@type table<string, Source>
   local signals = {}
 
   local function bind_signals()
@@ -127,9 +127,9 @@ function Widget.new(args)
         for k, sig in pairs(signals) do
           effect(function()
             if type(k) == "number" then
-              widget.children = sig.value
+              widget.children = sig:get()
             else
-              widget[k] = sig.value
+              widget[k] = sig:get()
             end
           end)
         end
@@ -147,7 +147,7 @@ function Widget.new(args)
   -- TODO: on_click_away?
   for key, value in pairs(args) do
     if Signal.is_signal(value) then
-      ---@cast value Signal
+      ---@cast value Source
       signals[key] = value
     elseif key == "children" then
       children = value

@@ -29,19 +29,6 @@ local function taglist_buttons(t)
 end
 
 local function taglist(s)
-  local tags = tbl.map(s.tags, function(t)
-    local client_count = signal(0)
-
-    t:connect_signal("tagged", function()
-      client_count.value = #t:clients()
-    end)
-    t:connect_signal("untagged", function()
-      client_count.value = #t:clients()
-    end)
-
-    return client_count
-  end)
-
   local taglist_widget = Row {
     spacing = dpi(4),
     on_wheel_up = function()
@@ -51,16 +38,25 @@ local function taglist(s)
       awful.tag.viewprev(s)
     end,
 
-    tbl.map(s.tags, function(t, i)
+    tbl.map(s.tags, function(t)
       local selected = bind(t, "selected")
       local urgent = bind(t, "urgent")
+      local client_count = signal(0)
+
+      t:connect_signal("tagged", function()
+        client_count:set(#t:clients())
+      end)
+
+      t:connect_signal("untagged", function()
+        client_count:set(#t:clients())
+      end)
 
       return Container {
         bg = computed(function()
-          return selected.value and beautiful.bg_focus or urgent.value and beautiful.bg_urgent or nil
+          return selected:get() and beautiful.bg_focus or urgent:get() and beautiful.bg_urgent or nil
         end),
         visible = computed(function()
-          return selected.value or tags[i].value > 0
+          return selected:get() or client_count:get() > 0
         end),
         radius = dpi(4),
         forced_width = dpi(20),

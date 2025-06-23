@@ -13,7 +13,7 @@ local calendar_visible = bind(calendar_popup, "visible")
 local function clock(s)
   local clock_widget = Container {
     bg = computed(function()
-      return calendar_visible.value and calendar_popup.screen == s and beautiful.bg_focus or nil
+      return calendar_visible:get() and calendar_popup.screen == s and beautiful.bg_focus or nil
     end),
     radius = dpi(4),
     padding = { x = dpi(6) },

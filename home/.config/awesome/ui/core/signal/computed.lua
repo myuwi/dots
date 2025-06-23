@@ -1,7 +1,6 @@
-local gtable = require("gears.table")
 local context = require("ui.core.signal._context")
 
----@class (exact) Computed: Signal, Subscriber
+---@class (exact) Computed: Source, Subscriber
 ---@field private _fn fun()
 local Computed = {}
 
@@ -43,16 +42,10 @@ function Computed:peek()
   return self._value
 end
 
----@private
-function Computed:get_value()
+function Computed:get()
   context.add_dependency(self)
   self:_refresh()
   return self._value
-end
-
----@private
-function Computed:set_value()
-  error("Cannot assign value to a computed signal", 3)
 end
 
 ---Create a new computed signal
@@ -69,26 +62,9 @@ local function computed(fn)
     _sources = {},
   }
 
-  gtable.crush(ret, Computed, true)
+  setmetatable(ret, { __index = Computed })
 
   context.add_child(ret)
-
-  setmetatable(ret, {
-    __index = function(self, key)
-      if rawget(self, "get_" .. key) then
-        return self["get_" .. key](self)
-      else
-        return rawget(self, key)
-      end
-    end,
-    __newindex = function(self, key, value)
-      if rawget(self, "set_" .. key) then
-        self["set_" .. key](self, value)
-      else
-        rawset(self, key, value)
-      end
-    end,
-  })
 
   return ret
 end

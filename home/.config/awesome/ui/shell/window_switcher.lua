@@ -32,7 +32,7 @@ local last_focused_client
 
 ---@param index integer
 local function activate_client_at_index(index)
-  local c = visible_clients.value[index]
+  local c = visible_clients:get()[index]
 
   c:emit_signal("request::activate", "window_switcher", {
     raise = true,
@@ -45,9 +45,9 @@ local function create_icon(c, i)
   local hovered = signal(false)
   local client_icon = Container {
     bg = computed(function()
-      if hovered.value then
+      if hovered:get() then
         return beautiful.window_switcher_hover
-      elseif i == alt_tab_index.value then
+      elseif i == alt_tab_index:get() then
         return beautiful.window_switcher_focus
       else
         return beautiful.window_switcher_inactive
@@ -60,10 +60,10 @@ local function create_icon(c, i)
       window_switcher_keygrabber:stop()
     end,
     on_mouse_enter = function()
-      hovered.value = true
+      hovered:set(true)
     end,
     on_mouse_leave = function()
-      hovered.value = false
+      hovered:set(false)
     end,
 
     Column {
@@ -98,7 +98,7 @@ local window_switcher_widget = Window.Popup {
   Row {
     spacing = dpi(6),
     computed(function()
-      return tbl.map(visible_clients.value, create_icon)
+      return tbl.map(visible_clients:get(), create_icon)
     end),
   },
 }
@@ -111,7 +111,7 @@ local function cancel()
 end
 
 local function hide()
-  visible_clients.value = {}
+  visible_clients:set({})
   last_focused_client = nil
   window_switcher_keygrabber = nil
   window_switcher_widget.visible = false
@@ -123,8 +123,8 @@ local function cycle_selection(amount)
     return
   end
 
-  local new_index = alt_tab_index.value + amount
-  alt_tab_index.value = (new_index - 1) % #visible_clients.value + 1
+  local new_index = alt_tab_index:get() + amount
+  alt_tab_index:set((new_index - 1) % #visible_clients:get() + 1)
 end
 
 local function filter_function(c)
@@ -134,12 +134,12 @@ end
 local function show(a)
   local cycle_amount = a or 1
   local clients = client.get(nil, true)
-  visible_clients.value = tbl.filter(clients, filter_function)
+  visible_clients:set(tbl.filter(clients, filter_function))
 
-  if #visible_clients.value == 0 then
+  if #visible_clients:get() == 0 then
     return
-  elseif #visible_clients.value == 1 then
-    visible_clients.value[1]:emit_signal("request::activate", "window_switcher", {
+  elseif #visible_clients:get() == 1 then
+    visible_clients:get()[1]:emit_signal("request::activate", "window_switcher", {
       raise = true,
     })
     return
@@ -159,14 +159,14 @@ local function show(a)
     stop_event = "release",
     stop_callback = function(_, stop_key)
       if stop_key == "Super_L" then
-        activate_client_at_index(alt_tab_index.value)
+        activate_client_at_index(alt_tab_index:get())
       end
 
       hide()
     end,
   })
 
-  alt_tab_index.value = 1
+  alt_tab_index:set(1)
 
   if client.focus == nil and cycle_amount > 0 then
     cycle_amount = cycle_amount - 1

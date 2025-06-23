@@ -1,20 +1,24 @@
 ---@diagnostic disable: invisible
 
----@class Node
+---@class (exact) Node
 ---@field protected __type string
 
----@class Source: Node
+---@class (exact) Source: Node
+---@field get fun(self: self): unknown
+---@field peek fun(self: self): unknown
+---@field protected _value any
 ---@field protected _version integer
 ---@field protected _subscribers Subscriber[]
 ---@field protected _refresh fun(self: self)
 
----@class Subscriber: Node
+---@class (exact) Subscriber: Node
 ---@field protected _dirty boolean
 ---@field protected _first_run boolean
 ---@field protected _parent Subscriber
 ---@field protected _children Subscriber[]
 ---@field protected _sources Source[]
 ---@field protected _source_versions table<Source, integer>
+---@field protected _notify fun(self: self)
 ---@field protected _dispose fun(self: self)
 
 ---@type Subscriber?
@@ -63,7 +67,7 @@ end
 ---@param sub Subscriber
 function M.cleanup_sub(sub)
   while #sub._sources > 0 do
-    ---@type Signal
+    ---@type Source
     local source = table.remove(sub._sources, 1)
 
     for i, s in ipairs(source._subscribers) do
