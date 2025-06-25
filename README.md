@@ -33,15 +33,15 @@ For example, here the background color of the clock widget is automatically upda
 ```lua
 local calendar_popup_visible = signal(false)
 
--- calendar_popup_visible.value = true / false
+-- calendar_popup_visible:set(true)
 
-local clock_widget = widget.new({
+local clock_widget = Container {
   ...,
   bg = computed(function()
-    return calendar_popup_visible.value and beautiful.bg_focus or nil
+    return calendar_popup_visible:get() and beautiful.bg_focus or nil
   end),
   ...
-})
+}
 ```
 
 The signal primitives, `computed(fn)`, `effect(fn)`, and `map(signal, fn)`, automatically track their dependencies within their *tracking scopes*, making them fully reactive without any need for manual dependency tracking.
