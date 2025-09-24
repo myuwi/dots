@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local gstring = require("gears.string")
 local lgi = require("lgi")
-local Gio = lgi.Gio
+local GioUnix = lgi.GioUnix
 local Gtk = lgi.require("Gtk", "3.0")
 
 local helpers = require("helpers")
@@ -284,6 +284,7 @@ function launcher.hide()
 end
 
 function launcher.cancel()
+  -- FIXME: Error here?
   client.focus = last_focused_client
   launcher.hide()
 end
@@ -292,7 +293,7 @@ function launcher.show()
   scroll_position:set(0)
   selected_index:set(1)
 
-  local new_apps = helpers.table.filter(Gio.DesktopAppInfo.get_all(), function(app)
+  local new_apps = helpers.table.filter(GioUnix.DesktopAppInfo.get_all(), function(app)
     return not app:get_nodisplay()
   end)
 
