@@ -31,7 +31,7 @@ function flex:layout(context, width, height)
   local shrink_count = 0
 
   for _, widget in pairs(self._private.widgets) do
-    local w, h = base.fit_widget(self, context, widget, width, height)
+    local w, h = base.fit_widget(self, context, widget, is_y and width or 9999, is_x and height or 9999)
     local main_size = is_y and h or w
     main_size = math.min(main_size, max_widget_size)
 
@@ -62,7 +62,7 @@ function flex:layout(context, width, height)
   local pos, pos_rounded = 0, 0
   local num_visible_placed = 0
   for i, widget in pairs(self._private.widgets) do
-    local w, h = base.fit_widget(self, context, widget, width, height)
+    local w, h = base.fit_widget(self, context, widget, is_y and width or 9999, is_x and height or 9999)
     local main_size = is_y and h or w
     main_size = math.min(main_size, max_widget_size)
 
@@ -71,7 +71,6 @@ function flex:layout(context, width, height)
       local local_spacing = (num_visible_placed > 0 and widget.visible) and spacing or 0
 
       -- Add spacing widget when defined
-      -- TODO: is it necessary to always add the spacing widget? fixed layout does this, but why?
       if spacing_widget then
         local spinset = math.min(local_spacing, 0)
         local abspace = math.abs(local_spacing)
@@ -116,10 +115,6 @@ function flex:layout(context, width, height)
         end
       end
     end
-
-    -- Disallow overflow
-    -- TODO: Should this behavior be manually opted into by wrapping an element with `Flexible`? If yes, use unbounded main axis for size calc.
-    main_size = math.min(main_size, (is_y and height or width) - pos)
 
     next_pos = pos + main_size
     next_pos_rounded = gmath.round(next_pos)
