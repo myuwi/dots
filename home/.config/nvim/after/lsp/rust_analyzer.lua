@@ -1,8 +1,11 @@
 return {
   settings = {
     ["rust-analyzer"] = {
-      checkOnSave = {
+      check = {
         command = "clippy",
+      },
+      rustfmt = {
+        extraArgs = { "+nightly" },
       },
     },
   },
