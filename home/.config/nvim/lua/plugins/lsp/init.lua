@@ -30,6 +30,7 @@ return {
       "jsonls",
       "lemminx",
       "marksman",
+      { "oxlint", opts = { mason = false } },
       "prismals",
       "pyright",
       { "rust_analyzer", opts = { mason = false } },
