@@ -22,6 +22,7 @@ function flex:layout(context, width, height)
   local max_widget_size = self._private.max_widget_size or math.huge
 
   -- Calculate flex sizes
+  local visible_count = 0
   local fixed_size = 0
   local flex_size = 0
   local total_spacing = 0
@@ -34,8 +35,12 @@ function flex:layout(context, width, height)
     local main_size = is_y and h or w
     main_size = math.min(main_size, max_widget_size)
 
-    if spacing > 0 and main_size > 0 and (fixed_size > 0 or flex_size > 0) then
+    if spacing > 0 and widget.visible and visible_count > 0 then
       total_spacing = total_spacing + spacing
+    end
+
+    if widget.visible then
+      visible_count = visible_count + 1
     end
 
     local flexible = widget.widget_name == "Flexible"
@@ -55,6 +60,7 @@ function flex:layout(context, width, height)
 
   -- Place widgets
   local pos, pos_rounded = 0, 0
+  local num_visible_placed = 0
   for i, widget in pairs(self._private.widgets) do
     local w, h = base.fit_widget(self, context, widget, width, height)
     local main_size = is_y and h or w
@@ -62,7 +68,7 @@ function flex:layout(context, width, height)
 
     -- Add the spacing and spacing widget, and add spacing to pos (if needed)
     if i > 1 then
-      local local_spacing = (pos > 0 and main_size > 0) and spacing or 0
+      local local_spacing = (num_visible_placed > 0 and widget.visible) and spacing or 0
 
       -- Add spacing widget when defined
       -- TODO: is it necessary to always add the spacing widget? fixed layout does this, but why?
@@ -134,6 +140,10 @@ function flex:layout(context, width, height)
     pos = next_pos
     pos_rounded = next_pos_rounded
 
+    if widget.visible then
+      num_visible_placed = num_visible_placed + 1
+    end
+
     if is_x and pos >= width or is_y and pos >= height then
       break
     end
@@ -176,8 +186,8 @@ function flex:fit(context, orig_width, orig_height)
     local main_axis = is_y and h or w
     local cross_axis = is_y and w or h
 
-    -- Skip zero sized widgets
-    if main_axis == 0 then
+    -- Skip hidden widgets
+    if not widget.visible then
       goto continue
     end
 
