@@ -51,12 +51,7 @@ theme.border_focus = hcolor.opacity(colors.muted, 0.2)
 theme.border_hover = hcolor.opacity(colors.muted, 0.3)
 
 -- Bar
---- @type "top" | "bottom"
-theme.bar_position = "top"
---- @type number | nil
-theme.bar_width = nil
 theme.bar_height = dpi(42)
-theme.bar_gap = theme.useless_gap * 2
 theme.bar_padding = dpi(6)
 theme.bar_spacing = dpi(6)
 

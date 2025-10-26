@@ -14,7 +14,7 @@ local clock = require("ui.shell.bar.clock")
 
 awful.screen.connect_for_each_screen(function(s)
   local is_primary = s == screen.primary
-  local bar_margin = beautiful.bar_gap
+  local bar_gap = beautiful.useless_gap * 2
   local bar_position = beautiful.bar_position
 
   s.bar = Window {
@@ -23,13 +23,7 @@ awful.screen.connect_for_each_screen(function(s)
     position = bar_position,
     bg = beautiful.colors.transparent,
     height = beautiful.bar_height,
-    width = beautiful.bar_width,
-    margins = {
-      top = bar_position == "top" and bar_margin or 0,
-      left = bar_margin,
-      right = bar_margin,
-      bottom = bar_position == "bottom" and bar_margin or 0,
-    },
+    margins = { top = bar_gap, left = bar_gap, right = bar_gap, bottom = 0 },
 
     Container {
       bg = beautiful.bg_bar,
