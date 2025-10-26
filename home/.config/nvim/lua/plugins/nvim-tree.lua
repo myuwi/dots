@@ -44,6 +44,9 @@ return {
   end,
   opts = {
     sync_root_with_cwd = true,
+    filters = {
+      git_ignored = false,
+    },
     diagnostics = {
       enable = true,
       show_on_dirs = true,
