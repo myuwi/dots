@@ -8,6 +8,7 @@ local start_cmds = {
   "solaar -w hide",
   "fcitx5",
   "vesktop",
+  "xset r rate 400",
 }
 
 for _, cmd in ipairs(start_cmds) do
