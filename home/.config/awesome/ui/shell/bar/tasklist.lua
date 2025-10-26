@@ -81,6 +81,10 @@ local function tasklist(s)
             fg = computed(function()
               return minimized:get() and beautiful.fg_minimized or nil
             end),
+            border_width = 1,
+            border_color = computed(function()
+              return active:get() and beautiful.border_focus or beautiful.colors.transparent
+            end),
             padding = { x = dpi(8), y = dpi(4) },
             radius = dpi(4),
             buttons = tasklist_buttons(c),

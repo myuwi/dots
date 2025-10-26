@@ -53,6 +53,16 @@ local function create_icon(c, i)
         return beautiful.window_switcher_inactive
       end
     end),
+    border_width = 1,
+    border_color = computed(function()
+      if hovered:get() then
+        return beautiful.border_hover
+      elseif i == alt_tab_index:get() then
+        return beautiful.border_focus
+      else
+        return beautiful.colors.transparent
+      end
+    end),
     radius = beautiful.border_radius,
     padding = outside_padding,
     on_click = function()

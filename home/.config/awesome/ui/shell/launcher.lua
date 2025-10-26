@@ -11,6 +11,7 @@ local Window = require("ui.window")
 local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
+local Flexible = require("ui.widgets").Flexible
 local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
 local Input = require("ui.components").Input
@@ -137,7 +138,7 @@ local function format_no_results(text)
 end
 
 local no_results = Container {
-  padding = dpi(12),
+  padding = { x = dpi(8), y = dpi(12) },
 
   Text {
     markup = map(query, format_no_results),
@@ -159,6 +160,10 @@ local function create_entry(app, i)
     end),
     padding = { x = dpi(9), y = dpi(6) },
     radius = dpi(4),
+    border_width = 1,
+    border_color = computed(function()
+      return i == selected_index:get() and beautiful.border_focus or beautiful.colors.transparent
+    end),
     on_click = function()
       launch(app)
     end,
@@ -173,7 +178,9 @@ local function create_entry(app, i)
         forced_width = dpi(30),
         forced_height = dpi(30),
       },
-      Text { app:get_name() },
+      Flexible {
+        Text { app:get_name() },
+      },
     },
   }
 
@@ -211,10 +218,32 @@ local app_list = Column {
   map(filtered_apps, create_entries),
 }
 
+local function Kbd(args)
+  return Container {
+    bg = beautiful.bg_focus,
+    padding = dpi(4),
+    radius = dpi(4),
+    border_width = 1,
+    border_color = beautiful.border_focus,
+
+    args[1],
+  }
+end
+
+local function Icon(args)
+  return Image {
+    image = beautiful.icon_path .. args[1] .. ".svg",
+    stylesheet = "* { color:" .. beautiful.fg_normal .. " }",
+    forced_width = dpi(12),
+    forced_height = dpi(12),
+  }
+end
+
 local launcher_widget_max_height = 0
 
 local launcher_widget = Window.Popup {
   forced_width = dpi(576),
+  padding = 0,
   -- TODO: A better way to do this
   placement = function(w)
     if w.height > launcher_widget_max_height then
@@ -231,13 +260,50 @@ local launcher_widget = Window.Popup {
   end,
 
   Column {
-    spacing = dpi(12),
+    spacing = 1,
+    -- TODO: implement proper per-side borders
+    spacing_widget = Container { bg = beautiful.border_color },
+
     Container {
       padding = dpi(12),
-      text_input,
+
+      Column {
+        spacing = dpi(12),
+
+        Container { padding = dpi(8), text_input },
+        -- TODO: scrollbar to indicate list position
+        app_list,
+      },
     },
-    -- TODO: scrollbar to indicate list position
-    app_list,
+
+    Container {
+      padding = { x = dpi(12), y = dpi(8) },
+
+      Row {
+        spacing = dpi(12),
+
+        Row {
+          spacing = dpi(6),
+          Kbd { Text { forced_height = dpi(12), "esc" } },
+          Text { "to close" },
+        },
+        Flexible { grow = 1 },
+        Row {
+          spacing = dpi(6),
+          Row {
+            spacing = dpi(4),
+            Kbd { Icon { "arrow-up" } },
+            Kbd { Icon { "arrow-down" } },
+          },
+          Text { "to navigate" },
+        },
+        Row {
+          spacing = dpi(6),
+          Kbd { Icon { "corner-arrow-left" } },
+          Text { "to select" },
+        },
+      },
+    },
   },
 }
 

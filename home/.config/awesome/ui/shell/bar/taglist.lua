@@ -55,6 +55,10 @@ local function taglist(s)
         bg = computed(function()
           return selected:get() and beautiful.bg_focus or urgent:get() and beautiful.bg_urgent or nil
         end),
+        border_width = 1,
+        border_color = computed(function()
+          return selected:get() and beautiful.border_focus or beautiful.colors.transparent
+        end),
         visible = computed(function()
           return selected:get() or client_count:get() > 0
         end),

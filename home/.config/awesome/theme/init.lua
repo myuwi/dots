@@ -23,6 +23,7 @@ theme.colors = colors
 
 theme.bg_normal = colors.base
 theme.bg_focus = hcolor.opacity(colors.muted, 0.15)
+theme.bg_hover = hcolor.opacity(colors.muted, 0.25)
 theme.bg_urgent = colors.urgent
 theme.bg_minimized = nil
 theme.bg_bar = colors.base
@@ -36,7 +37,7 @@ theme.fg_unfocus = colors.muted
 theme.fg_placeholder = colors.muted
 
 theme.bg_button = theme.bg_focus
-theme.bg_button_hover = hcolor.opacity(colors.muted, 0.25)
+theme.bg_button_hover = theme.bg_hover
 
 -- Gaps
 theme.useless_gap = dpi(6)
@@ -45,6 +46,9 @@ theme.useless_gap = dpi(6)
 theme.border_radius = dpi(6)
 theme.border_color = colors.surface
 theme.border_width = dpi(1)
+
+theme.border_focus = hcolor.opacity(colors.muted, 0.2)
+theme.border_hover = hcolor.opacity(colors.muted, 0.3)
 
 -- Bar
 --- @type "top" | "bottom"
@@ -74,7 +78,7 @@ theme.systray_icon_spacing = dpi(6)
 
 -- Window Switcher
 theme.window_switcher_focus = theme.bg_focus
-theme.window_switcher_hover = hcolor.opacity(colors.muted, 0.25)
+theme.window_switcher_hover = theme.bg_hover
 theme.window_switcher_inactive = nil
 
 -- Notifications

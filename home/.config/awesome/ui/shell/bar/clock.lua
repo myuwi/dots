@@ -15,6 +15,10 @@ local function clock(s)
     bg = computed(function()
       return calendar_visible:get() and calendar_popup.screen == s and beautiful.bg_focus or nil
     end),
+    border_width = 1,
+    border_color = computed(function()
+      return calendar_visible:get() and beautiful.border_focus or beautiful.colors.transparent
+    end),
     radius = dpi(4),
     padding = { x = dpi(6) },
     on_button_press = function(_, _, _, button)
