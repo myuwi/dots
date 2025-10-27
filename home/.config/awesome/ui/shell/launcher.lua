@@ -1,7 +1,6 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
-local gstring = require("gears.string")
 local lgi = require("lgi")
 local GioUnix = lgi.GioUnix
 local Gtk = lgi.require("Gtk", "3.0")
@@ -12,6 +11,7 @@ local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
 local Flexible = require("ui.widgets").Flexible
+local Center = require("ui.widgets").Center
 local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
 local Input = require("ui.components").Input
@@ -24,7 +24,7 @@ local map = require("ui.core.signal.map")
 local launcher = {}
 
 local gtk_theme = Gtk.IconTheme.new()
-Gtk.IconTheme.set_custom_theme(gtk_theme, beautiful.icon_theme)
+gtk_theme:set_custom_theme(beautiful.icon_theme)
 
 local page_size = 6
 
@@ -126,27 +126,6 @@ local text_input = Input {
   placeholder = "Search for apps...",
 }
 
----@param text string
-local function format_no_results(text)
-  local no_results_format = 'No results for "%s"'
-
-  local escaped = gstring.xml_escape(text) --[[@as string]]
-  local input_text = helpers.ui.colorize_text(escaped, beautiful.fg_normal)
-  local formatted = no_results_format:format(input_text)
-
-  return helpers.ui.colorize_text(formatted, beautiful.fg_unfocus)
-end
-
-local no_results = Container {
-  padding = { x = dpi(8), y = dpi(12) },
-
-  Text {
-    markup = map(query, format_no_results),
-    valign = "center",
-    forced_height = dpi(18),
-  },
-}
-
 local function create_entry(app, i)
   local icon = gtk_theme:lookup_by_gicon(app:get_icon(), dpi(30), 0)
 
@@ -189,10 +168,6 @@ end
 
 -- TODO(perf): reuse elements instead of discarding them on every render?
 local function create_entries(apps)
-  if #apps <= 0 then
-    return no_results
-  end
-
   local children = {}
   local num_visible_apps = math.min(page_size, #apps)
 
@@ -208,6 +183,9 @@ end
 -- TODO: extract as a reusable scrollable list widget?
 local app_list = Column {
   spacing = dpi(6),
+  visible = computed(function()
+    return #filtered_apps:get() > 0
+  end),
   on_wheel_up = function()
     scroll_list(-1)
   end,
@@ -270,7 +248,12 @@ local launcher_widget = Window.Popup {
       Column {
         spacing = dpi(12),
 
-        Container { padding = dpi(8), text_input },
+        Row {
+          Center {
+            Kbd { Text { forced_height = dpi(12), "Run" } },
+          },
+          Container { padding = dpi(8), text_input },
+        },
         -- TODO: scrollbar to indicate list position
         app_list,
       },
@@ -284,12 +267,14 @@ local launcher_widget = Window.Popup {
 
         Row {
           spacing = dpi(6),
-          Kbd { Text { forced_height = dpi(12), "esc" } },
+          Kbd { Text { forced_height = dpi(12), "Esc" } },
           Text { "to close" },
         },
         Flexible { grow = 1 },
         Row {
           spacing = dpi(6),
+          Kbd { Text { forced_height = dpi(12), "Tab" } },
+          Text { "or" },
           Row {
             spacing = dpi(4),
             Kbd { Icon { "arrow-up" } },
@@ -317,7 +302,12 @@ text_input.keypressed_callback = function(mods, key)
 
   if key == "Return" then
     local app = filtered_apps:get()[selected_index:get()]
-    launch(app)
+    if app then
+      launch(app)
+    else
+      awful.spawn.with_shell(query:get())
+      launcher.hide()
+    end
   end
 
   local shift = mods[1] == "Shift"
