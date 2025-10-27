@@ -65,12 +65,14 @@ naughty.connect_signal("request::display", function(n)
     notification = n,
     type = "notification",
     bg = beautiful.colors.transparent,
+    minimum_width = beautiful.notification_width,
+    maximum_width = beautiful.notification_width,
+
     widget_template = Container {
       bg = beautiful.bg_normal,
       border_color = beautiful.border_color,
       border_width = beautiful.border_width,
       radius = beautiful.border_radius,
-      forced_width = beautiful.notification_width,
       padding = beautiful.notification_margin,
 
       Column {

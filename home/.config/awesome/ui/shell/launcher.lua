@@ -157,9 +157,7 @@ local function create_entry(app, i)
         forced_width = dpi(30),
         forced_height = dpi(30),
       },
-      Flexible {
-        Text { app:get_name() },
-      },
+      Text { app:get_name() },
     },
   }
 
@@ -183,6 +181,7 @@ end
 -- TODO: extract as a reusable scrollable list widget?
 local app_list = Column {
   spacing = dpi(6),
+  overflow = "visible",
   visible = computed(function()
     return #filtered_apps:get() > 0
   end),

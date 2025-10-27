@@ -20,18 +20,25 @@ function flex:layout(context, width, height)
   local spacing = self._private.spacing or 0
   local spacing_widget = spacing ~= 0 and self._private.spacing_widget or nil
   local max_widget_size = self._private.max_widget_size or math.huge
+  local overflow = self._private.overflow
 
   -- Calculate flex sizes
-  local visible_count = 0
   local fixed_size = 0
   local flex_size = 0
   local total_spacing = 0
 
+  local visible_count = 0
   local grow_count = 0
   local shrink_count = 0
 
   for _, widget in pairs(self._private.widgets) do
-    local w, h = base.fit_widget(self, context, widget, is_y and width or 9999, is_x and height or 9999)
+    local w, h = base.fit_widget(
+      self,
+      context,
+      widget,
+      is_x and overflow == "visible" and 9999 or width,
+      is_y and overflow == "visible" and 9999 or height
+    )
     local main_size = is_y and h or w
     main_size = math.min(main_size, max_widget_size)
 
@@ -62,7 +69,13 @@ function flex:layout(context, width, height)
   local pos, pos_rounded = 0, 0
   local num_visible_placed = 0
   for i, widget in pairs(self._private.widgets) do
-    local w, h = base.fit_widget(self, context, widget, is_y and width or 9999, is_x and height or 9999)
+    local w, h = base.fit_widget(
+      self,
+      context,
+      widget,
+      is_x and overflow == "visible" and 9999 or width,
+      is_y and overflow == "visible" and 9999 or height
+    )
     local main_size = is_y and h or w
     main_size = math.min(main_size, max_widget_size)
 
@@ -99,7 +112,6 @@ function flex:layout(context, width, height)
     end
 
     local flexible = widget.widget_name == "Flexible"
-
     if flexible then
       local grow = widget.grow or 0
       local shrink = widget.shrink or 1
@@ -114,6 +126,10 @@ function flex:layout(context, width, height)
           main_size = basis - ((shrink / shrink_count) * -available_space)
         end
       end
+    end
+
+    if overflow ~= "visible" then
+      main_size = math.min(main_size, (is_y and height or width) - pos)
     end
 
     next_pos = pos + main_size
@@ -157,6 +173,7 @@ function flex:fit(context, orig_width, orig_height)
   local is_x = not is_y
   local spacing = self._private.spacing or 0
   local max_widget_size = self._private.max_widget_size or math.huge
+  local overflow = self._private.overflow
 
   -- when no widgets exist the function can be called with orig_width or
   -- orig_height equal to nil. Exit early in this case.
@@ -175,8 +192,8 @@ function flex:fit(context, orig_width, orig_height)
       self,
       context,
       widget,
-      is_x and main_axis_left or orig_width,
-      is_y and main_axis_left or orig_height
+      is_x and (overflow == "visible" and 9999 or main_axis_left) or orig_width,
+      is_y and (overflow == "visible" and 9999 or main_axis_left) or orig_height
     )
     local main_axis = is_y and h or w
     local cross_axis = is_y and w or h
@@ -235,12 +252,23 @@ function flex:set_max_widget_size(val)
   end
 end
 
+---Set the overflow strategy this layout will use.
+---@param val number
+function flex:set_overflow(val)
+  if self._private.overflow ~= val then
+    self._private.overflow = val
+    self:emit_signal("widget::layout_changed")
+    self:emit_signal("property::overflow", val)
+  end
+end
+
 local function get_layout(dir, ...)
   local ret = fixed[dir](...)
   ret.widget_name = "Flex"
 
   gtable.crush(ret, flex, true)
 
+  ret._private.overflow = "hidden"
   ret._private.fill_space = nil
 
   return ret

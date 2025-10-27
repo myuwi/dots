@@ -92,9 +92,7 @@ local function tasklist(s)
             Row {
               spacing = dpi(6),
               ClientIcon { client = c },
-              Flexible {
-                Text { bind(c, "name") },
-              },
+              Text { bind(c, "name") },
             },
           },
         }
