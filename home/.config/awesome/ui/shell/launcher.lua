@@ -247,12 +247,7 @@ local launcher_widget = Window.Popup {
       Column {
         spacing = dpi(12),
 
-        Row {
-          Center {
-            Kbd { Text { forced_height = dpi(12), "Run" } },
-          },
-          Container { padding = dpi(8), text_input },
-        },
+        Container { padding = dpi(8), text_input },
         -- TODO: scrollbar to indicate list position
         app_list,
       },
@@ -273,7 +268,7 @@ local launcher_widget = Window.Popup {
         Row {
           spacing = dpi(6),
           Kbd { Text { forced_height = dpi(12), "Tab" } },
-          Text { "or" },
+          Text { "/" },
           Row {
             spacing = dpi(4),
             Kbd { Icon { "arrow-up" } },
