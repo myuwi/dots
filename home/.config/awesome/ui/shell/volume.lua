@@ -61,7 +61,7 @@ local volume_text = Text {
   forced_height = dpi(18),
 }
 
-local volume_widget = Window.Popup({
+local volume_widget = Window.Popup {
   padding = dpi(18),
   forced_width = dpi(288),
   placement = function(w)
@@ -80,7 +80,7 @@ local volume_widget = Window.Popup({
     },
     volume_text,
   },
-})
+}
 
 local hide_volume_widget = gears.timer({
   timeout = 1,
@@ -108,11 +108,12 @@ end)
 
 -- Keep widget visible while hovered
 effect(function()
+  local hovered = hovered:get() ---@diagnostic disable-line: redefined-local
   if not volume_widget.visible then
     return
   end
 
-  if hovered:get() then
+  if hovered then
     hide_volume_widget:stop()
   else
     hide_volume_widget:again()
