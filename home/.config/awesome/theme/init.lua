@@ -32,6 +32,7 @@ theme.bg_systray = theme.bg_bar
 theme.fg_normal = colors.text
 theme.fg_focus = colors.text
 theme.fg_urgent = colors.text
+theme.fg_muted = colors.muted
 theme.fg_minimized = colors.muted
 theme.fg_unfocus = colors.muted
 theme.fg_placeholder = colors.muted

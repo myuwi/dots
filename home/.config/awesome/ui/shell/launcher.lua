@@ -39,11 +39,13 @@ local function filter_apps(apps, query_text)
   if query_text == "" then
     return apps
   end
+  local query_text_lower = query_text:lower()
 
   local filtered_apps = helpers.table.filter(apps, function(app)
-    return app:get_name():lower():find(query_text:lower(), 1, true)
+    return app:get_name():lower():find(query_text_lower, 1, true) ~= nil
+      or (app:get_description() or ""):lower():find(query_text_lower, 1, true) ~= nil
       or helpers.table.any(app:get_keywords(), function(keyword)
-        return keyword:lower():find(query_text:lower(), 1, true)
+        return keyword:lower():find(query_text_lower:lower(), 1, true)
       end)
   end)
 
@@ -51,8 +53,8 @@ local function filter_apps(apps, query_text)
     local a_name = a:get_name():lower()
     local b_name = b:get_name():lower()
 
-    local a_match = a_name:find(query_text:lower(), 1, true) ~= nil
-    local b_match = b_name:find(query_text:lower(), 1, true) ~= nil
+    local a_match = a_name:find(query_text_lower, 1, true) ~= nil
+    local b_match = b_name:find(query_text_lower, 1, true) ~= nil
 
     if a_match == b_match then
       return a_name < b_name
@@ -126,7 +128,8 @@ local text_input = Input {
 }
 
 local function create_entry(app, i)
-  local icon = gtk_theme:lookup_by_gicon(app:get_icon(), dpi(30), 0)
+  local icon_size = dpi(24)
+  local icon = gtk_theme:lookup_by_gicon(app:get_icon(), icon_size, 0)
 
   if icon then
     icon = icon:get_filename()
@@ -150,13 +153,19 @@ local function create_entry(app, i)
     end,
 
     Row {
-      spacing = dpi(9),
+      spacing = dpi(12),
+      align_items = "center",
       Image {
         image = icon,
-        forced_width = dpi(30),
-        forced_height = dpi(30),
+        forced_width = icon_size,
+        forced_height = icon_size,
       },
       Text { app:get_name() },
+      Text {
+        -- TODO: fg prop
+        markup = helpers.ui.colorize_text(app:get_description() or "", beautiful.fg_muted),
+        forced_height = dpi(12),
+      },
     },
   }
 
