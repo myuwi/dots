@@ -189,9 +189,9 @@ local function create_entry(app, i)
       },
       Text { app:get_name() },
       Text {
-        -- TODO: fg prop
-        markup = helpers.ui.colorize_text(app:get_description() or "", beautiful.fg_muted),
         forced_height = dpi(12),
+        fg = beautiful.fg_muted,
+        app:get_description(),
       },
     },
   }

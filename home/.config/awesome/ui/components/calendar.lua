@@ -10,7 +10,6 @@ local Text = require("ui.widgets").Text
 local signal = require("ui.core.signal")
 local computed = require("ui.core.signal.computed")
 
-local helpers = require("helpers")
 local tbl = require("helpers.table")
 
 local function StyledGrid(args)
@@ -24,36 +23,50 @@ local function StyledGrid(args)
   }
 end
 
-local function create_cell(markup)
+local function Cell(args)
   return Text {
-    markup = markup,
+    fg = args.fg,
     halign = "center",
     valign = "center",
+    args[1],
   }
 end
 
 local function create_weekday_name_cell(weekday_name)
-  return create_cell(helpers.ui.colorize_text(weekday_name:sub(1, 2), beautiful.calendar_weekday))
+  return Cell {
+    fg = beautiful.calendar_weekday,
+    weekday_name:sub(1, 2),
+  }
 end
 
 local function create_week_number_cell(day)
-  return create_cell(helpers.ui.colorize_text(day, beautiful.calendar_weeknumber))
+  return Cell {
+    fg = beautiful.calendar_weeknumber,
+    day,
+  }
 end
 
 local function create_day_cell(day)
-  return create_cell(day)
+  return Cell { day }
 end
 
 local function create_current_day_cell(day)
   return Container {
     bg = beautiful.calendar_bg_current,
     radius = dpi(4),
-    create_cell(helpers.ui.colorize_text(day, beautiful.calendar_fg_current)),
+
+    Cell {
+      fg = beautiful.calendar_fg_current,
+      day,
+    },
   }
 end
 
 local function create_outside_day_cell(day)
-  return create_cell(helpers.ui.colorize_text(day, beautiful.calendar_day_other))
+  return Cell {
+    fg = beautiful.calendar_day_other,
+    day,
+  }
 end
 
 local weekday_names = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" }

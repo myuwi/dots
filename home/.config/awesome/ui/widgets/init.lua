@@ -5,6 +5,7 @@ local Widget = require("ui.core.widget")
 local container = require("ui.widgets.container")
 local flexible = require("ui.widgets.flexible")
 local flex = require("ui.layout.flex")
+local text = require("ui.widgets.text")
 
 local function make_widget(widget_constructor, child_prop)
   return function(params)
@@ -35,7 +36,7 @@ local widgets = {
   Image = make_widget(wibox.widget.imagebox, "image"),
   ProgressBar = make_widget(wibox.widget.progressbar),
   Systray = make_widget(wibox.widget.systray),
-  Text = make_widget(wibox.widget.textbox, "text"),
+  Text = make_widget(text, "text"),
   TextClock = make_widget(wibox.widget.textclock, "format"),
 }
 

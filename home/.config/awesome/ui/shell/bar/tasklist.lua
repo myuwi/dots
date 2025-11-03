@@ -78,9 +78,6 @@ local function tasklist(s)
             bg = computed(function()
               return active:get() and beautiful.bg_focus or urgent:get() and beautiful.bg_urgent or nil
             end),
-            fg = computed(function()
-              return minimized:get() and beautiful.fg_minimized or nil
-            end),
             border_width = 1,
             border_color = computed(function()
               return active:get() and beautiful.border_focus or beautiful.colors.transparent
@@ -92,7 +89,12 @@ local function tasklist(s)
             Row {
               spacing = dpi(6),
               ClientIcon { client = c },
-              Text { bind(c, "name") },
+              Text {
+                fg = computed(function()
+                  return minimized:get() and beautiful.fg_minimized or nil
+                end),
+                bind(c, "name"),
+              },
             },
           },
         }
