@@ -1,3 +1,4 @@
+local gtimer = require("gears.timer")
 local wibox = require("wibox")
 local Widget = require("ui.core.widget")
 local util = require("ui.core.util")
@@ -17,17 +18,24 @@ local function set_visible(w, visible)
     end
   end
 
-  -- Hacky way to avoid popup not updating its position for one frame after it is made visible
-  -- Possibly due to this https://github.com/awesomeWM/awesome/blob/8b1f8958b46b3e75618bc822d512bb4d449a89aa/lib/awful/popup.lua#L115
-  -- TODO: Is this okay to use?
-  if w._apply_size_now then
-    w:_apply_size_now()
-  end
+  if visible then
+    -- Force popup to update its geometry before it is made visible
+    -- See: https://github.com/awesomeWM/awesome/blob/8b1f8958b46b3e75618bc822d512bb4d449a89aa/lib/awful/popup.lua#L115
+    if w._apply_size_now then
+      w:_apply_size_now()
+    end
 
-  w.drawin.visible = visible
+    -- Delay show until geometry and widget contents have updated
+    gtimer.delayed_call(function()
+      w.drawin.visible = true
+    end)
+  else
+    w.drawin.visible = false
+  end
 end
 
--- TODO: support widget_template?
+-- TODO: on_click_outside
+-- TODO: better support widget_template?
 function Window.new(args)
   local window_constructor = args.window or wibox
   args.window = nil

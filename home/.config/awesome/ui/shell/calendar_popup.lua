@@ -5,7 +5,7 @@ local helpers = require("helpers")
 local Window = require("ui.window")
 local Calendar = require("ui.components").Calendar
 
-local calendar = Calendar()
+local calendar = Calendar {}
 
 local calendar_popup = Window.Popup {
   placement = function(w)

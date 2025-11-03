@@ -27,6 +27,8 @@ local widgets = {
   Column = make_widget(flex.vertical),
   Row = make_widget(flex.horizontal),
 
+  Grid = make_widget(wibox.layout.grid),
+
   -- Widgets
   -- TODO: merge ClientIcon and Image
   ClientIcon = make_widget(awful.widget.clienticon, "client"),
