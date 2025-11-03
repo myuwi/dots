@@ -7,6 +7,7 @@ local signal = require("ui.core.signal")
 local effect = require("ui.core.signal.effect")
 local computed = require("ui.core.signal.computed")
 local map = require("ui.core.signal.map")
+local track = require("ui.core.signal.track")
 
 local Window = require("ui.window")
 local Row = require("ui.widgets").Row
@@ -109,12 +110,13 @@ end)
 
 -- Keep widget visible while hovered
 effect(function()
-  local hovered = hovered:get() ---@diagnostic disable-line: redefined-local
+  track(hovered)
+
   if not volume_widget.visible then
     return
   end
 
-  if hovered then
+  if hovered:get() then
     hide_volume_widget:stop()
   else
     hide_volume_widget:again()
