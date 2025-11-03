@@ -11,7 +11,6 @@ local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
 local Flexible = require("ui.widgets").Flexible
-local Center = require("ui.widgets").Center
 local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
 local Input = require("ui.components").Input
