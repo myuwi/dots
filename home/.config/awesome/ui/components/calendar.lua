@@ -149,11 +149,11 @@ local function calendar(_args)
     end,
 
     Column {
-      align_items = "center",
       spacing = beautiful.calendar_spacing,
 
       Text {
         forced_height = beautiful.calendar_cell_size,
+        halign = "center",
         header_text,
       },
       Column {
