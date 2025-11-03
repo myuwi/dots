@@ -6,7 +6,8 @@ local gtable = require("gears.table")
 local flex = {}
 
 -- TODO: Use the same shrink strategy for sizing widgets as the fit layout? shrink_strategy = "smart" prop etc.?
--- TODO: align and justify props
+-- TODO: justify prop
+-- TODO: support align_self prop on children
 
 ---Layout a flex layout. Each normal widget gets just the space it asks for, while flexible widgets may grow and shrink based on the available space.
 ---@param context table The context in which we are drawn.
@@ -21,11 +22,14 @@ function flex:layout(context, width, height)
   local spacing_widget = spacing ~= 0 and self._private.spacing_widget or nil
   local max_widget_size = self._private.max_widget_size or math.huge
   local overflow = self._private.overflow
+  local align_items = self._private.align_items
+
+  local cross_axis_space = is_y and width or height
 
   -- Calculate flex sizes
-  local fixed_size = 0
-  local flex_size = 0
-  local total_spacing = 0
+  local fixed_size_total = 0
+  local flex_size_total = 0
+  local spacing_total = 0
 
   local visible_count = 0
   local grow_count = 0
@@ -39,11 +43,11 @@ function flex:layout(context, width, height)
       is_x and overflow == "visible" and 9999 or width,
       is_y and overflow == "visible" and 9999 or height
     )
-    local main_size = is_y and h or w
-    main_size = math.min(main_size, max_widget_size)
+    local main_axis_size = is_y and h or w
+    main_axis_size = math.min(main_axis_size, max_widget_size)
 
     if spacing > 0 and widget.visible and visible_count > 0 then
-      total_spacing = total_spacing + spacing
+      spacing_total = spacing_total + spacing
     end
 
     if widget.visible then
@@ -57,28 +61,18 @@ function flex:layout(context, width, height)
 
       grow_count = grow_count + grow
       shrink_count = shrink_count + shrink
-      flex_size = flex_size + main_size
+      flex_size_total = flex_size_total + main_axis_size
     else
-      fixed_size = fixed_size + main_size
+      fixed_size_total = fixed_size_total + main_axis_size
     end
   end
 
-  local available_space = (is_y and height or width) - fixed_size - flex_size - total_spacing
+  local available_space = (is_y and height or width) - fixed_size_total - flex_size_total - spacing_total
 
   -- Place widgets
   local pos, pos_rounded = 0, 0
   local num_visible_placed = 0
   for i, widget in pairs(self._private.widgets) do
-    local w, h = base.fit_widget(
-      self,
-      context,
-      widget,
-      is_x and overflow == "visible" and 9999 or width,
-      is_y and overflow == "visible" and 9999 or height
-    )
-    local main_size = is_y and h or w
-    main_size = math.min(main_size, max_widget_size)
-
     -- Add the spacing and spacing widget, and add spacing to pos (if needed)
     if i > 1 then
       local local_spacing = (num_visible_placed > 0 and widget.visible) and spacing or 0
@@ -88,14 +82,16 @@ function flex:layout(context, width, height)
         local spinset = math.min(local_spacing, 0)
         local abspace = math.abs(local_spacing)
 
+        -- TODO: Apply align_items to spacing widget as well
+
         table.insert(
           result,
           base.place_widget_at(
             spacing_widget,
             is_x and (pos_rounded + spinset) or 0,
             is_y and (pos_rounded + spinset) or 0,
-            is_x and abspace or width,
-            is_y and abspace or height
+            is_x and abspace or cross_axis_space,
+            is_y and abspace or cross_axis_space
           )
         )
       end
@@ -110,6 +106,17 @@ function flex:layout(context, width, height)
         end
       end
     end
+
+    -- Calculate main axis size
+    local w, h = base.fit_widget(
+      self,
+      context,
+      widget,
+      is_x and overflow == "visible" and 9999 or width,
+      is_y and overflow == "visible" and 9999 or height
+    )
+    local main_size = is_y and h or w
+    main_size = math.min(main_size, max_widget_size)
 
     local flexible = widget.widget_name == "Flexible"
     if flexible then
@@ -132,19 +139,31 @@ function flex:layout(context, width, height)
       main_size = math.min(main_size, (is_y and height or width) - pos)
     end
 
+    -- Calculate cross axis size and position
+    local cross_axis_size = align_items == "stretch" and cross_axis_space or (is_y and w or h)
+
+    local cross_axis_pos = 0
+    if align_items == "stretch" or align_items == "start" then
+      cross_axis_pos = 0
+    elseif align_items == "end" then
+      cross_axis_pos = math.max(cross_axis_space - cross_axis_size, 0)
+    elseif align_items == "center" then
+      cross_axis_pos = math.max((cross_axis_space - cross_axis_size) / 2, 0)
+    end
+    local cross_axis_pos_rounded = gmath.round(cross_axis_pos)
+
+    -- Place widget and calculate next position
     next_pos = pos + main_size
     next_pos_rounded = gmath.round(next_pos)
 
-    -- Place widget, even if it has zero width/height. Otherwise
-    -- any layout change for zero-sized widget would become invisible.
     table.insert(
       result,
       base.place_widget_at(
         widget,
-        is_x and pos_rounded or 0,
-        is_y and pos_rounded or 0,
-        is_x and next_pos_rounded - pos_rounded or width,
-        is_y and next_pos_rounded - pos_rounded or height
+        is_x and pos_rounded or cross_axis_pos_rounded,
+        is_y and pos_rounded or cross_axis_pos_rounded,
+        is_x and next_pos_rounded - pos_rounded or cross_axis_size,
+        is_y and next_pos_rounded - pos_rounded or cross_axis_size
       )
     )
 
@@ -262,6 +281,16 @@ function flex:set_overflow(val)
   end
 end
 
+---Set the overflow strategy this layout will use.
+---@param val "stretch" | "start" | "center" | "end"
+function flex:set_align_items(val)
+  if self._private.align_items ~= val then
+    self._private.align_items = val
+    self:emit_signal("widget::layout_changed")
+    self:emit_signal("property::align_items", val)
+  end
+end
+
 local function get_layout(dir, ...)
   local ret = fixed[dir](...)
   ret.widget_name = "Flex"
@@ -269,6 +298,7 @@ local function get_layout(dir, ...)
   gtable.crush(ret, flex, true)
 
   ret._private.overflow = "hidden"
+  ret._private.align_items = "stretch"
   ret._private.fill_space = nil
 
   return ret

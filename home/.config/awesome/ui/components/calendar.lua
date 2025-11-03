@@ -5,7 +5,6 @@ local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
 local Grid = require("ui.widgets").Grid
-local Center = require("ui.widgets").Center
 local Text = require("ui.widgets").Text
 
 local signal = require("ui.core.signal")
@@ -132,6 +131,10 @@ local function calendar(_args)
     end),
   }
 
+  local header_text = computed(function()
+    return os.date("%B %Y", os.time(viewed_month:get()))
+  end)
+
   local widget = Container {
     padding = dpi(6),
     on_wheel_up = function()
@@ -146,15 +149,12 @@ local function calendar(_args)
     end,
 
     Column {
+      align_items = "center",
       spacing = beautiful.calendar_spacing,
 
-      Center {
-        Text {
-          forced_height = beautiful.calendar_cell_size,
-          text = computed(function()
-            return os.date("%B %Y", os.time(viewed_month:get()))
-          end),
-        },
+      Text {
+        forced_height = beautiful.calendar_cell_size,
+        header_text,
       },
       Column {
         spacing = beautiful.calendar_spacing,
