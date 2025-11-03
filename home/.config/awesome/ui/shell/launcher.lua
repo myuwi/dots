@@ -27,13 +27,15 @@ gtk_theme:set_custom_theme(beautiful.icon_theme)
 
 local page_size = 6
 
--- Signals
+-- State
 
 local query = signal("")
 local selected_index = signal(1)
 local scroll_position = signal(0)
 
 local all_apps = signal({})
+
+local last_focused_client = nil
 
 local function filter_apps(apps, query_text)
   if query_text == "" then
@@ -119,12 +121,37 @@ local function scroll_list(amount)
   end
 end
 
-local last_focused_client = nil
-
 -- Widgets
 
 local text_input = Input {
   placeholder = "Search for apps...",
+  -- TODO: declarative keybind handling?
+  on_key_press = function(mods, key)
+    if key == "Escape" then
+      launcher.cancel()
+    end
+
+    if key == "Return" then
+      local app = filtered_apps:get()[selected_index:get()]
+      if app then
+        launch(app)
+      else
+        awful.spawn.with_shell(query:get())
+        launcher.hide()
+      end
+    end
+
+    local shift = mods[1] == "Shift"
+
+    if key == "Tab" and shift or key == "Up" then
+      move_selection(-1)
+    elseif key == "Tab" or key == "Down" then
+      move_selection(1)
+    end
+  end,
+  on_text_changed = function(text)
+    query:set(text)
+  end,
 }
 
 local function create_entry(app, i)
@@ -293,37 +320,6 @@ local launcher_widget = Window.Popup {
     },
   },
 }
-
--- Controls
-
--- TODO: declarative keybind handling?
-text_input.keypressed_callback = function(mods, key)
-  if key == "Escape" then
-    launcher.cancel()
-  end
-
-  if key == "Return" then
-    local app = filtered_apps:get()[selected_index:get()]
-    if app then
-      launch(app)
-    else
-      awful.spawn.with_shell(query:get())
-      launcher.hide()
-    end
-  end
-
-  local shift = mods[1] == "Shift"
-
-  if key == "Tab" and shift or key == "Up" then
-    move_selection(-1)
-  elseif key == "Tab" or key == "Down" then
-    move_selection(1)
-  end
-end
-
-text_input.changed_callback = function(text)
-  query:set(text)
-end
 
 -- Setup
 

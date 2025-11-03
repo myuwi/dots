@@ -40,8 +40,8 @@ end
 ---@class (exact) InputArgs
 ---@field text string?
 ---@field placeholder string?
----@field keypressed_callback fun(mods: string[], key: string, event: string): any
----@field changed_callback fun(text: string): any
+---@field on_key_press fun(mods: string[], key: string): any
+---@field on_text_changed fun(text: string): any
 
 ---@param args InputArgs
 local function new(args)
@@ -78,6 +78,9 @@ local function new(args)
   w._private.placeholder = placeholder
   w._private.cursor = cursor
 
+  w._private.on_text_changed = args.on_text_changed
+  w._private.on_key_press = args.on_key_press
+
   w._private.cursor_blink_timer = gtimer({
     -- Same as GNOME's default cursor-blink-time
     timeout = 0.6,
@@ -87,12 +90,11 @@ local function new(args)
   })
 
   gtable.crush(w, input)
-  gtable.crush(w, args)
 
   w._private.prompt = prompt({
     keypressed_callback = function(mod, key)
-      if w.keypressed_callback then
-        w.keypressed_callback(mod, key)
+      if w._private.on_key_press then
+        w._private.on_key_press(mod, key)
       end
     end,
     changed_callback = function(text, cursor_pos)
@@ -113,8 +115,8 @@ local function new(args)
 
       activate_cursor(w)
 
-      if w.changed_callback then
-        w.changed_callback(w._private.textbox.text)
+      if w._private.on_text_changed then
+        w._private.on_text_changed(w._private.textbox.text)
       end
     end,
   })
