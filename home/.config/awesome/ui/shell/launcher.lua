@@ -190,7 +190,7 @@ local function create_entry(app, i)
       Text { app:get_name() },
       Text {
         forced_height = dpi(12),
-        fg = beautiful.fg_muted,
+        color = beautiful.fg_muted,
         app:get_description(),
       },
     },

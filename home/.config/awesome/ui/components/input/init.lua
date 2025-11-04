@@ -53,7 +53,7 @@ local function new(args)
 
   local placeholder = wibox.widget({
     text = args.placeholder,
-    fg = beautiful.fg_placeholder,
+    color = beautiful.fg_placeholder,
     widget = text,
   })
 

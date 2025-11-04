@@ -25,7 +25,7 @@ end
 
 local function Cell(args)
   return Text {
-    fg = args.fg,
+    color = args.color,
     halign = "center",
     valign = "center",
     args[1],
@@ -34,14 +34,14 @@ end
 
 local function create_weekday_name_cell(weekday_name)
   return Cell {
-    fg = beautiful.calendar_weekday,
+    color = beautiful.calendar_weekday,
     weekday_name:sub(1, 2),
   }
 end
 
 local function create_week_number_cell(day)
   return Cell {
-    fg = beautiful.calendar_weeknumber,
+    color = beautiful.calendar_weeknumber,
     day,
   }
 end
@@ -56,7 +56,7 @@ local function create_current_day_cell(day)
     radius = dpi(4),
 
     Cell {
-      fg = beautiful.calendar_fg_current,
+      color = beautiful.calendar_fg_current,
       day,
     },
   }
@@ -64,7 +64,7 @@ end
 
 local function create_outside_day_cell(day)
   return Cell {
-    fg = beautiful.calendar_day_other,
+    color = beautiful.calendar_day_other,
     day,
   }
 end

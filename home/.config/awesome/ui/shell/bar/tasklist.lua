@@ -90,7 +90,7 @@ local function tasklist(s)
               spacing = dpi(6),
               ClientIcon { client = c },
               Text {
-                fg = computed(function()
+                color = computed(function()
                   return minimized:get() and beautiful.fg_minimized or nil
                 end),
                 bind(c, "name"),
