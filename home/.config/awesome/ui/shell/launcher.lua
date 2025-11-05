@@ -189,8 +189,8 @@ local function create_entry(app, i)
       },
       Text { app:get_name() },
       Text {
-        forced_height = dpi(12),
         color = beautiful.fg_muted,
+        wrap = "none",
         app:get_description(),
       },
     },

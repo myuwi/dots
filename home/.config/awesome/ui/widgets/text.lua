@@ -27,6 +27,20 @@ function text:get_color()
   return self._private.foreground
 end
 
+-- Same as textbox:set_wrap except "none" is a valid mode
+function text:set_wrap(mode)
+  local allowed = { word = "WORD", char = "CHAR", word_char = "WORD_CHAR", none = "NONE" }
+  if allowed[mode] then
+    if self._private.layout:get_wrap() == allowed[mode] then
+      return
+    end
+    self._private.layout:set_wrap(allowed[mode])
+    self:emit_signal("widget::redraw_needed")
+    self:emit_signal("widget::layout_changed")
+    self:emit_signal("property::wrap", mode)
+  end
+end
+
 local function new(...)
   local ret = wibox.widget.textbox(...)
   ret.widget_name = "Text"
