@@ -28,7 +28,7 @@ local function clock(s)
       end
     end,
 
-    TextClock { "%a %d %b %H:%M" },
+    TextClock { "%d %b %H:%M" },
   }
 
   return clock_widget
