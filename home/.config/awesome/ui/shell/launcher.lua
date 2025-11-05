@@ -272,10 +272,6 @@ local launcher_widget = Window.Popup {
   end,
 
   Column {
-    spacing = 1,
-    -- TODO: implement proper per-side borders
-    spacing_widget = Container { bg = beautiful.border_color },
-
     Container {
       padding = dpi(12),
 
@@ -287,6 +283,9 @@ local launcher_widget = Window.Popup {
         app_list,
       },
     },
+
+    -- TODO: implement proper per-side borders
+    Container { bg = beautiful.border_color, forced_height = 1 },
 
     Container {
       padding = { x = dpi(12), y = dpi(8) },
