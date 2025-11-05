@@ -5,12 +5,44 @@ local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
 local Grid = require("ui.widgets").Grid
+local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
 
 local signal = require("ui.core.signal")
 local computed = require("ui.core.signal.computed")
 
 local tbl = require("helpers.table")
+
+local function Icon(args)
+  local hovered = signal(false)
+
+  return Container {
+    padding = dpi(6),
+    radius = beautiful.border_radius,
+    bg = computed(function()
+      return hovered:get() and beautiful.window_switcher_hover or nil
+    end),
+    border_width = 1,
+    border_color = computed(function()
+      return hovered:get() and beautiful.border_hover or beautiful.colors.transparent
+    end),
+
+    on_mouse_enter = function()
+      hovered:set(true)
+    end,
+    on_mouse_leave = function()
+      hovered:set(false)
+    end,
+    on_click = args.on_click,
+
+    Image {
+      image = beautiful.icon_path .. args[1] .. ".svg",
+      stylesheet = "* { color:" .. beautiful.fg_normal .. " }",
+      forced_width = dpi(16),
+      forced_height = dpi(16),
+    },
+  }
+end
 
 local function StyledGrid(args)
   return Grid {
@@ -73,7 +105,27 @@ local weekday_names = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
 
 local function calendar(_args)
   local current_date = signal(os.date("*t"))
-  local viewed_month = signal(nil)
+  local viewed_month =
+    signal(os.date("*t", os.time({ year = current_date:get().year, month = current_date:get().month, day = 1 })))
+
+  local function init()
+    current_date:set(os.date("*t"))
+    viewed_month:set(
+      os.date("*t", os.time({ year = current_date:get().year, month = current_date:get().month, day = 1 }))
+    )
+  end
+
+  local function next_month()
+    viewed_month:set(
+      os.date("*t", os.time({ year = viewed_month:get().year, month = viewed_month:get().month + 1, day = 1 }))
+    )
+  end
+
+  local function prev_month()
+    viewed_month:set(
+      os.date("*t", os.time({ year = viewed_month:get().year, month = viewed_month:get().month - 1, day = 1 }))
+    )
+  end
 
   local grid_header = StyledGrid {
     column_count = 7,
@@ -150,24 +202,22 @@ local function calendar(_args)
 
   local widget = Container {
     padding = dpi(6),
-    on_wheel_up = function()
-      viewed_month:set(
-        os.date("*t", os.time({ year = viewed_month:get().year, month = viewed_month:get().month - 1, day = 1 }))
-      )
-    end,
-    on_wheel_down = function()
-      viewed_month:set(
-        os.date("*t", os.time({ year = viewed_month:get().year, month = viewed_month:get().month + 1, day = 1 }))
-      )
-    end,
+    on_wheel_up = prev_month,
+    on_wheel_down = next_month,
 
     Column {
       spacing = beautiful.calendar_spacing,
 
-      Text {
-        forced_height = beautiful.calendar_cell_size,
-        halign = "center",
-        header_text,
+      Row {
+        justify_content = "space-between",
+        spacing = beautiful.calendar_spacing,
+
+        Icon { "chevron-left", on_click = prev_month },
+        Text {
+          halign = "center",
+          header_text,
+        },
+        Icon { "chevron-right", on_click = next_month },
       },
       Column {
         spacing = beautiful.calendar_spacing,
@@ -184,14 +234,7 @@ local function calendar(_args)
     },
   }
 
-  function widget:reset()
-    current_date:set(os.date("*t"))
-    viewed_month:set(
-      os.date("*t", os.time({ year = current_date:get().year, month = current_date:get().month, day = 1 }))
-    )
-  end
-
-  widget:reset()
+  widget.reset = init
 
   return widget
 end
