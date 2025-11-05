@@ -6,8 +6,8 @@ local gtable = require("gears.table")
 local flex = {}
 
 -- TODO: Use the same shrink strategy for sizing widgets as the fit layout? shrink_strategy = "smart" prop etc.?
--- TODO: justify prop
 -- TODO: support align_self prop on children
+-- TODO: better support for Flexible inside a container with unconstrained size
 
 ---Layout a flex layout. Each normal widget gets just the space it asks for, while flexible widgets may grow and shrink based on the available space.
 ---@param context table The context in which we are drawn.
@@ -19,10 +19,10 @@ function flex:layout(context, width, height)
   local is_y = self._private.dir == "y"
   local is_x = not is_y
   local spacing = self._private.spacing or 0
-  local spacing_widget = spacing ~= 0 and self._private.spacing_widget or nil
   local max_widget_size = self._private.max_widget_size or math.huge
   local overflow = self._private.overflow
   local align_items = self._private.align_items
+  local justify_content = self._private.justify_content
 
   local cross_axis_space = is_y and width or height
 
@@ -70,40 +70,22 @@ function flex:layout(context, width, height)
   local available_space = (is_y and height or width) - fixed_size_total - flex_size_total - spacing_total
 
   -- Place widgets
-  local pos, pos_rounded = 0, 0
+  local pos = justify_content == "end" and grow_count == 0 and available_space or 0
   local num_visible_placed = 0
-  for i, widget in pairs(self._private.widgets) do
-    -- Add the spacing and spacing widget, and add spacing to pos (if needed)
-    if i > 1 then
-      local local_spacing = (num_visible_placed > 0 and widget.visible) and spacing or 0
 
-      -- Add spacing widget when defined
-      if spacing_widget then
-        local spinset = math.min(local_spacing, 0)
-        local abspace = math.abs(local_spacing)
-
-        -- TODO: Apply align_items to spacing widget as well
-
-        table.insert(
-          result,
-          base.place_widget_at(
-            spacing_widget,
-            is_x and (pos_rounded + spinset) or 0,
-            is_y and (pos_rounded + spinset) or 0,
-            is_x and abspace or cross_axis_space,
-            is_y and abspace or cross_axis_space
-          )
-        )
+  for _, widget in pairs(self._private.widgets) do
+    -- Add spacing and justification
+    if num_visible_placed > 0 and widget.visible then
+      if spacing > 0 then
+        pos = pos + spacing
       end
 
-      -- Add spacing to pos if needed
-      if local_spacing > 0 then
-        pos = pos + local_spacing
-        pos_rounded = pos_rounded + local_spacing
+      if justify_content == "space-between" and visible_count > 1 then
+        pos = pos + available_space / (visible_count - 1)
+      end
 
-        if is_x and pos >= width or is_y and pos >= height then
-          break
-        end
+      if is_x and pos >= width or is_y and pos >= height then
+        break
       end
     end
 
@@ -152,9 +134,9 @@ function flex:layout(context, width, height)
     end
     local cross_axis_pos_rounded = gmath.round(cross_axis_pos)
 
-    -- Place widget and calculate next position
-    next_pos = pos + main_size
-    next_pos_rounded = gmath.round(next_pos)
+    -- Place widget and update position
+    local pos_rounded = gmath.round(pos)
+    local main_size_rounded = gmath.round(main_size)
 
     table.insert(
       result,
@@ -162,13 +144,12 @@ function flex:layout(context, width, height)
         widget,
         is_x and pos_rounded or cross_axis_pos_rounded,
         is_y and pos_rounded or cross_axis_pos_rounded,
-        is_x and next_pos_rounded - pos_rounded or cross_axis_size,
-        is_y and next_pos_rounded - pos_rounded or cross_axis_size
+        is_x and main_size_rounded or cross_axis_size,
+        is_y and main_size_rounded or cross_axis_size
       )
     )
 
-    pos = next_pos
-    pos_rounded = next_pos_rounded
+    pos = pos + main_size
 
     if widget.visible then
       num_visible_placed = num_visible_placed + 1
@@ -281,13 +262,23 @@ function flex:set_overflow(val)
   end
 end
 
----Set the overflow strategy this layout will use.
+---Set the align strategy this layout will use.
 ---@param val "stretch" | "start" | "center" | "end"
 function flex:set_align_items(val)
   if self._private.align_items ~= val then
     self._private.align_items = val
     self:emit_signal("widget::layout_changed")
     self:emit_signal("property::align_items", val)
+  end
+end
+
+---Set the justify strategy this layout will use.
+---@param val "start" | "space-between" | "end"
+function flex:set_justify_content(val)
+  if self._private.justify_content ~= val then
+    self._private.justify_content = val
+    self:emit_signal("widget::layout_changed")
+    self:emit_signal("property::justify_content", val)
   end
 end
 
