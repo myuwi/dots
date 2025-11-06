@@ -29,6 +29,7 @@ local colors = {
   highlight_high = rose_pine.highlight_high,
   highlight_med = rose_pine.highlight_med,
   highlight_low = rose_pine.highlight_low,
+  black = "#000000",
   transparent = "#00000000",
 }
 

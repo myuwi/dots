@@ -47,6 +47,7 @@ theme.useless_gap = dpi(6)
 theme.border_radius = dpi(6)
 theme.border_color = colors.surface
 theme.border_width = dpi(1)
+theme.client_border_color = hcolor.opacity(colors.black, 0.65)
 
 theme.border_focus = hcolor.opacity(colors.muted, 0.2)
 theme.border_hover = hcolor.opacity(colors.muted, 0.3)
