@@ -6,11 +6,11 @@ uniform float corner_radius;
 uniform float border_width;
 
 float inset_border_width = 1;
-vec4 border_color = vec4(1.0, 1.0, 1.0, 0.15);
+vec4 border_color = vec4(1.0, 1.0, 1.0, 0.05);
 
 vec4 default_post_processing(vec4 c);
 
-vec4 add_rounded_corners(
+vec4 add_border(
   vec4 win_color,
   vec2 tex_coord,
   vec2 tex_size,
@@ -37,7 +37,7 @@ vec4 add_rounded_corners(
     );
 
   // Do some simple anti-aliasing
-  float inner_radius = radius - thickness;
+  float inner_radius = radius - thickness + 0.3;
   float feather = 1 / inner_radius;
   float r = length(center_distance) / inner_radius;
   float blend = smoothstep(1 - 1 / radius, 1, r);
@@ -45,10 +45,9 @@ vec4 add_rounded_corners(
   return mix(win_color, color, color.a * blend);
 }
 
-vec4 window_shader()
-{
+vec4 window_shader() {
   vec2 tex_size = textureSize(tex, 0);
   vec4 c = texture2D(tex, texcoord / tex_size, 0);
-  vec4 with_borders = add_rounded_corners(c, texcoord, tex_size, corner_radius, border_width + inset_border_width, border_color);
-  return default_post_processing(with_borders);
+  vec4 with_border = add_border(c, texcoord, tex_size, corner_radius, border_width + inset_border_width, border_color);
+  return default_post_processing(with_border);
 }

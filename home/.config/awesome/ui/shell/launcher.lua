@@ -285,7 +285,7 @@ local launcher_widget = Window.Popup {
     },
 
     -- TODO: implement proper per-side borders
-    Container { bg = beautiful.border_color, forced_height = 1 },
+    Container { bg = beautiful.bg_divider, forced_height = 1 },
 
     Container {
       padding = { x = dpi(12), y = dpi(8) },

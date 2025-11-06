@@ -14,8 +14,8 @@ theme.font = theme.font_name .. " " .. theme.font_size
 
 theme.icon_path = theme_path .. "assets/icons/"
 
--- Source: https://unsplash.com/photos/mthwaeiqky0
-theme.wallpaper = theme_path .. "assets/wallpaper.jpg"
+-- Source: https://www.pixiv.net/en/artworks/106390259
+theme.wallpaper = theme_path .. "assets/106390259_p0.jpg"
 
 local colors = require("theme.colors")
 
@@ -28,6 +28,7 @@ theme.bg_urgent = colors.urgent
 theme.bg_minimized = nil
 theme.bg_bar = colors.base
 theme.bg_systray = theme.bg_bar
+theme.bg_divider = colors.surface
 
 theme.fg_normal = colors.text
 theme.fg_focus = colors.text
@@ -41,13 +42,13 @@ theme.bg_button = theme.bg_focus
 theme.bg_button_hover = theme.bg_hover
 
 -- Gaps
-theme.useless_gap = dpi(6)
+theme.useless_gap = dpi(4)
 
 -- Borders
 theme.border_radius = dpi(6)
-theme.border_color = colors.surface
 theme.border_width = dpi(1)
-theme.client_border_color = hcolor.opacity(colors.black, 0.65)
+theme.border_color = hcolor.opacity(colors.black, 0.2)
+theme.client_border_color = hcolor.opacity(colors.black, 0.2)
 
 theme.border_focus = hcolor.opacity(colors.muted, 0.2)
 theme.border_hover = hcolor.opacity(colors.muted, 0.3)
@@ -66,9 +67,6 @@ theme.calendar_day_other = colors.muted
 
 theme.calendar_spacing = dpi(6)
 theme.calendar_cell_size = dpi(24)
-
--- Tasklist
-theme.tasklist_plain_task_name = true
 
 -- Systray
 theme.systray_icon_spacing = dpi(6)
