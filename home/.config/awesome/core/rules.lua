@@ -57,6 +57,19 @@ ruled.client.connect_signal("request::rules", function()
     },
   })
 
+  -- Ignore size hints
+  ruled.client.append_rule({
+    id = "ignore-size-hints",
+    rule_any = {
+      class = {
+        "Protonvpn-app",
+      },
+    },
+    properties = {
+      size_hints_honor = false,
+    },
+  })
+
   -- On-top clients.
   ruled.client.append_rule({
     id = "on-top",
