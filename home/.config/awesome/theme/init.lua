@@ -44,8 +44,10 @@ theme.bg_button_hover = theme.bg_hover
 -- Gaps
 theme.useless_gap = dpi(4)
 
+-- Corners
+theme.corner_radius = dpi(6)
+
 -- Borders
-theme.border_radius = dpi(6)
 theme.border_width = dpi(1)
 theme.border_color = hcolor.opacity(colors.black, 0.2)
 theme.client_border_color = hcolor.opacity(colors.black, 0.2)

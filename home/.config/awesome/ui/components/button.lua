@@ -19,7 +19,7 @@ local function button(args)
     bg = beautiful.bg_button,
     forced_height = dpi(28),
     padding = { x = dpi(8) },
-    radius = beautiful.border_radius,
+    radius = beautiful.corner_radius,
     buttons = args.buttons,
 
     Text {

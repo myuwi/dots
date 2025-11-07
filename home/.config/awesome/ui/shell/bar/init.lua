@@ -22,7 +22,7 @@ awful.screen.connect_for_each_screen(function(s)
     height = beautiful.bar_height,
     margins = { top = bar_gap, left = bar_gap, right = bar_gap, bottom = 0 },
     bg = beautiful.bg_bar,
-    radius = beautiful.border_radius,
+    radius = beautiful.corner_radius,
 
     Container {
       padding = beautiful.bar_padding,

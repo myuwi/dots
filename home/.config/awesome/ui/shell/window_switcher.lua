@@ -63,7 +63,7 @@ local function create_icon(c, i)
         return beautiful.colors.transparent
       end
     end),
-    radius = beautiful.border_radius,
+    radius = beautiful.corner_radius,
     padding = outside_padding,
     on_click = function()
       activate_client_at_index(i)

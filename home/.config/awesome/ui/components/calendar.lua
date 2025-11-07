@@ -18,7 +18,7 @@ local function Icon(args)
 
   return Container {
     padding = dpi(6),
-    radius = beautiful.border_radius,
+    radius = beautiful.corner_radius,
     bg = computed(function()
       return hovered:get() and beautiful.window_switcher_hover or nil
     end),

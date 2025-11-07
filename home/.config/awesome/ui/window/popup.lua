@@ -32,7 +32,7 @@ local function popup(args)
     bg = beautiful.bg_normal,
     border_color = beautiful.border_color,
     border_width = beautiful.border_width,
-    radius = beautiful.border_radius,
+    radius = beautiful.corner_radius,
 
     Container {
       forced_height = forced_height,
