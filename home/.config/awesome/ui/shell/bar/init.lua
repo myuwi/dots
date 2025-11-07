@@ -19,7 +19,7 @@ awful.screen.connect_for_each_screen(function(s)
   s.bar = Window {
     window = awful.wibar,
     screen = s,
-    height = beautiful.bar_height - beautiful.border_width * 2,
+    height = beautiful.bar_height,
     margins = { top = bar_gap, left = bar_gap, right = bar_gap, bottom = 0 },
     bg = beautiful.bg_bar,
     radius = beautiful.border_radius,
