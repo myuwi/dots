@@ -18,6 +18,8 @@ local calendar_popup = Window.Popup {
   calendar,
 }
 
+helpers.window.set_prop(calendar_popup, "_ANIMATE", "slide-down")
+
 -- TODO: Somehow whitelist clock widget in bar to avoid closing and reopening on click
 local click_away_handler = helpers.ui.create_click_away_handler(calendar_popup, true)
 

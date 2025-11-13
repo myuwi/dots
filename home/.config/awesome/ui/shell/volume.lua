@@ -3,6 +3,8 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local gears = require("gears")
 
+local helpers = require("helpers")
+
 local signal = require("ui.core.signal")
 local effect = require("ui.core.signal.effect")
 local computed = require("ui.core.signal.computed")
@@ -83,6 +85,8 @@ local volume_widget = Window.Popup {
     volume_text,
   },
 }
+
+helpers.window.set_prop(volume_widget, "_ANIMATE", "slide-up")
 
 local hide_volume_widget = gears.timer({
   timeout = 1,

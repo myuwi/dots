@@ -21,7 +21,7 @@ local function clock(s)
         or beautiful.colors.transparent
     end),
     radius = dpi(4),
-    padding = { x = dpi(6) },
+    padding = { x = dpi(8) },
     on_button_press = function(_, _, _, button)
       if button == 1 then
         awesome.emit_signal("shell::calendar_popup::show")
