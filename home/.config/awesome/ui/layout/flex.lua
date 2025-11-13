@@ -70,7 +70,15 @@ function flex:layout(context, width, height)
   local available_space = (is_y and height or width) - fixed_size_total - flex_size_total - spacing_total
 
   -- Place widgets
-  local pos = justify_content == "end" and grow_count == 0 and available_space or 0
+  local pos = 0
+  if grow_count == 0 then
+    if justify_content == "end" then
+      pos = available_space
+    elseif justify_content == "center" then
+      pos = available_space / 2
+    end
+  end
+
   local num_visible_placed = 0
 
   for _, widget in pairs(self._private.widgets) do
@@ -273,7 +281,7 @@ function flex:set_align_items(val)
 end
 
 ---Set the justify strategy this layout will use.
----@param val "start" | "space-between" | "end"
+---@param val "start" | "center" | "end" | "space-between"
 function flex:set_justify_content(val)
   if self._private.justify_content ~= val then
     self._private.justify_content = val

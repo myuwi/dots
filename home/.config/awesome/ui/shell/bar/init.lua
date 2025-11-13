@@ -10,6 +10,7 @@ local taglist = require("ui.shell.bar.taglist")
 local tasklist = require("ui.shell.bar.tasklist")
 local systray = require("ui.shell.bar.systray")
 local battery = require("ui.shell.bar.battery")
+local status = require("ui.shell.bar.status")
 local clock = require("ui.shell.bar.clock")
 
 awful.screen.connect_for_each_screen(function(s)
@@ -35,9 +36,10 @@ awful.screen.connect_for_each_screen(function(s)
           tasklist(s),
         },
         Row {
-          spacing = beautiful.bar_spacing,
+          spacing = beautiful.bar_spacing / 2,
           is_primary and systray() or nil,
-          battery(),
+          is_primary and battery() or nil,
+          is_primary and status() or nil,
           clock(s),
         },
       },
