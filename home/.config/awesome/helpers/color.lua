@@ -1,9 +1,11 @@
+local gmath = require("gears.math")
+
 local M = {}
 
 ---Clamp a value to the rgb color range (0-255)
 ---@param x number a value
 local function clamp(x)
-  return math.max(0, math.min(255, x))
+  return gmath.round(math.max(0, math.min(255, x)))
 end
 
 ---Convert Hex to Decimal
