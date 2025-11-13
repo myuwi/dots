@@ -31,6 +31,7 @@ return {
       "jsonls",
       "lemminx",
       "marksman",
+      "nushell",
       { "oxlint", opts = { mason = false } },
       "prismals",
       "pyright",

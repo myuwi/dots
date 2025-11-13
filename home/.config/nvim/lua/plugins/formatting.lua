@@ -56,6 +56,7 @@ return {
       go = { "goimports", "gofmt" },
       lua = { "stylua" },
       fennel = { "fnlfmt" },
+      nu = { "topiary_nu" },
       python = { "isort", "black" },
       sh = { "shfmt" },
       toml = { "taplo" },
@@ -94,6 +95,10 @@ return {
     opts.formatters = {
       ["biome-check"] = { append_args = { "--indent-style=space" } },
       shfmt = { prepend_args = { "-i", "2" } },
+      topiary_nu = {
+        command = "topiary",
+        args = { "format", "--language", "nu" },
+      },
     }
   end,
 }
