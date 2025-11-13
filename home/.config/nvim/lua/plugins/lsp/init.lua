@@ -26,6 +26,7 @@ return {
       "eslint",
       "fennel_ls",
       { "gleam", opts = { mason = false } },
+      "glsl_analyzer",
       "gopls",
       "jsonls",
       "lemminx",
