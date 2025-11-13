@@ -1,5 +1,6 @@
 local awful = require("awful")
 local gcolor = require("gears.color")
+local gtimer = require("gears.timer")
 local wibox = require("wibox")
 
 local rubato = require("lib.rubato")
@@ -103,6 +104,8 @@ function M.create_click_away_handler(widget, focus_events)
 
   ---@param callback fun(target: any)
   local function attach(callback)
+    gtimer.run_delayed_calls_now()
+
     cb = callback
 
     awful.mouse.append_global_mousebindings(root_binds)
@@ -116,16 +119,21 @@ function M.create_click_away_handler(widget, focus_events)
   end
 
   local function detach()
-    cb = nil
+    -- Disconnecting the handler immediately may cause another handler for the same target to be skipped due to
+    -- the handlers being stored in a list that is iterated over, causing handler indices to shift mid execution,
+    -- so wait for all handlers to be fired before disconnecting any of them
+    gtimer.delayed_call(function()
+      cb = nil
 
-    hmouse.remove_global_mousebindings(root_binds)
-    client.disconnect_signal("button::press", cb_handler)
-    wibox.disconnect_signal("button::press", cb_handler)
+      hmouse.remove_global_mousebindings(root_binds)
+      client.disconnect_signal("button::press", cb_handler)
+      wibox.disconnect_signal("button::press", cb_handler)
 
-    if focus_events then
-      client.disconnect_signal("focus", cb_handler)
-      tag.disconnect_signal("property::selected", cb_handler)
-    end
+      if focus_events then
+        client.disconnect_signal("focus", cb_handler)
+        tag.disconnect_signal("property::selected", cb_handler)
+      end
+    end)
   end
 
   return {
