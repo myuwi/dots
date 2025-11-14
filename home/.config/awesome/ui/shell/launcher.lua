@@ -320,6 +320,8 @@ local launcher_widget = Window.Popup {
   },
 }
 
+helpers.window.set_prop(launcher_widget, "_ANIMATE", "slide-down")
+
 -- Setup
 
 -- TODO: Should this be a backdrop instead?
