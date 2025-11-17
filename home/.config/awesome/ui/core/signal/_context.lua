@@ -3,25 +3,25 @@
 ---@class (exact) Node
 ---@field protected __type string
 
----@class (exact) Source: Node
+---@class (exact) Signal.Source: Node
 ---@field get fun(self: self): unknown
 ---@field peek fun(self: self): unknown
 ---@field protected _value any
 ---@field protected _version integer
----@field protected _subscribers Subscriber[]
+---@field protected _subscribers Signal.Subscriber[]
 ---@field protected _refresh fun(self: self)
 
----@class (exact) Subscriber: Node
+---@class (exact) Signal.Subscriber: Node
 ---@field protected _dirty boolean
 ---@field protected _first_run boolean
----@field protected _parent Subscriber
----@field protected _children Subscriber[]
----@field protected _sources Source[]
----@field protected _source_versions table<Source, integer>
+---@field protected _parent Signal.Subscriber
+---@field protected _children Signal.Subscriber[]
+---@field protected _sources Signal.Source[]
+---@field protected _source_versions table<Signal.Source, integer>
 ---@field protected _notify fun(self: self)
 ---@field protected _dispose fun(self: self)
 
----@type Subscriber?
+---@type Signal.Subscriber?
 local active_scope = nil
 local batch_depth = 0
 
@@ -30,7 +30,7 @@ local effect_queue = {}
 
 local M = {}
 
----@param scope Subscriber | nil
+---@param scope Signal.Subscriber | nil
 ---@param fn fun(): any
 ---@return unknown
 function M.with_scope(scope, fn)
@@ -44,7 +44,7 @@ function M.with_scope(scope, fn)
   return val
 end
 
----@param source Source
+---@param source Signal.Source
 function M.add_dependency(source)
   if not active_scope or active_scope._source_versions[source] then
     return
@@ -56,7 +56,7 @@ function M.add_dependency(source)
   table.insert(source._subscribers, active_scope)
 end
 
----@param sub Subscriber
+---@param sub Signal.Subscriber
 function M.add_child(sub)
   if active_scope then
     table.insert(active_scope._children, sub)
@@ -64,10 +64,10 @@ function M.add_child(sub)
   end
 end
 
----@param sub Subscriber
+---@param sub Signal.Subscriber
 function M.cleanup_sub(sub)
   while #sub._sources > 0 do
-    ---@type Source
+    ---@type Signal.Source
     local source = table.remove(sub._sources, 1)
 
     for i, s in ipairs(source._subscribers) do
@@ -81,7 +81,7 @@ function M.cleanup_sub(sub)
   sub._source_versions = {}
 
   while #sub._children > 0 do
-    ---@type Subscriber
+    ---@type Signal.Subscriber
     local child_scope = table.remove(sub._children, 1)
     child_scope:_dispose()
   end
@@ -114,7 +114,7 @@ function M.with_batch(fn)
   return val
 end
 
----@param sub Subscriber
+---@param sub Signal.Subscriber
 function M.should_recompute(sub)
   if sub._first_run then
     sub._first_run = false

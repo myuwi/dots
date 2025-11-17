@@ -7,9 +7,9 @@ local computed = require("ui.core.signal.computed")
 local Image = require("ui.widgets").Image
 
 ---@class (exact) IconArgs
----@field color? string | Source
----@field size? integer | Source
----@field [1] string | Source
+---@field color? string | Signal.Source
+---@field size? integer | Signal.Source
+---@field [1] string | Signal.Source
 
 ---@param args IconArgs
 local function Icon(args)

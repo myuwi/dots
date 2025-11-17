@@ -1,6 +1,6 @@
 local computed = require("ui.core.signal.computed")
 
----@param signal Source
+---@param signal Signal.Source
 ---@param fn fun(value: any): any
 ---@return Computed
 local function map(signal, fn)

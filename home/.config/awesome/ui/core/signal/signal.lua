@@ -1,6 +1,6 @@
 local context = require("ui.core.signal._context")
 
----@class (exact) Signal: Source
+---@class (exact) Signal: Signal.Source
 local Signal = {}
 
 Signal.__type = "Signal"

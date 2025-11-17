@@ -1,6 +1,6 @@
 local context = require("ui.core.signal._context")
 
----@class (exact) Computed: Source, Subscriber
+---@class (exact) Computed: Signal.Source, Signal.Subscriber
 ---@field private _fn fun()
 local Computed = {}
 

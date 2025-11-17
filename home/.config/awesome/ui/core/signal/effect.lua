@@ -2,7 +2,7 @@ local context = require("ui.core.signal._context")
 
 ---@alias EffectFn fun(): fun()?
 
----@class (exact) Effect: Subscriber
+---@class (exact) Effect: Signal.Subscriber
 ---@field private _fn EffectFn
 ---@field private _cleanup? fun()
 ---@field private _disposed boolean
