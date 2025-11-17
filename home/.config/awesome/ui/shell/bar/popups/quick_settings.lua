@@ -10,31 +10,10 @@ local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
 local Grid = require("ui.widgets").Grid
 local Text = require("ui.widgets").Text
-local Image = require("ui.widgets").Image
+local Icon = require("ui.components").Icon
 
 local signal = require("ui.core.signal")
 local computed = require("ui.core.signal.computed")
-
--- TODO: One common Icon component
-local function Icon(args)
-  local image = computed(function()
-    local name = signal.is_signal(args[1]) and args[1]:get() or args[1]
-    return beautiful.icon_path .. name .. ".svg"
-  end)
-
-  local stylesheet = computed(function()
-    local color = signal.is_signal(args.color) and args.color:get() or args.color
-    return "* { color:" .. (color or beautiful.fg_normal) .. " }"
-  end)
-
-  return Image {
-    image = image,
-    stylesheet = stylesheet,
-    scaling_quality = "best",
-    forced_width = args.size or dpi(14),
-    forced_height = args.size or dpi(14),
-  }
-end
 
 local function Pill(args)
   local fg_color = computed(function()

@@ -13,6 +13,7 @@ local Row = require("ui.widgets").Row
 local Flexible = require("ui.widgets").Flexible
 local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
+local Icon = require("ui.components").Icon
 local Input = require("ui.components").Input
 
 local signal = require("ui.core.signal")
@@ -242,12 +243,10 @@ local function Kbd(args)
   }
 end
 
-local function Icon(args)
-  return Image {
-    image = beautiful.icon_path .. args[1] .. ".svg",
-    stylesheet = "* { color:" .. beautiful.fg_normal .. " }",
-    forced_width = dpi(12),
-    forced_height = dpi(12),
+local function StyledIcon(args)
+  return Icon {
+    size = dpi(12),
+    args[1],
   }
 end
 
@@ -305,14 +304,14 @@ local launcher_widget = Window.Popup {
           Text { "/" },
           Row {
             spacing = dpi(4),
-            Kbd { Icon { "arrow-up" } },
-            Kbd { Icon { "arrow-down" } },
+            Kbd { StyledIcon { "arrow-up" } },
+            Kbd { StyledIcon { "arrow-down" } },
           },
           Text { "to navigate" },
         },
         Row {
           spacing = dpi(6),
-          Kbd { Icon { "corner-arrow-left" } },
+          Kbd { StyledIcon { "corner-arrow-left" } },
           Text { "to select" },
         },
       },

@@ -5,15 +5,15 @@ local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
 local Grid = require("ui.widgets").Grid
-local Image = require("ui.widgets").Image
 local Text = require("ui.widgets").Text
+local Icon = require("ui.components.icon")
 
 local signal = require("ui.core.signal")
 local computed = require("ui.core.signal.computed")
 
 local tbl = require("helpers.table")
 
-local function Icon(args)
+local function StyledIcon(args)
   local hovered = signal(false)
 
   return Container {
@@ -35,11 +35,9 @@ local function Icon(args)
     end,
     on_click = args.on_click,
 
-    Image {
-      image = beautiful.icon_path .. args[1] .. ".svg",
-      stylesheet = "* { color:" .. beautiful.fg_normal .. " }",
-      forced_width = dpi(16),
-      forced_height = dpi(16),
+    Icon {
+      size = dpi(16),
+      args[1],
     },
   }
 end
@@ -212,12 +210,12 @@ local function calendar(_args)
         justify_content = "space-between",
         spacing = beautiful.calendar_spacing,
 
-        Icon { "chevron-left", on_click = prev_month },
+        StyledIcon { "chevron-left", on_click = prev_month },
         Text {
           halign = "center",
           header_text,
         },
-        Icon { "chevron-right", on_click = next_month },
+        StyledIcon { "chevron-right", on_click = next_month },
       },
       Column {
         spacing = beautiful.calendar_spacing,

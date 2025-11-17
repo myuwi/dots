@@ -14,9 +14,9 @@ local track = require("ui.core.signal.track")
 local Window = require("ui.window")
 local Row = require("ui.widgets").Row
 local Flexible = require("ui.widgets").Flexible
-local Image = require("ui.widgets").Image
 local ProgressBar = require("ui.widgets").ProgressBar
 local Text = require("ui.widgets").Text
+local Icon = require("ui.components").Icon
 
 local volume = signal(0)
 local muted = signal(false)
@@ -24,25 +24,21 @@ local hovered = signal(false)
 
 local function get_volume_svg()
   if muted:get() or volume:get() == 0 then
-    return "volume-x.svg"
+    return "volume-x"
   end
 
   if volume:get() >= 50 then
-    return "volume-2.svg"
+    return "volume-2"
   elseif volume:get() >= 20 then
-    return "volume-1.svg"
+    return "volume-1"
   else
-    return "volume.svg"
+    return "volume"
   end
 end
 
-local volume_icon = Image {
-  image = computed(function()
-    return beautiful.icon_path .. get_volume_svg()
-  end),
-  stylesheet = "* { color:" .. beautiful.fg_normal .. " }",
-  forced_width = dpi(18),
-  forced_height = dpi(18),
+local volume_icon = Icon {
+  size = dpi(18),
+  computed(get_volume_svg),
 }
 
 local volume_bar = ProgressBar {
