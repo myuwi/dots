@@ -6,12 +6,12 @@ local Container = require("ui.widgets").Container
 local Flexible = require("ui.widgets").Flexible
 local Row = require("ui.widgets").Row
 
-local taglist = require("ui.shell.bar.taglist")
-local tasklist = require("ui.shell.bar.tasklist")
-local systray = require("ui.shell.bar.systray")
-local battery = require("ui.shell.bar.battery")
-local status = require("ui.shell.bar.status")
-local clock = require("ui.shell.bar.clock")
+local taglist = require("ui.shell.bar.modules.taglist")
+local tasklist = require("ui.shell.bar.modules.tasklist")
+local systray = require("ui.shell.bar.modules.systray")
+local battery = require("ui.shell.bar.modules.battery")
+local status = require("ui.shell.bar.modules.status")
+local clock = require("ui.shell.bar.modules.clock")
 
 awful.screen.connect_for_each_screen(function(s)
   local is_primary = s == screen.primary

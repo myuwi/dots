@@ -173,18 +173,16 @@ helpers.window.set_prop(quick_settings, "_ANIMATE", "slide-down")
 
 local click_away_handler = helpers.ui.create_click_away_handler(quick_settings, true)
 
-local function hide()
+function quick_settings.hide()
   quick_settings.visible = false
   click_away_handler.detach()
 end
 
-local function show()
+function quick_settings.show()
   client.focus = nil
   quick_settings.screen = mouse.screen
-  click_away_handler.attach(hide)
+  click_away_handler.attach(quick_settings.hide)
   quick_settings.visible = true
 end
-
-awesome.connect_signal("shell::quick_settings::show", show)
 
 return quick_settings

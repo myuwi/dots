@@ -24,19 +24,17 @@ helpers.window.set_prop(calendar_popup, "_ANIMATE", "slide-down")
 local click_away_handler = helpers.ui.create_click_away_handler(calendar_popup, true)
 
 -- TODO: Esc to hide, also refocus client which was unfocused in show()
-local function hide()
+function calendar_popup.hide()
   calendar_popup.visible = false
   click_away_handler.detach()
 end
 
-local function show()
+function calendar_popup.show()
   client.focus = nil
   calendar_popup.screen = mouse.screen
-  click_away_handler.attach(hide)
+  click_away_handler.attach(calendar_popup.hide)
   calendar:reset()
   calendar_popup.visible = true
 end
-
-awesome.connect_signal("shell::calendar_popup::show", show)
 
 return calendar_popup

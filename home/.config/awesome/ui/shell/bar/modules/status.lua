@@ -8,7 +8,7 @@ local Image = require("ui.widgets").Image
 local computed = require("ui.core.signal.computed")
 local bind = require("ui.core.signal.bind")
 
-local quick_settings = require("ui.shell.quick_settings")
+local quick_settings = require("ui.shell.bar.popups.quick_settings")
 local quick_settings_open = bind(quick_settings, "visible")
 
 local function Icon(args)
@@ -34,7 +34,7 @@ local function status()
     padding = { x = dpi(8) },
     on_button_press = function(_, _, _, button)
       if button == 1 then
-        awesome.emit_signal("shell::quick_settings::show")
+        quick_settings.show()
       end
     end,
 

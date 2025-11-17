@@ -7,7 +7,7 @@ local TextClock = require("ui.widgets").TextClock
 local computed = require("ui.core.signal.computed")
 local bind = require("ui.core.signal.bind")
 
-local calendar_popup = require("ui.shell.calendar_popup")
+local calendar_popup = require("ui.shell.bar.popups.calendar_popup")
 local calendar_visible = bind(calendar_popup, "visible")
 
 local function clock(s)
@@ -24,7 +24,7 @@ local function clock(s)
     padding = { x = dpi(8) },
     on_button_press = function(_, _, _, button)
       if button == 1 then
-        awesome.emit_signal("shell::calendar_popup::show")
+        calendar_popup.show()
       end
     end,
 
