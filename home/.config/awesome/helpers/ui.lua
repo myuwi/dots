@@ -3,7 +3,7 @@ local gcolor = require("gears.color")
 local gtimer = require("gears.timer")
 local wibox = require("wibox")
 
-local rubato = require("lib.rubato")
+local rubato = require("rubato")
 
 local hcolor = require("helpers.color")
 local hmouse = require("helpers.mouse")

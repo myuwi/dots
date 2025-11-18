@@ -1,3 +1,5 @@
+pcall(require, "luarocks.loader")
+
 modkey = "Mod4"
 
 function debug_print(...)

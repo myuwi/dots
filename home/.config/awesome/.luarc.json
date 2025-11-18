@@ -13,7 +13,6 @@
     ]
   },
   "workspace": {
-    "ignoreDir": ["lib"],
     "library": ["/usr/share/awesome/lib"]
   },
   "runtime.version": "LuaJIT"
