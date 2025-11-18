@@ -1,4 +1,4 @@
-local computed = require("ui.core.signal.computed")
+local computed = require("lib.signal.computed")
 
 ---@param signal Signal.Source
 ---@param fn fun(value: any): any

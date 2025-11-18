@@ -5,8 +5,8 @@ local Container = require("ui.widgets").Container
 local Row = require("ui.widgets").Row
 local Icon = require("ui.components").Icon
 
-local computed = require("ui.core.signal.computed")
-local bind = require("ui.core.signal.bind")
+local computed = require("lib.signal.computed")
+local bind = require("lib.signal.bind")
 
 local quick_settings = require("ui.shell.bar.popups.quick_settings")
 local quick_settings_open = bind(quick_settings, "visible")

@@ -9,8 +9,8 @@ local Row = require("ui.widgets").Row
 local ClientIcon = require("ui.widgets").ClientIcon
 local Text = require("ui.widgets").Text
 
-local signal = require("ui.core.signal")
-local computed = require("ui.core.signal.computed")
+local signal = require("lib.signal")
+local computed = require("lib.signal.computed")
 
 local tbl = require("helpers.table")
 

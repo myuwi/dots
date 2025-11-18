@@ -1,4 +1,4 @@
-local signal = require("ui.core.signal.signal")
+local signal = require("lib.signal.signal")
 
 ---@class SignalModule
 ---@field private mt table

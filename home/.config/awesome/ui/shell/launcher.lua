@@ -16,10 +16,10 @@ local Text = require("ui.widgets").Text
 local Icon = require("ui.components").Icon
 local Input = require("ui.components").Input
 
-local signal = require("ui.core.signal")
-local computed = require("ui.core.signal.computed")
-local effect = require("ui.core.signal.effect")
-local map = require("ui.core.signal.map")
+local signal = require("lib.signal")
+local computed = require("lib.signal.computed")
+local effect = require("lib.signal.effect")
+local map = require("lib.signal.map")
 
 local launcher = {}
 

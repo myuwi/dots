@@ -1,8 +1,8 @@
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local signal = require("ui.core.signal")
-local computed = require("ui.core.signal.computed")
+local signal = require("lib.signal")
+local computed = require("lib.signal.computed")
 
 local Image = require("ui.widgets").Image
 

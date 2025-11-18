@@ -1,4 +1,4 @@
-local context = require("ui.core.signal._context")
+local context = require("lib.signal._context")
 
 ---@alias EffectFn fun(): fun()?
 

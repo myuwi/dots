@@ -4,8 +4,8 @@ local dpi = beautiful.xresources.apply_dpi
 local Container = require("ui.widgets").Container
 local TextClock = require("ui.widgets").TextClock
 
-local computed = require("ui.core.signal.computed")
-local bind = require("ui.core.signal.bind")
+local computed = require("lib.signal.computed")
+local bind = require("lib.signal.bind")
 
 local calendar_popup = require("ui.shell.bar.popups.calendar_popup")
 local calendar_visible = bind(calendar_popup, "visible")

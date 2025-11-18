@@ -1,4 +1,4 @@
-local signal = require("ui.core.signal")
+local signal = require("lib.signal")
 
 ---@param emitter table
 ---@param property string

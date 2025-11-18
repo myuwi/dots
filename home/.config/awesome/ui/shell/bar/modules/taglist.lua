@@ -2,9 +2,9 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local signal = require("ui.core.signal")
-local computed = require("ui.core.signal.computed")
-local bind = require("ui.core.signal.bind")
+local signal = require("lib.signal")
+local computed = require("lib.signal.computed")
+local bind = require("lib.signal.bind")
 
 local Container = require("ui.widgets").Container
 local Row = require("ui.widgets").Row

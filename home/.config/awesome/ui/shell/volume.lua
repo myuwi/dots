@@ -5,11 +5,11 @@ local gears = require("gears")
 
 local helpers = require("helpers")
 
-local signal = require("ui.core.signal")
-local effect = require("ui.core.signal.effect")
-local computed = require("ui.core.signal.computed")
-local map = require("ui.core.signal.map")
-local track = require("ui.core.signal.track")
+local signal = require("lib.signal")
+local effect = require("lib.signal.effect")
+local computed = require("lib.signal.computed")
+local map = require("lib.signal.map")
+local track = require("lib.signal.track")
 
 local Window = require("ui.window")
 local Row = require("ui.widgets").Row

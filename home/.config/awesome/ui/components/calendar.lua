@@ -8,8 +8,8 @@ local Grid = require("ui.widgets").Grid
 local Text = require("ui.widgets").Text
 local Icon = require("ui.components.icon")
 
-local signal = require("ui.core.signal")
-local computed = require("ui.core.signal.computed")
+local signal = require("lib.signal")
+local computed = require("lib.signal.computed")
 
 local tbl = require("helpers.table")
 

@@ -1,9 +1,9 @@
 local awful = require("awful")
 local wibox = require("wibox")
 
-local Signal = require("ui.core.signal")
-local effect = require("ui.core.signal.effect")
-local untracked = require("ui.core.signal.untracked")
+local Signal = require("lib.signal")
+local effect = require("lib.signal.effect")
+local untracked = require("lib.signal.untracked")
 local util = require("ui.core.util")
 
 local tbl = require("helpers.table")
