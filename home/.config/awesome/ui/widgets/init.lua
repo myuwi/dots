@@ -29,6 +29,7 @@ local widgets = {
   Row = make_widget(flex.horizontal),
 
   Grid = make_widget(wibox.layout.grid),
+  Stack = make_widget(wibox.layout.stack),
 
   -- Widgets
   -- TODO: merge ClientIcon and Image

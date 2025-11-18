@@ -9,7 +9,6 @@ local Row = require("ui.widgets").Row
 local taglist = require("ui.shell.bar.modules.taglist")
 local tasklist = require("ui.shell.bar.modules.tasklist")
 local systray = require("ui.shell.bar.modules.systray")
-local battery = require("ui.shell.bar.modules.battery")
 local status = require("ui.shell.bar.modules.status")
 local clock = require("ui.shell.bar.modules.clock")
 
@@ -38,7 +37,6 @@ awful.screen.connect_for_each_screen(function(s)
         Row {
           spacing = beautiful.bar_spacing / 2,
           is_primary and systray() or nil,
-          is_primary and battery() or nil,
           is_primary and status() or nil,
           clock(s),
         },
