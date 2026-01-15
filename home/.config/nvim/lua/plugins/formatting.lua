@@ -5,7 +5,7 @@ local function find_closest_formatter(bufnr, formatters)
   local lspconfig_util = require("lspconfig.util")
   local current_buf_path = vim.api.nvim_buf_get_name(bufnr)
   local git_root = vim.fs.root(bufnr, ".git")
-  local min_len = git_root and git_root:len() or 0
+  local git_root_len = git_root and git_root:len() or 0
 
   local path_len = 0
   local closest_formatter = nil
@@ -16,7 +16,7 @@ local function find_closest_formatter(bufnr, formatters)
 
     local root_dir = lspconfig_util.root_pattern(root_files)(current_buf_path)
 
-    if root_dir and root_dir:len() > min_len and root_dir:len() > path_len then
+    if root_dir and root_dir:len() >= git_root_len and root_dir:len() > path_len then
       path_len = root_dir:len()
       closest_formatter = formatter_name
     end
