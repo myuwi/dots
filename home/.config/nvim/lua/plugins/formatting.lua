@@ -27,6 +27,7 @@ end
 
 local function javascript_formatters(bufnr)
   local project_formatter = find_closest_formatter(bufnr, {
+    { "oxfmt", root_files = { ".oxfmtrc.json", ".oxfmtrc.jsonc" } },
     { "prettierd", root_files = { ".prettierrc*", "prettier.config.*" } },
     { "biome-check", root_files = { "biome.json", "biome.jsonc" } },
     { "deno_fmt", root_files = { "deno.json", "deno.jsonc" } },
