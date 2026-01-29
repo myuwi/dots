@@ -15,4 +15,9 @@ return {
     return vim.lsp.rpc.start({ oxlint_bin_path, "--lsp" }, dispatchers)
   end,
   workspace_required = true,
+  init_options = {
+    settings = {
+      typeAware = true,
+    },
+  },
 }
