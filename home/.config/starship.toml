@@ -7,9 +7,6 @@ $git_status\
 [>](red) """
 add_newline = false
 
-[username]
-disabled = false
-
 [directory]
 style = "yellow"
 
