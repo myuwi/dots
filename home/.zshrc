@@ -1,8 +1,8 @@
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-export TOPIARY_CONFIG_FILE="$(realpath ~/.config/topiary/languages.ncl)"
-export TOPIARY_LANGUAGE_DIR="$(realpath ~/.config/topiary/languages)"
+export TOPIARY_CONFIG_FILE=$HOME/.config/topiary/languages.ncl
+export TOPIARY_LANGUAGE_DIR=$HOME/.config/topiary/languages
 
 export DOTFILES_DIR=$HOME/.dots
 
