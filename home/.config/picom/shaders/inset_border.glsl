@@ -6,7 +6,7 @@ uniform float corner_radius;
 uniform float border_width;
 
 float inset_border_width = 1;
-vec4 border_color = vec4(1.0, 1.0, 1.0, 0.05);
+vec4 border_color = vec4(1.0, 1.0, 1.0, 0.1);
 
 vec4 default_post_processing(vec4 c);
 
