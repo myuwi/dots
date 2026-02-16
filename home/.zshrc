@@ -41,5 +41,5 @@ bindkey "^H" backward-kill-word
 bindkey "^[[3;5~" kill-word
 bindkey "^[[3~" delete-char
 
-eval "$(starship init zsh)"
 eval "$(mise activate zsh)"
+eval "$(starship init zsh)"
