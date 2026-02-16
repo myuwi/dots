@@ -27,7 +27,7 @@ local function update_state(device)
   end
 end
 
-if display_device then
+if display_device and display_device.is_present then
   gtimer({
     timeout = 5,
     autostart = true,
