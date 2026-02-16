@@ -32,6 +32,7 @@ vim.opt.scrolloff = 1
 -- Enable mouse
 vim.opt.mouse = "a"
 vim.opt.mousemodel = "extend"
+vim.opt.mousetime = 200
 
 -- True colors
 vim.opt.termguicolors = true
