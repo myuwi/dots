@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+SEARCH_DIRS="$HOME/repos $HOME/Code"
+STATIC_DIRS="$HOME/.dots"
+
+existing_sessions=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | sort -u)
+sanitized_existing=$(echo "$existing_sessions" | tr '".: ' '_')
+
+if [ -n "$sanitized_existing" ]; then
+  pattern=$(echo "$sanitized_existing" | paste -sd '|' -)
+else
+  pattern="NO_MATCH_"
+fi
+
+search_dirs=$(find $SEARCH_DIRS -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+static_dirs=$(echo "$STATIC_DIRS" | tr ' ' '\n')
+
+dirs=$(
+  {
+    echo "$search_dirs"
+    echo "$static_dirs"
+  } |
+    while read -r dir; do
+      name=$(basename "$dir" | tr '".: ' '_')
+      echo "$name|$dir"
+    done |
+    grep -vE "^($pattern)\|" 2>/dev/null |
+    cut -d'|' -f2 |
+    sort -u
+)
+
+combined=$(echo "$existing_sessions" && echo "$dirs")
+
+selected=$(echo "$combined" | grep -v '^$' | fzf --prompt="tmux> " --preview '
+    if tmux has-session -t {} 2>/dev/null; then
+      tmux list-windows -t {} -F "#I: #W" 2>/dev/null
+    else
+      echo "New session: $(basename {})"
+    fi
+')
+
+[ -z "$selected" ] && exit 0
+
+session_name=$(basename "$selected" | tr '".: ' '_')
+
+if ! tmux has-session -t "$session_name" 2>/dev/null; then
+  tmux new-session -ds "$session_name" -c "$selected"
+fi
+
+if [ -z "$TMUX" ]; then
+  tmux attach-session -t "$session_name"
+else
+  tmux switch-client -t "$session_name"
+fi
