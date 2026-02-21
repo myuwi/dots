@@ -1,37 +1,35 @@
 #!/usr/bin/env bash
 
-SEARCH_DIRS="$HOME/repos $HOME/Code"
-STATIC_DIRS="$HOME/.dots"
+SEARCH_DIRS=("$HOME/repos" "$HOME/Code")
+STATIC_DIRS=("$HOME/.dots")
 
-existing_sessions=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | sort -u)
-sanitized_existing=$(echo "$existing_sessions" | tr '".: ' '_')
-
-if [ -n "$sanitized_existing" ]; then
-  pattern=$(echo "$sanitized_existing" | paste -sd '|' -)
-else
-  pattern="NO_MATCH_"
-fi
-
-search_dirs=$(find $SEARCH_DIRS -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
-static_dirs=$(echo "$STATIC_DIRS" | tr ' ' '\n')
+existing_sessions=$(tmux list-sessions -F "#S" 2>/dev/null | sort -u)
 
 dirs=$(
   {
-    echo "$search_dirs"
-    echo "$static_dirs"
+    find "${SEARCH_DIRS[@]}" -mindepth 1 -maxdepth 1 -type d 2>/dev/null
+    printf '%s\n' "${STATIC_DIRS[@]}"
   } |
-    while read -r dir; do
-      name=$(basename "$dir" | tr '".: ' '_')
-      echo "$name|$dir"
-    done |
-    grep -vE "^($pattern)\|" 2>/dev/null |
-    cut -d'|' -f2 |
+    grep -v "^$" |
+    grep -vFf <(tmux list-sessions -F '#{session_path}' 2>/dev/null) |
     sort -u
 )
 
-combined=$(echo "$existing_sessions" && echo "$dirs")
+if [[ -n "${TMUX}" ]]; then
+  current_session=$(tmux display-message -p '#S')
+  combined=$(
+    echo "$current_session"
+    echo "$existing_sessions" | grep -vFx "$current_session"
+    echo "$dirs"
+  )
+else
+  combined=$(
+    echo "$existing_sessions"
+    echo "$dirs"
+  )
+fi
 
-selected=$(echo "$combined" | grep -v '^$' | fzf --prompt="tmux> " --preview '
+selected=$(echo "$combined" | grep -v "^$" | fzf --tmux top,99% --border none --preview '
     if tmux has-session -t {} 2>/dev/null; then
       tmux list-windows -t {} -F "#I: #W" 2>/dev/null
     else
@@ -41,7 +39,7 @@ selected=$(echo "$combined" | grep -v '^$' | fzf --prompt="tmux> " --preview '
 
 [ -z "$selected" ] && exit 0
 
-session_name=$(basename "$selected" | tr '".: ' '_')
+session_name=$(basename "$selected" | tr . _)
 
 if ! tmux has-session -t "$session_name" 2>/dev/null; then
   tmux new-session -ds "$session_name" -c "$selected"
