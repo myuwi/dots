@@ -17,13 +17,20 @@ vim.opt.relativenumber = true
 -- vim.opt.numberwidth = 4
 vim.opt.signcolumn = "yes"
 
-vim.opt.fillchars = {
+vim.opt.fillchars:append({
+  -- horiz = " ",
+  horizup = " ",
+  horizdown = " ",
+  vert = " ",
+  vertleft = " ",
+  vertright = " ",
+  verthoriz = " ",
   eob = " ",
   fold = " ",
   foldopen = "",
   foldsep = " ",
   foldclose = "",
-}
+})
 
 -- Cursor
 vim.opt.cursorline = true

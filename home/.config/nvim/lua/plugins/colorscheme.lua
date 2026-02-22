@@ -15,7 +15,7 @@ return {
     },
     highlight_groups = {
       NormalFloat = { bg = "none" },
-      WinSeparator = { fg = "base" },
+      WinSeparator = { fg = "highlight_low" },
     },
   },
   config = function(_, opts)
