@@ -1,17 +1,20 @@
 #!/usr/bin/env bash
 
 SEARCH_DIRS=("$HOME/repos" "$HOME/Code")
-STATIC_DIRS=("$HOME/.dots")
+STATIC_DIRS=("$HOME/.dots" "$HOME/repos" "$HOME/Code")
 
 existing_sessions=$(tmux list-sessions -F "#S" 2>/dev/null | sort -u)
 
 dirs=$(
   {
     find "${SEARCH_DIRS[@]}" -mindepth 1 -maxdepth 1 -type d 2>/dev/null
-    printf '%s\n' "${STATIC_DIRS[@]}"
+
+    for dir in "${STATIC_DIRS[@]}"; do
+      [ -d "$dir" ] && printf '%s\n' "$dir"
+    done
   } |
     grep -v "^$" |
-    grep -vFf <(tmux list-sessions -F '#{session_path}' 2>/dev/null) |
+    grep -vFxf <(tmux list-sessions -F '#{session_path}' 2>/dev/null) |
     sort -u
 )
 
