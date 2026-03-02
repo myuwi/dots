@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
 SEARCH_DIRS=("$HOME/repos" "$HOME/Code")
-STATIC_DIRS=("$HOME/.dots" "$HOME/repos" "$HOME/Code")
+EXTRA_DIRS=("$HOME/.dots")
 
 existing_sessions=$(tmux list-sessions -F "#S" 2>/dev/null | sort -u)
 
 dirs=$(
   {
-    find "${SEARCH_DIRS[@]}" -mindepth 1 -maxdepth 1 -type d 2>/dev/null
+    find "${SEARCH_DIRS[@]}" -mindepth 0 -maxdepth 1 -type d 2>/dev/null
 
-    for dir in "${STATIC_DIRS[@]}"; do
+    for dir in "${EXTRA_DIRS[@]}"; do
       [ -d "$dir" ] && printf '%s\n' "$dir"
     done
   } |
