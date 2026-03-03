@@ -1,0 +1,18 @@
+#!/bin/bash
+
+current=$(tmux display-message -p '#I')
+target=$1
+
+min=$(tmux display-message -p '#{base-index}')
+max=$((min + $(tmux display-message -p '#{session_windows}') - 1))
+
+if [[ "$target" -lt "$min" ]] || [[ "$target" -gt "$max" ]]; then
+  tmux display-message "Error: target index $target out of range [$min, $max]"
+  exit 0
+fi
+
+step=$((current > target ? -1 : 1))
+
+for i in $(seq $((current + step)) $step $target); do
+  tmux swap-window -dt $i
+done
