@@ -48,8 +48,12 @@ if ! tmux has-session -t "$session_name" 2>/dev/null; then
   tmux new-session -ds "$session_name" -c "$selected"
 fi
 
-if [ -z "$TMUX" ]; then
-  tmux attach-session -t "$session_name"
-else
+if [ -n "$TMUX" ]; then
   tmux switch-client -t "$session_name"
+  exit 0
 fi
+
+tmux attach-session -t "$session_name"
+
+# Session was closed, so rerun session manager
+exec "$0" "$@"
