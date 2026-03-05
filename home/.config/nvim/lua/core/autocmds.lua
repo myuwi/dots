@@ -10,7 +10,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 
 vim.api.nvim_create_autocmd("FileType", {
   group = vim.api.nvim_create_augroup("unlist-ephemeral-buffers", { clear = true }),
-  pattern = { "qf", "help", "man" },
+  pattern = { "qf", "help", "man", "gitsigns-blame" },
   callback = function(event)
     vim.bo[event.buf].buflisted = false
     vim.api.nvim_buf_set_keymap(event.buf, "n", "q", "<cmd>close<cr>", { silent = true })
