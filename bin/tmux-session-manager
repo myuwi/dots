@@ -3,7 +3,7 @@
 SEARCH_DIRS=("$HOME/repos" "$HOME/Code")
 EXTRA_DIRS=("$HOME/.dots")
 
-existing_sessions=$(tmux list-sessions -F "#S" 2>/dev/null | sort -u)
+existing_sessions=$(tmux list-sessions -F "#S" 2>/dev/null)
 
 dirs=$(
   {
@@ -15,7 +15,7 @@ dirs=$(
   } |
     grep -v "^$" |
     grep -vFxf <(tmux list-sessions -F '#{session_path}' 2>/dev/null) |
-    sort -u
+    LC_COLLATE=C sort -u
 )
 
 if [[ -n "${TMUX}" ]]; then
