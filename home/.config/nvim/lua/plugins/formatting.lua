@@ -60,7 +60,7 @@ return {
       nu = { "topiary_nu" },
       python = { "isort", "black" },
       sh = { "shfmt" },
-      toml = { "taplo" },
+      toml = { "oxfmt" },
       typst = { "typstyle" },
 
       graphql = { "prettierd" },
