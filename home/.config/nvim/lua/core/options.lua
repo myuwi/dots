@@ -70,5 +70,7 @@ vim.opt.showmode = false
 -- Keywords
 vim.opt.iskeyword:append("-")
 
+vim.o.autoread = true
+
 -- React Native Expo Hot reload breaks without this
 vim.opt.backupcopy = "yes"
