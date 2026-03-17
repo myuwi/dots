@@ -29,13 +29,14 @@ return {
         file_ignore_patterns = {
           "^.git/",
         },
+        entry_prefix = " ",
+        selection_caret = " ",
+        prompt_prefix = " > ",
+        layout_strategy = "horizontal_merged",
       },
       pickers = {
         find_files = {
           hidden = true,
-        },
-        grep_string = {
-          additional_args = { "--hidden" },
         },
         live_grep = {
           additional_args = { "--hidden" },
@@ -44,6 +45,18 @@ return {
     },
     config = function(_, opts)
       local telescope = require("telescope")
+      local layout_strategies = require("telescope.pickers.layout_strategies")
+
+      layout_strategies.horizontal_merged = function(picker, max_columns, max_lines, layout_config)
+        local layout = layout_strategies.horizontal(picker, max_columns, max_lines, layout_config)
+
+        layout.results.borderchars = { "─", "│", "─", "│", "╭", "╮", "│", "│" }
+        layout.results.height = layout.results.height + 1
+        layout.results.title = layout.prompt.title
+
+        return layout
+      end
+
       telescope.load_extension("fzf")
       telescope.setup(opts)
     end,
