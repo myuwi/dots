@@ -19,4 +19,5 @@ padding = { x = 16, y = 16 }
 bindings = [
   { key = "Tab", mods = "Control", chars = "\u001B[9;5u" },
   { key = "Tab", mods = "Control|Shift", chars = "\u001B[1;5Z" },
+  { key = ".", mods = "Control", chars = "\u001B[46;5u" },
 ]

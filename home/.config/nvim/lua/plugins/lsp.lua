@@ -26,7 +26,7 @@ local function on_attach(client, bufnr)
   vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts("Find implementations"))
   vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Rename symbol"))
   vim.keymap.set("n", "<F2>", vim.lsp.buf.rename, opts("Rename symbol"))
-  vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts("Code action"))
+  vim.keymap.set("n", "<C-.>", vim.lsp.buf.code_action, opts("Code action"))
   vim.keymap.set("n", "<leader>gR", "<cmd>LspRestart<CR>", opts("Restart LSP client"))
 
   -- TODO: Refresh when it becomes available?
