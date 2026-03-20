@@ -34,7 +34,7 @@ local function javascript_formatters(bufnr)
   })
 
   local formatters = {
-    project_formatter or "prettierd",
+    project_formatter or "oxfmt",
   }
 
   return formatters
@@ -83,6 +83,7 @@ return {
       "svelte",
 
       "json",
+      "json5",
       "jsonc",
       "yaml",
       "markdown",
