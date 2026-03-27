@@ -15,20 +15,31 @@ local function is_widget(obj)
   return type(obj) == "table" and (obj.widget or obj.layout or rawget(obj, "is_widget"))
 end
 
-local function flatten(t)
-  local flat = {}
+local function expand_and_flatten(template, depth)
+  if depth > 20 then
+    error("Maximum nesting depth exceeded")
+  end
 
-  for _, v in pairs(t) do
+  local result = {}
+
+  for _, v in ipairs(template) do
+    if Signal.is_signal(v) then
+      v = v:get()
+    end
+
     if type(v) == "table" and not is_widget(v) then
-      for _, inner in pairs(flatten(v)) do
-        table.insert(flat, inner)
+      -- Nested table: recurse
+      local flattened = expand_and_flatten(v, depth + 1)
+      for _, inner in ipairs(flattened) do
+        table.insert(result, inner)
       end
     else
-      table.insert(flat, v)
+      -- Already a widget
+      table.insert(result, v)
     end
   end
 
-  return flat
+  return result
 end
 
 local function set_children(self, new_children)
@@ -36,8 +47,6 @@ local function set_children(self, new_children)
     new_children = {}
   elseif is_widget(new_children) then
     new_children = { new_children }
-  else
-    new_children = flatten(new_children)
   end
 
   new_children = tbl.map(new_children, Widget.new)
@@ -119,40 +128,16 @@ function Widget.new(args)
   util.wrap(widget, "set_children", set_children)
 
   ---@type table<string, Signal.Source>
-  local signals = {}
+  local prop_signals = {}
+  local children_template = {}
 
-  local function bind_signals()
-    return untracked(function()
-      return effect(function()
-        for k, sig in pairs(signals) do
-          effect(function()
-            if type(k) == "number" then
-              widget.children = sig:get()
-            else
-              widget[k] = sig:get()
-            end
-          end)
-        end
-      end)
-    end)
-  end
-
-  local cleanup
-
-  local children = {}
-
-  -- TODO: better handling of reactive children
-  -- TODO: function props to reactive signals?
-  -- TODO: reassigning signals
   -- TODO: on_click_away?
   for key, value in pairs(args) do
-    if Signal.is_signal(value) then
+    if type(key) == "number" or key == "children" then
+      children_template[#children_template + 1] = value
+    elseif Signal.is_signal(value) then
       ---@cast value Signal.Source
-      signals[key] = value
-    elseif key == "children" then
-      children = value
-    elseif type(key) == "number" then
-      children[#children + 1] = value
+      prop_signals[key] = value
     elseif key == "on_wheel_up" then
       widget:add_button(awful.button({ "Any" }, 4, value))
     elseif key == "on_wheel_down" then
@@ -171,16 +156,33 @@ function Widget.new(args)
     end
   end
 
-  widget.children = children
+  local function setup()
+    return untracked(function()
+      return effect(function()
+        -- Reactive Props
+        for k, sig in pairs(prop_signals) do
+          effect(function()
+            widget[k] = sig:get()
+          end)
+        end
+
+        -- Children
+        effect(function()
+          widget.children = expand_and_flatten(children_template, 1)
+        end)
+      end)
+    end)
+  end
 
   -- Keep track of how many times this widget (instance) is shown on the UI to (un)subscribe signals
   widget._private.mount_count = 0
 
+  local cleanup
+
   widget:connect_signal("mount", function()
     if widget._private.mount_count == 0 then
-      if next(signals) ~= nil then
-        cleanup = bind_signals()
-      end
+      -- TODO: Setup only when widget has reactive props/children?
+      cleanup = setup()
     end
 
     widget._private.mount_count = widget._private.mount_count + 1
