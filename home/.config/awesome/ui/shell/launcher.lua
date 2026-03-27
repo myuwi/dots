@@ -7,6 +7,7 @@ local Gtk = lgi.require("Gtk", "3.0")
 
 local helpers = require("helpers")
 local Window = require("ui.window")
+local For = require("ui.flow").For
 local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
@@ -19,7 +20,6 @@ local Input = require("ui.components").Input
 local signal = require("lib.signal")
 local computed = require("lib.signal.computed")
 local effect = require("lib.signal.effect")
-local map = require("lib.signal.map")
 
 local launcher = {}
 
@@ -163,15 +163,19 @@ local function create_entry(app, i)
     icon = icon:get_filename()
   end
 
+  local is_selected = computed(function()
+    return i == selected_index:get()
+  end)
+
   local entry = Container {
     bg = computed(function()
-      return i == selected_index:get() and beautiful.bg_focus or nil
+      return is_selected:get() and beautiful.bg_focus or nil
     end),
     padding = { x = dpi(9), y = dpi(6) },
     radius = dpi(4),
     border_width = 1,
     border_color = computed(function()
-      return i == selected_index:get() and beautiful.border_focus or beautiful.colors.transparent
+      return is_selected:get() and beautiful.border_focus or beautiful.colors.transparent
     end),
     on_click = function()
       launch(app)
@@ -200,19 +204,16 @@ local function create_entry(app, i)
   return entry
 end
 
--- TODO(perf): reuse elements instead of discarding them on every render?
-local function create_entries(apps)
-  local children = {}
-  local num_visible_apps = math.min(page_size, #apps)
+local visible_apps = computed(function()
+  local num_visible_apps = math.min(page_size, #filtered_apps:get())
+  local apps = {}
 
   for i = 1 + scroll_position:get(), num_visible_apps + scroll_position:get() do
-    local app = apps[i]
-    local entry = create_entry(app, i)
-    children[#children + 1] = entry
+    apps[#apps + 1] = filtered_apps:get()[i]
   end
 
-  return children
-end
+  return apps
+end)
 
 -- TODO: extract as a reusable scrollable list widget?
 local app_list = Column {
@@ -228,7 +229,11 @@ local app_list = Column {
     scroll_list(1)
   end,
 
-  map(filtered_apps, create_entries),
+  -- TODO(perf): reuse elements instead of discarding them on every render?
+  For {
+    each = visible_apps,
+    create_entry,
+  },
 }
 
 local function Kbd(args)

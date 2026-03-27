@@ -6,6 +6,7 @@ local signal = require("lib.signal")
 local computed = require("lib.signal.computed")
 local bind = require("lib.signal.bind")
 
+local For = require("ui.flow").For
 local Container = require("ui.widgets").Container
 local Flexible = require("ui.widgets").Flexible
 local ClientIcon = require("ui.widgets").ClientIcon
@@ -67,8 +68,9 @@ local function tasklist(s)
     spacing = dpi(4),
     max_widget_size = dpi(480),
 
-    computed(function()
-      return tbl.map(clients:get(), function(c)
+    For {
+      each = clients,
+      function(c)
         local active = bind(c, "active")
         local minimized = bind(c, "minimized")
         local urgent = bind(c, "urgent")
@@ -98,8 +100,8 @@ local function tasklist(s)
             },
           },
         }
-      end)
-    end),
+      end,
+    },
   }
 
   return tasklist_widget

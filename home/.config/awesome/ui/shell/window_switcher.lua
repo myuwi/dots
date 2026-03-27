@@ -3,6 +3,7 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
 local Window = require("ui.window")
+local For = require("ui.flow").For
 local Container = require("ui.widgets").Container
 local Column = require("ui.widgets").Column
 local Row = require("ui.widgets").Row
@@ -107,9 +108,10 @@ local window_switcher_widget = Window.Popup {
 
   Row {
     spacing = dpi(6),
-    computed(function()
-      return tbl.map(visible_clients:get(), create_icon)
-    end),
+    For {
+      each = visible_clients,
+      create_icon,
+    },
   },
 }
 
