@@ -3,7 +3,7 @@ local beautiful = require("beautiful")
 local gsurface = require("gears.surface")
 
 local Window = require("ui.window")
-local Image = require("ui.widgets").Image
+local Image = require("tide.widget").Image
 
 tag.connect_signal("request::default_layouts", function()
   awful.layout.append_default_layouts({

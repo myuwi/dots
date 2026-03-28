@@ -2,16 +2,16 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local signal = require("lib.signal")
-local computed = require("lib.signal.computed")
-local bind = require("lib.signal.bind")
+local signal = require("tide.signal")
+local computed = require("tide.signal.computed")
+local watch = require("tide.signal.watch")
 
-local For = require("ui.flow").For
-local Container = require("ui.widgets").Container
-local Flexible = require("ui.widgets").Flexible
-local ClientIcon = require("ui.widgets").ClientIcon
-local Row = require("ui.widgets").Row
-local Text = require("ui.widgets").Text
+local For = require("tide.flow").For
+local Container = require("tide.widget").Container
+local Flexible = require("tide.widget").Flexible
+local ClientIcon = require("tide.widget").ClientIcon
+local Row = require("tide.widget").Row
+local Text = require("tide.widget").Text
 
 local tbl = require("helpers.table")
 local throttle = require("helpers.fn").throttle
@@ -71,9 +71,10 @@ local function tasklist(s)
     For {
       each = clients,
       function(c)
-        local active = bind(c, "active")
-        local minimized = bind(c, "minimized")
-        local urgent = bind(c, "urgent")
+        local active = watch(c, "active")
+        local minimized = watch(c, "minimized")
+        local urgent = watch(c, "urgent")
+        local name = watch(c, "name")
 
         return Flexible {
           Container {
@@ -95,7 +96,7 @@ local function tasklist(s)
                 color = computed(function()
                   return minimized:get() and beautiful.fg_minimized or nil
                 end),
-                bind(c, "name"),
+                name,
               },
             },
           },

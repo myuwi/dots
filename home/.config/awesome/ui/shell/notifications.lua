@@ -7,13 +7,14 @@ local naughty = require("naughty")
 local helpers = require("helpers")
 local tbl = require("helpers.table")
 
+local tide = require("tide")
 local Window = require("ui.window")
-local Container = require("ui.widgets").Container
-local Column = require("ui.widgets").Column
-local Row = require("ui.widgets").Row
-local Flexible = require("ui.widgets").Flexible
-local Image = require("ui.widgets").Image
-local Text = require("ui.widgets").Text
+local Container = require("tide.widget").Container
+local Column = require("tide.widget").Column
+local Row = require("tide.widget").Row
+local Flexible = require("tide.widget").Flexible
+local Image = require("tide.widget").Image
+local Text = require("tide.widget").Text
 local Button = require("ui.components").Button
 
 naughty.config.defaults.app_name = "Notification"
@@ -93,7 +94,7 @@ naughty.connect_signal("request::display", function(n)
             image = n.image,
             forced_width = dpi(60),
             forced_height = dpi(60),
-            clip_shape = helpers.shape.rounded_rect(dpi(3)),
+            clip_shape = tide.util.shape.rounded_rect(dpi(3)),
             visible = n.image ~= nil,
           },
           Container {

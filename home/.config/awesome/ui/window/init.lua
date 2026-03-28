@@ -1,4 +1,4 @@
-local Window = require("ui.core.window")
+local Window = require("tide.core.window")
 
 ---@overload fun(args): table
 local window = {

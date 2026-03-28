@@ -1,7 +1,7 @@
 local gtimer = require("gears.timer")
 local wibox = require("wibox")
-local Widget = require("ui.core.widget")
-local util = require("ui.core.util")
+local Widget = require("tide.core.widget")
+local util = require("tide.core.util")
 
 local Window = {}
 

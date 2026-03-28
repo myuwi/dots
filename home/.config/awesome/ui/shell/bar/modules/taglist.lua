@@ -2,13 +2,13 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local signal = require("lib.signal")
-local computed = require("lib.signal.computed")
-local bind = require("lib.signal.bind")
+local signal = require("tide.signal")
+local computed = require("tide.signal.computed")
+local watch = require("tide.signal.watch")
 
-local Container = require("ui.widgets").Container
-local Row = require("ui.widgets").Row
-local Text = require("ui.widgets").Text
+local Container = require("tide.widget").Container
+local Row = require("tide.widget").Row
+local Text = require("tide.widget").Text
 
 local tbl = require("helpers.table")
 
@@ -39,8 +39,8 @@ local function taglist(s)
     end,
 
     tbl.map(s.tags, function(t)
-      local selected = bind(t, "selected")
-      local urgent = bind(t, "urgent")
+      local selected = watch(t, "selected")
+      local urgent = watch(t, "urgent")
       local client_count = signal(0)
 
       t:connect_signal("tagged", function()

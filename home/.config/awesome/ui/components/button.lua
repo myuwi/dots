@@ -1,8 +1,8 @@
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local Container = require("ui.widgets").Container
-local Text = require("ui.widgets").Text
+local Container = require("tide.widget").Container
+local Text = require("tide.widget").Text
 
 local helpers = require("helpers")
 

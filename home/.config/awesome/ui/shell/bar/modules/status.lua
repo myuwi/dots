@@ -2,17 +2,17 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local upower = require("lgi").UPowerGlib
 
-local Container = require("ui.widgets").Container
-local Row = require("ui.widgets").Row
-local Stack = require("ui.widgets").Stack
-local Text = require("ui.widgets").Text
+local Container = require("tide.widget").Container
+local Row = require("tide.widget").Row
+local Stack = require("tide.widget").Stack
+local Text = require("tide.widget").Text
 local Icon = require("ui.components").Icon
 
-local computed = require("lib.signal.computed")
-local bind = require("lib.signal.bind")
+local computed = require("tide.signal.computed")
+local watch = require("tide.signal.watch")
 
 local quick_settings = require("ui.shell.bar.popups.quick_settings")
-local quick_settings_open = bind(quick_settings, "visible")
+local quick_settings_open = watch(quick_settings, "visible")
 
 local battery_state = require("state.battery")
 

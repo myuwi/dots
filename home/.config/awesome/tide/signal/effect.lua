@@ -1,4 +1,4 @@
-local context = require("lib.signal._context")
+local context = require("tide.signal._context")
 
 ---@alias EffectFn fun(): fun()?
 
@@ -54,6 +54,7 @@ function Effect:_callback()
   end)
 end
 
+---Create an effect
 ---@param fn EffectFn
 ---@return fun() dispose
 local function effect(fn)

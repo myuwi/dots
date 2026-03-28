@@ -3,15 +3,15 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
 local Window = require("ui.window")
-local For = require("ui.flow").For
-local Container = require("ui.widgets").Container
-local Column = require("ui.widgets").Column
-local Row = require("ui.widgets").Row
-local ClientIcon = require("ui.widgets").ClientIcon
-local Text = require("ui.widgets").Text
+local For = require("tide.flow").For
+local Container = require("tide.widget").Container
+local Column = require("tide.widget").Column
+local Row = require("tide.widget").Row
+local ClientIcon = require("tide.widget").ClientIcon
+local Text = require("tide.widget").Text
 
-local signal = require("lib.signal")
-local computed = require("lib.signal.computed")
+local signal = require("tide.signal")
+local computed = require("tide.signal.computed")
 
 local tbl = require("helpers.table")
 

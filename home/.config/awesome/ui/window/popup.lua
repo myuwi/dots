@@ -2,8 +2,8 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local Container = require("ui.widgets").Container
-local Window = require("ui.core.window")
+local Container = require("tide.widget").Container
+local Window = require("tide.core.window")
 
 ---@class (exact) PopupArgs
 ---@field forced_width integer?

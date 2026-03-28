@@ -1,11 +1,11 @@
 local awful = require("awful")
 local wibox = require("wibox")
 
-local Widget = require("ui.core.widget")
-local container = require("ui.widgets.container")
-local flexible = require("ui.widgets.flexible")
-local flex = require("ui.layout.flex")
-local text = require("ui.widgets.text")
+local Widget = require("tide.core.widget")
+local container = require("tide.widget.container")
+local flexible = require("tide.widget.flexible")
+local flex = require("tide.layout.flex")
+local text = require("tide.widget.text")
 
 local function make_widget(widget_constructor, child_prop)
   return function(params)

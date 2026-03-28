@@ -1,4 +1,4 @@
-local context = require("lib.signal._context")
+local context = require("tide.signal._context")
 
 ---@class (exact) Signal: Signal.Source
 local Signal = {}

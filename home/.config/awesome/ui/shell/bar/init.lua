@@ -2,9 +2,9 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 
 local Window = require("ui.window")
-local Container = require("ui.widgets").Container
-local Flexible = require("ui.widgets").Flexible
-local Row = require("ui.widgets").Row
+local Container = require("tide.widget").Container
+local Flexible = require("tide.widget").Flexible
+local Row = require("tide.widget").Row
 
 local taglist = require("ui.shell.bar.modules.taglist")
 local tasklist = require("ui.shell.bar.modules.tasklist")

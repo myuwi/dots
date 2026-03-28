@@ -7,19 +7,19 @@ local Gtk = lgi.require("Gtk", "3.0")
 
 local helpers = require("helpers")
 local Window = require("ui.window")
-local For = require("ui.flow").For
-local Container = require("ui.widgets").Container
-local Column = require("ui.widgets").Column
-local Row = require("ui.widgets").Row
-local Flexible = require("ui.widgets").Flexible
-local Image = require("ui.widgets").Image
-local Text = require("ui.widgets").Text
+local For = require("tide.flow").For
+local Container = require("tide.widget").Container
+local Column = require("tide.widget").Column
+local Row = require("tide.widget").Row
+local Flexible = require("tide.widget").Flexible
+local Image = require("tide.widget").Image
+local Text = require("tide.widget").Text
 local Icon = require("ui.components").Icon
 local Input = require("ui.components").Input
 
-local signal = require("lib.signal")
-local computed = require("lib.signal.computed")
-local effect = require("lib.signal.effect")
+local signal = require("tide.signal")
+local computed = require("tide.signal.computed")
+local effect = require("tide.signal.effect")
 
 local launcher = {}
 

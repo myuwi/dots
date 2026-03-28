@@ -2,7 +2,7 @@ local gtable = require("gears.table")
 local wibox = require("wibox")
 local base = wibox.widget.base
 
-local hshape = require("helpers.shape")
+local shape = require("tide.util.shape")
 
 local container = { mt = {} }
 
@@ -40,7 +40,7 @@ function container:fit(context, width, height)
 end
 
 function container:set_radius(radius)
-  self.shape = radius and hshape.rounded_rect(radius)
+  self.shape = radius and shape.rounded_rect(radius)
 end
 
 -- TODO: container:get_radius?

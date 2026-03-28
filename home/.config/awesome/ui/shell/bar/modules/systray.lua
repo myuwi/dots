@@ -1,9 +1,9 @@
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local Container = require("ui.widgets").Container
-local Center = require("ui.widgets").Center
-local Systray = require("ui.widgets").Systray
+local Container = require("tide.widget").Container
+local Center = require("tide.widget").Center
+local Systray = require("tide.widget").Systray
 
 local function systray()
   local systray_widget = Container {

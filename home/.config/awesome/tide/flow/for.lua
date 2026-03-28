@@ -1,4 +1,4 @@
-local computed = require("lib.signal.computed")
+local computed = require("tide.signal.computed")
 
 local function For(opts)
   return computed(function()

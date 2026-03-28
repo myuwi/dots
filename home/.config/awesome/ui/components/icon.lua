@@ -1,10 +1,10 @@
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local signal = require("lib.signal")
-local computed = require("lib.signal.computed")
+local signal = require("tide.signal")
+local computed = require("tide.signal.computed")
 
-local Image = require("ui.widgets").Image
+local Image = require("tide.widget").Image
 
 ---@class (exact) IconArgs
 ---@field color? string | Signal.Source

@@ -1,10 +1,10 @@
-local signal = require("lib.signal.signal")
+local signal = require("tide.signal.signal")
 
 ---@class SignalModule
 ---@field private mt table
 local M = { mt = {} }
 
----Checks if the given value is a signal
+---Check if the given value is a signal
 ---@param value any
 ---@return boolean
 function M.is_signal(value)
@@ -14,6 +14,14 @@ end
 function M.mt:__call(...)
   return signal(...)
 end
+
+M.batch = require("tide.signal.batch")
+M.computed = require("tide.signal.computed")
+M.effect = require("tide.signal.effect")
+M.track = require("tide.signal.track")
+M.signal = signal
+M.untracked = require("tide.signal.untracked")
+M.watch = require("tide.signal.watch")
 
 ---@overload fun(initial_value: any): Signal
 local module = setmetatable(M, M.mt)

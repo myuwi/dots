@@ -1,15 +1,15 @@
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local Container = require("ui.widgets").Container
-local Column = require("ui.widgets").Column
-local Row = require("ui.widgets").Row
-local Grid = require("ui.widgets").Grid
-local Text = require("ui.widgets").Text
+local Container = require("tide.widget").Container
+local Column = require("tide.widget").Column
+local Row = require("tide.widget").Row
+local Grid = require("tide.widget").Grid
+local Text = require("tide.widget").Text
 local Icon = require("ui.components.icon")
 
-local signal = require("lib.signal")
-local computed = require("lib.signal.computed")
+local signal = require("tide.signal")
+local computed = require("tide.signal.computed")
 
 local tbl = require("helpers.table")
 

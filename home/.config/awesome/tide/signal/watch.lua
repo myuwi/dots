@@ -1,4 +1,4 @@
-local signal = require("lib.signal")
+local signal = require("tide.signal.signal")
 
 ---@param emitter table
 ---@param property string

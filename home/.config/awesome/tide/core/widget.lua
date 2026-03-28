@@ -1,12 +1,12 @@
 local awful = require("awful")
 local wibox = require("wibox")
 
-local Signal = require("lib.signal")
-local effect = require("lib.signal.effect")
-local untracked = require("lib.signal.untracked")
-local util = require("ui.core.util")
+local Signal = require("tide.signal")
+local effect = require("tide.signal.effect")
+local untracked = require("tide.signal.untracked")
+local util = require("tide.core.util")
 
-local tbl = require("helpers.table")
+local tbl = require("tide.util.table")
 
 local Widget = {}
 

@@ -1,6 +1,6 @@
 local gtimer = require("gears.timer")
 local upower = require("lgi").UPowerGlib
-local signal = require("lib.signal")
+local signal = require("tide.signal")
 
 local battery_state = signal(nil)
 

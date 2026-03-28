@@ -5,17 +5,16 @@ local gears = require("gears")
 
 local helpers = require("helpers")
 
-local signal = require("lib.signal")
-local effect = require("lib.signal.effect")
-local computed = require("lib.signal.computed")
-local map = require("lib.signal.map")
-local track = require("lib.signal.track")
+local signal = require("tide.signal")
+local effect = require("tide.signal.effect")
+local computed = require("tide.signal.computed")
+local track = require("tide.signal.track")
 
 local Window = require("ui.window")
-local Row = require("ui.widgets").Row
-local Flexible = require("ui.widgets").Flexible
-local ProgressBar = require("ui.widgets").ProgressBar
-local Text = require("ui.widgets").Text
+local Row = require("tide.widget").Row
+local Flexible = require("tide.widget").Flexible
+local ProgressBar = require("tide.widget").ProgressBar
+local Text = require("tide.widget").Text
 local Icon = require("ui.components").Icon
 
 local volume = signal(0)
@@ -52,7 +51,9 @@ local volume_bar = ProgressBar {
 }
 
 local volume_text = Text {
-  text = map(volume, tostring),
+  text = computed(function()
+    return tostring(volume:get())
+  end),
   halign = "center",
   valign = "center",
   forced_width = dpi(18),

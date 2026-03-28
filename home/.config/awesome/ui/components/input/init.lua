@@ -6,7 +6,7 @@ local gtimer = require("gears.timer")
 local wibox = require("wibox")
 
 local prompt = require("ui.components.input.prompt")
-local text = require("ui.widgets.text")
+local text = require("tide.widget.text")
 
 -- TODO: refactor into a proper primitive widget
 

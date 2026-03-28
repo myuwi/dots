@@ -1,4 +1,4 @@
-local context = require("lib.signal._context")
+local context = require("tide.signal._context")
 
 ---@class (exact) Computed: Signal.Source, Signal.Subscriber
 ---@field private _fn fun()
