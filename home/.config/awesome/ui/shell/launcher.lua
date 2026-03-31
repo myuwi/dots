@@ -6,7 +6,7 @@ local GioUnix = lgi.GioUnix
 local Gtk = lgi.require("Gtk", "3.0")
 
 local helpers = require("helpers")
-local Window = require("ui.window")
+local Popup = require("ui.popup")
 local For = require("tide.flow").For
 local Container = require("tide.widget").Container
 local Column = require("tide.widget").Column
@@ -257,7 +257,7 @@ end
 
 local launcher_widget_max_height = 0
 
-local launcher_widget = Window.Popup {
+local launcher_widget = Popup {
   forced_width = dpi(576),
   padding = 0,
   -- TODO: A better way to do this

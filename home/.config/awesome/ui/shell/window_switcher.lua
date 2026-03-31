@@ -2,7 +2,7 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local Window = require("ui.window")
+local Popup = require("ui.popup")
 local For = require("tide.flow").For
 local Container = require("tide.widget").Container
 local Column = require("tide.widget").Column
@@ -103,7 +103,7 @@ local function create_icon(c, i)
   return client_icon
 end
 
-local window_switcher_widget = Window.Popup {
+local window_switcher_widget = Popup {
   placement = awful.placement.centered,
 
   Row {

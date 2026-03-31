@@ -2,12 +2,12 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 
 local helpers = require("helpers")
-local Window = require("ui.window")
+local Popup = require("ui.popup")
 local Calendar = require("ui.components").Calendar
 
 local calendar = Calendar {}
 
-local calendar_popup = Window.Popup {
+local calendar_popup = Popup {
   placement = function(w)
     awful.placement.top_right(w, {
       margins = beautiful.useless_gap * 2,

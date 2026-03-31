@@ -1,7 +1,7 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 
-local Window = require("ui.window")
+local Window = require("tide.core.window")
 local Container = require("tide.widget").Container
 local Flexible = require("tide.widget").Flexible
 local Row = require("tide.widget").Row

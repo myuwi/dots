@@ -4,7 +4,7 @@ local dpi = beautiful.xresources.apply_dpi
 
 local helpers = require("helpers")
 
-local Window = require("ui.window")
+local Popup = require("ui.popup")
 local Container = require("tide.widget").Container
 local Column = require("tide.widget").Column
 local Row = require("tide.widget").Row
@@ -95,7 +95,7 @@ local function on_screensaver_click()
 end
 
 -- TODO: get real statuses for wifi and bluetooth
-local quick_settings = Window.Popup {
+local quick_settings = Popup {
   placement = function(w)
     awful.placement.top_right(w, {
       margins = beautiful.useless_gap * 2,
@@ -107,7 +107,7 @@ local quick_settings = Window.Popup {
   Column {
     spacing = dpi(6),
 
-    -- TODO: Move handler to Window.Popup
+    -- TODO: Move handler to Popup
     on_mount = function()
       update_screensaver_status()
       update_compositor_status()

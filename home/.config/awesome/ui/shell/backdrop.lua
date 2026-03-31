@@ -1,5 +1,5 @@
 local awful = require("awful")
-local Window = require("ui.window")
+local Window = require("tide.core.window")
 
 local helpers = require("helpers")
 

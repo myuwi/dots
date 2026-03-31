@@ -2,7 +2,7 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local gsurface = require("gears.surface")
 
-local Window = require("ui.window")
+local Window = require("tide.core.window")
 local Image = require("tide.widget").Image
 
 tag.connect_signal("request::default_layouts", function()

@@ -10,7 +10,7 @@ local effect = require("tide.signal.effect")
 local computed = require("tide.signal.computed")
 local track = require("tide.signal.track")
 
-local Window = require("ui.window")
+local Popup = require("ui.popup")
 local Row = require("tide.widget").Row
 local Flexible = require("tide.widget").Flexible
 local ProgressBar = require("tide.widget").ProgressBar
@@ -60,7 +60,7 @@ local volume_text = Text {
   forced_height = dpi(18),
 }
 
-local volume_widget = Window.Popup {
+local volume_widget = Popup {
   padding = dpi(18),
   forced_width = dpi(288),
   placement = function(w)

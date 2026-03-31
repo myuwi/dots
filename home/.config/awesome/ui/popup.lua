@@ -2,8 +2,8 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
-local Container = require("tide.widget").Container
 local Window = require("tide.core.window")
+local Container = require("tide.widget").Container
 
 ---@class (exact) PopupArgs
 ---@field forced_width integer?
@@ -15,7 +15,7 @@ local Window = require("tide.core.window")
 ---@field [1]? table
 
 ---@param args PopupArgs
-local function popup(args)
+local function Popup(args)
   local forced_height = args.forced_height
   local forced_width = args.forced_width
   local padding = args.padding or dpi(12)
@@ -43,4 +43,4 @@ local function popup(args)
   }
 end
 
-return popup
+return Popup
