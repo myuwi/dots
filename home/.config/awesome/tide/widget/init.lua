@@ -14,7 +14,7 @@ local function make_widget(widget_constructor, child_prop)
       params[1] = nil
     end
     params.widget = widget_constructor
-    return Widget.new(params)
+    return Widget(params)
   end
 end
 
@@ -44,6 +44,6 @@ local widgets = {
 ---@diagnostic disable-next-line: param-type-mismatch
 return setmetatable(widgets, {
   __call = function(_, w)
-    return Widget.new(w)
+    return Widget(w)
   end,
 })

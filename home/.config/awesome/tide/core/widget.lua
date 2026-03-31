@@ -5,10 +5,7 @@ local Signal = require("tide.signal")
 local effect = require("tide.signal.effect")
 local untracked = require("tide.signal.untracked")
 local util = require("tide.core.util")
-
 local tbl = require("tide.util.table")
-
-local Widget = {}
 
 ---@return boolean
 local function is_widget(obj)
@@ -42,6 +39,8 @@ local function expand_and_flatten(template, depth)
   return result
 end
 
+local Widget
+
 local function set_children(self, new_children)
   if not new_children then
     new_children = {}
@@ -49,7 +48,7 @@ local function set_children(self, new_children)
     new_children = { new_children }
   end
 
-  new_children = tbl.map(new_children, Widget.new)
+  new_children = tbl.map(new_children, Widget)
 
   if self._private.mount_count and self._private.mount_count > 0 then
     for _, child in ipairs(new_children) do
@@ -111,7 +110,7 @@ awful.mouse.append_global_mousebinding(awful.button({ "Any" }, 1, nil, release_h
 wibox.connect_signal("button::release", release_handler)
 
 -- TODO: Add typedef
-function Widget.new(args)
+Widget = function(args)
   if rawget(args, "is_widget") then
     return args
   end

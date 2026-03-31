@@ -8,6 +8,7 @@ tide.signal = require("tide.signal")
 
 tide.Widget = require("tide.core.widget")
 tide.Window = require("tide.core.window")
+tide.Notification = require("tide.core.notification")
 
 -- Widgets
 

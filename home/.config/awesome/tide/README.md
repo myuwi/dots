@@ -29,7 +29,7 @@ local widget = Container {
   bg = computed(function()
     return count:get() > 5 and "#ff0000" or "#00ff00"
   end),
-  
+
   Text {
     text = computed(function()
       return "Count: " .. count:get()
@@ -111,21 +111,21 @@ local Container = tide.widget.Container
 local Text = tide.widget.Text
 local Flexible = tide.widget.Flexible
 
-Container {  -- Container with padding, background, border
+Container {
   padding = 10,
   bg = "#ff0000",
   radius = 8,
-  
+
   Text { text = "Hello" }
 }
 
-Text {       -- Enhanced text widget
+Text {
   text = "Hello World",
   color = "#ffffff",
   font = "Inter 12"
 }
 
-Flexible {   -- Flex layout child
+Flexible {
   grow = 1,
   shrink = 1,
   Text { text = "Flexible content" }
@@ -141,20 +141,18 @@ local Flexible = tide.widget.Flexible
 local Row = tide.widget.Row
 local Column = tide.widget.Column
 
--- Row (horizontal flex)
 Row {
   spacing = 10,
   justify_content = "center",
-  
+
   Text { text = "Item 1" },
   Text { text = "Item 2" },
   Flexible { Text { text = "Flexible" } }
 }
 
--- Column (vertical flex)
 Column {
   spacing = 5,
-  
+
   Text { text = "Row 1" },
   Text { text = "Row 2" }
 }
@@ -199,7 +197,7 @@ local popup = Window {
   window = awful.popup,
   visible = false,
   ontop = true,
-  
+
   Container {
     padding = 20,
     Text { text = "Popup content" }
@@ -230,6 +228,12 @@ local batch = tide.signal.batch
 - `signal.untracked(fn)` - Run function without tracking
 - `signal.batch(fn)` - Batch multiple signal updates
 
+### Core
+
+- `tide.Widget(args)` - Widget constructor with reactive support
+- `tide.Window(args)` - Window base
+- `tide.Notification(args)` - Notification wrapper for naughty.layout.box
+
 ### Widget Module
 
 - `tide.widget.Container` - Single-child container with styling
@@ -249,8 +253,3 @@ local batch = tide.signal.batch
 ### Flow Control
 
 - `tide.flow.For` - Render lists reactively
-
-### Core
-
-- `tide.Widget` - Widget constructor with reactive support
-- `tide.Window` - Window/Popup base

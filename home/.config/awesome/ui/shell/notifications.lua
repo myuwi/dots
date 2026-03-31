@@ -8,7 +8,7 @@ local helpers = require("helpers")
 local tbl = require("helpers.table")
 
 local tide = require("tide")
-local Window = require("ui.window")
+local Notification = require("tide.core.notification")
 local Container = require("tide.widget").Container
 local Column = require("tide.widget").Column
 local Row = require("tide.widget").Row
@@ -61,8 +61,7 @@ naughty.connect_signal("request::display", function(n)
     end),
   }
 
-  local notification_widget = Window {
-    window = naughty.layout.box,
+  local notification_widget = Notification {
     notification = n,
     type = "notification",
     bg = beautiful.bg_normal,
@@ -72,7 +71,7 @@ naughty.connect_signal("request::display", function(n)
     minimum_width = beautiful.notification_width,
     maximum_width = beautiful.notification_width,
 
-    widget_template = Container {
+    Container {
       padding = beautiful.notification_margin,
 
       Column {
