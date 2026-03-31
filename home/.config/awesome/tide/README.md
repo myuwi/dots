@@ -216,17 +216,19 @@ popup.visible = true
 local signal = tide.signal
 local computed = tide.signal.computed
 local effect = tide.signal.effect
-local watch = tide.signal.watch
-local untracked = tide.signal.untracked
 local batch = tide.signal.batch
+local track = tide.signal.track
+local untracked = tide.signal.untracked
+local watch = tide.signal.watch
 ```
 
 - `signal(initial_value)` - Create a new signal
 - `signal.computed(fn)` - Create a computed signal
 - `signal.effect(fn)` - Create an effect
-- `signal.watch(object, property)` - Bind to object property
-- `signal.untracked(fn)` - Run function without tracking
 - `signal.batch(fn)` - Batch multiple signal updates
+- `signal.track(signal)` - Manually track a signal dependency within an effect
+- `signal.untracked(fn)` - Run function without tracking
+- `signal.watch(object, property)` - Bind to object property
 
 ### Core
 

@@ -15,11 +15,11 @@ function M.mt:__call(...)
   return signal(...)
 end
 
-M.batch = require("tide.signal.batch")
+M.signal = signal
 M.computed = require("tide.signal.computed")
 M.effect = require("tide.signal.effect")
+M.batch = require("tide.signal.batch")
 M.track = require("tide.signal.track")
-M.signal = signal
 M.untracked = require("tide.signal.untracked")
 M.watch = require("tide.signal.watch")
 
