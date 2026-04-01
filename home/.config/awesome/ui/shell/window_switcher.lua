@@ -15,8 +15,6 @@ local computed = require("tide.signal.computed")
 
 local tbl = require("helpers.table")
 
-local backdrop = require("ui.shell.backdrop")
-
 -- Somewhat replicates the Windows behavior
 -- https://en.wikipedia.org/wiki/Alt-Tab#Behavior
 
@@ -103,8 +101,17 @@ local function create_icon(c, i)
   return client_icon
 end
 
+local function cancel()
+  if window_switcher_keygrabber ~= nil then
+    client.focus = last_focused_client
+    window_switcher_keygrabber:stop()
+  end
+end
+
 local window_switcher_widget = Popup {
   placement = awful.placement.centered,
+  backdrop = true,
+  on_click_outside = cancel,
 
   Row {
     spacing = dpi(6),
@@ -115,19 +122,11 @@ local window_switcher_widget = Popup {
   },
 }
 
-local function cancel()
-  if window_switcher_keygrabber ~= nil then
-    client.focus = last_focused_client
-    window_switcher_keygrabber:stop()
-  end
-end
-
 local function hide()
   visible_clients:set({})
   last_focused_client = nil
   window_switcher_keygrabber = nil
   window_switcher_widget.visible = false
-  backdrop.detach()
 end
 
 local function cycle_selection(amount)
@@ -190,8 +189,6 @@ local function show(a)
 
   last_focused_client = client.focus
   client.focus = nil
-
-  backdrop.attach(cancel)
 
   window_switcher_keygrabber:start()
   window_switcher_widget.visible = true

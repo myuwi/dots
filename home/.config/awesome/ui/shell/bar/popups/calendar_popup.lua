@@ -14,25 +14,23 @@ local calendar_popup = Popup {
       honor_workarea = true,
     })
   end,
-
+  on_click_outside = function(self)
+    self.visible = false
+  end,
   calendar,
 }
 
 helpers.window.set_prop(calendar_popup, "_ANIMATE", "slide-down")
 
 -- TODO: Somehow whitelist clock widget in bar to avoid closing and reopening on click
-local click_away_handler = helpers.ui.create_click_away_handler(calendar_popup, true)
-
 -- TODO: Esc to hide, also refocus client which was unfocused in show()
 function calendar_popup.hide()
   calendar_popup.visible = false
-  click_away_handler.detach()
 end
 
 function calendar_popup.show()
   client.focus = nil
   calendar_popup.screen = mouse.screen
-  click_away_handler.attach(calendar_popup.hide)
   calendar:reset()
   calendar_popup.visible = true
 end

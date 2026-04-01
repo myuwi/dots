@@ -3,9 +3,32 @@ local wibox = require("wibox")
 local Widget = require("tide.core.widget")
 local util = require("tide.core.util")
 
+local backdrop = require("tide.core.backdrop")
+local click_away = require("tide.core.click_away")
+
 local function set_visible(win, visible)
   if win.visible == visible then
     return
+  end
+
+  if win._private.click_away_handler then
+    if visible then
+      win._private.click_away_handler.attach(function(target)
+        if win._private.on_click_outside then
+          win._private.on_click_outside(win, target)
+        end
+      end)
+    else
+      win._private.click_away_handler.detach()
+    end
+  end
+
+  if win._private.use_backdrop then
+    if visible then
+      backdrop.attach()
+    else
+      backdrop.detach()
+    end
   end
 
   local tide_widget = win._private.tide_widget
@@ -33,22 +56,43 @@ local function set_visible(win, visible)
   end
 end
 
--- TODO: on_click_outside
 local function Window(args)
   args = args or {}
 
   local window_constructor = args.window or wibox
   args.window = nil
 
-  -- Extract Tide widget content
+  local use_backdrop = args.backdrop
+  local on_click_outside = args.on_click_outside
+  args.backdrop = nil
+  args.on_click_outside = nil
+
   local tide_widget = args.widget or args[1]
   args.widget = tide_widget and Widget(tide_widget)
   args[1] = nil
 
   local window = window_constructor(args)
 
-  -- Store reference for set_visible wrapper (args.widget is the converted Tide widget, or nil if none was provided)
   window._private.tide_widget = args.widget
+  window._private.use_backdrop = use_backdrop
+  window._private.on_click_outside = on_click_outside
+
+  -- Create click-away handler if needed
+  if on_click_outside then
+    window._private.click_away_handler = click_away.create_handler(window, false)
+  end
+
+  -- Show backdrop and attach click-away handler if window starts visible
+  if args.visible then
+    if use_backdrop then
+      backdrop.attach()
+    end
+    if window._private.click_away_handler then
+      window._private.click_away_handler.attach(function(target)
+        on_click_outside(window, target)
+      end)
+    end
+  end
 
   if tide_widget and args.visible ~= false then
     args.widget:emit_signal("mount")

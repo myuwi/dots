@@ -208,6 +208,35 @@ local popup = Window {
 popup.visible = true
 ```
 
+### Backdrop and Click-Outside Handling
+
+Windows support optional backdrop and automatic click-outside handling:
+
+```lua
+local modal = Window {
+  window = awful.popup,
+  backdrop = true,
+  on_click_outside = function(self)
+    self.visible = false
+  end,
+
+  Container {
+    Text { text = "Modal content" }
+  }
+}
+
+local dropdown = Window {
+  window = awful.popup,
+  on_click_outside = function(self)
+    self.visible = false
+  end,
+
+  Container {
+    Text { text = "Dropdown content" }
+  }
+}
+```
+
 ## API Reference
 
 ### Signal Module

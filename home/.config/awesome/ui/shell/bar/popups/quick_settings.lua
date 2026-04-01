@@ -103,6 +103,9 @@ local quick_settings = Popup {
     })
   end,
   padding = dpi(18),
+  on_click_outside = function(self)
+    self.visible = false
+  end,
 
   Column {
     spacing = dpi(6),
@@ -150,17 +153,13 @@ local quick_settings = Popup {
 
 helpers.window.set_prop(quick_settings, "_ANIMATE", "slide-down")
 
-local click_away_handler = helpers.ui.create_click_away_handler(quick_settings, true)
-
 function quick_settings.hide()
   quick_settings.visible = false
-  click_away_handler.detach()
 end
 
 function quick_settings.show()
   client.focus = nil
   quick_settings.screen = mouse.screen
-  click_away_handler.attach(quick_settings.hide)
   quick_settings.visible = true
 end
 

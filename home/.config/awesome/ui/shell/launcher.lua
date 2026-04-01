@@ -274,6 +274,9 @@ local launcher_widget = Popup {
       },
     })
   end,
+  on_click_outside = function()
+    launcher.cancel()
+  end,
 
   Column {
     Container {
@@ -328,13 +331,9 @@ helpers.window.set_prop(launcher_widget, "_ANIMATE", "slide-down")
 
 -- Setup
 
--- TODO: Should this be a backdrop instead?
-local click_away_handler = helpers.ui.create_click_away_handler(launcher_widget, false)
-
 function launcher.hide()
   launcher_widget.visible = false
   last_focused_client = nil
-  click_away_handler.detach()
 
   text_input:reset()
   text_input:unfocus()
@@ -364,7 +363,6 @@ function launcher.show()
 
   last_focused_client = client.focus
   client.focus = nil
-  click_away_handler.attach(launcher.cancel)
 
   text_input:focus()
 

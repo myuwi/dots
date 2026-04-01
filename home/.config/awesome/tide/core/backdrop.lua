@@ -1,11 +1,11 @@
 local awful = require("awful")
-local Window = require("tide.core.window")
+local wibox = require("wibox")
 
 local helpers = require("helpers")
 
 local backdrop = {}
 
-local backdrop_widget = Window {
+local backdrop_widget = wibox {
   screen = screen.primary,
   type = "utility",
   x = 0,
@@ -72,7 +72,7 @@ local function hide()
   backdrop_widget.visible = false
 end
 
----@param callback function
+---@param callback function|nil
 function backdrop.attach(callback)
   cb = callback
   show()
