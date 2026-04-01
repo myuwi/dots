@@ -6,6 +6,5 @@ return {
   placement = require("helpers.placement"),
   run = require("helpers.run"),
   table = require("helpers.table"),
-  ui = require("helpers.ui"),
   window = require("helpers.window"),
 }
