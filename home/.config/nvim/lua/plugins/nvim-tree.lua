@@ -64,15 +64,5 @@ return {
     view = {
       signcolumn = "no",
     },
-    on_attach = function(bufnr)
-      local api = require("nvim-tree.api")
-      api.map.on_attach.default(bufnr)
-
-      local function opts(desc)
-        return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-      end
-
-      vim.keymap.set("n", "<LeftRelease>", api.node.open.edit, opts("Open"))
-    end,
   },
 }
