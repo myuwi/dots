@@ -13,6 +13,7 @@ local Container = require("tide.widget").Container
 ---@field placement fun(w: table): any
 ---@field backdrop boolean?
 ---@field on_click_outside fun(self: table, target: table)?
+---@field on_blur fun(self: table)?
 ---@field widget? table
 ---@field [1]? table
 
@@ -26,6 +27,7 @@ local function Popup(args)
   local widget = args.widget or args[1]
   local backdrop = args.backdrop
   local on_click_outside = args.on_click_outside
+  local on_blur = args.on_blur
 
   return Window {
     window = awful.popup,
@@ -39,6 +41,7 @@ local function Popup(args)
     radius = beautiful.corner_radius,
     backdrop = backdrop,
     on_click_outside = on_click_outside,
+    on_blur = on_blur,
 
     Container {
       forced_height = forced_height,

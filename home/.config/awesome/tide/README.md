@@ -216,7 +216,7 @@ Windows support optional backdrop and automatic click-outside handling:
 local modal = Window {
   window = awful.popup,
   backdrop = true,
-  on_click_outside = function(self)
+  on_click_outside = function(self, target)
     self.visible = false
   end,
 
@@ -227,12 +227,32 @@ local modal = Window {
 
 local dropdown = Window {
   window = awful.popup,
-  on_click_outside = function(self)
+  on_click_outside = function(self, target)
     self.visible = false
   end,
 
   Container {
     Text { text = "Dropdown content" }
+  }
+}
+```
+
+### Focus Change Handling
+
+Popups can automatically close when focus changes to another window or tag:
+
+```lua
+local popup = Window {
+  window = awful.popup,
+  on_click_outside = function(self, target)
+    self.visible = false
+  end,
+  on_blur = function(self)
+    self.visible = false
+  end,
+
+  Container {
+    Text { text = "Auto-closing popup" }
   }
 }
 ```

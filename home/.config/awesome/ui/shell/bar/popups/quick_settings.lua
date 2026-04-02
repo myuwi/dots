@@ -106,6 +106,9 @@ local quick_settings = Popup {
   on_click_outside = function(self)
     self.visible = false
   end,
+  on_blur = function(self)
+    self.visible = false
+  end,
 
   Column {
     spacing = dpi(6),

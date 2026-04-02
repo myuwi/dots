@@ -72,6 +72,8 @@ local function hide()
   backdrop_widget.visible = false
 end
 
+-- TODO: support multiple backdrops
+
 ---@param callback function|nil
 function backdrop.attach(callback)
   cb = callback

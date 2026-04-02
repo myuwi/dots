@@ -17,6 +17,9 @@ local calendar_popup = Popup {
   on_click_outside = function(self)
     self.visible = false
   end,
+  on_blur = function(self)
+    self.visible = false
+  end,
   calendar,
 }
 

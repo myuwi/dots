@@ -5,6 +5,7 @@ local util = require("tide.core.util")
 
 local backdrop = require("tide.core.backdrop")
 local click_away = require("tide.core.click_away")
+local focus_change = require("tide.core.focus_change")
 
 local function set_visible(win, visible)
   if win.visible == visible then
@@ -20,6 +21,18 @@ local function set_visible(win, visible)
       end)
     else
       win._private.click_away_handler.detach()
+    end
+  end
+
+  if win._private.focus_change_handler then
+    if visible then
+      win._private.focus_change_handler.attach(function()
+        if win._private.on_blur then
+          win._private.on_blur(win)
+        end
+      end)
+    else
+      win._private.focus_change_handler.detach()
     end
   end
 
@@ -64,8 +77,10 @@ local function Window(args)
 
   local use_backdrop = args.backdrop
   local on_click_outside = args.on_click_outside
+  local on_blur = args.on_blur
   args.backdrop = nil
   args.on_click_outside = nil
+  args.on_blur = nil
 
   local tide_widget = args.widget or args[1]
   args.widget = tide_widget and Widget(tide_widget)
@@ -76,13 +91,19 @@ local function Window(args)
   window._private.tide_widget = args.widget
   window._private.use_backdrop = use_backdrop
   window._private.on_click_outside = on_click_outside
+  window._private.on_blur = on_blur
 
   -- Create click-away handler if needed
   if on_click_outside then
     window._private.click_away_handler = click_away.create_handler(window, false)
   end
 
-  -- Show backdrop and attach click-away handler if window starts visible
+  -- Create focus change handler if needed
+  if on_blur then
+    window._private.focus_change_handler = focus_change.create_handler(window)
+  end
+
+  -- Show backdrop and attach handlers if window starts visible
   if args.visible then
     if use_backdrop then
       backdrop.attach()
@@ -90,6 +111,11 @@ local function Window(args)
     if window._private.click_away_handler then
       window._private.click_away_handler.attach(function(target)
         on_click_outside(window, target)
+      end)
+    end
+    if window._private.focus_change_handler then
+      window._private.focus_change_handler.attach(function()
+        on_blur(window)
       end)
     end
   end
