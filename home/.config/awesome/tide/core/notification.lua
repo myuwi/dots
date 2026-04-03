@@ -1,5 +1,5 @@
 local naughty = require("naughty")
-local util = require("tide.core.util")
+local util = require("tide.util")
 
 local Widget = require("tide.core.widget")
 

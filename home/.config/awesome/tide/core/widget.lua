@@ -4,7 +4,7 @@ local wibox = require("wibox")
 local Signal = require("tide.signal")
 local effect = require("tide.signal.effect")
 local untracked = require("tide.signal.untracked")
-local util = require("tide.core.util")
+local util = require("tide.util")
 local tbl = require("tide.util.table")
 
 ---@return boolean

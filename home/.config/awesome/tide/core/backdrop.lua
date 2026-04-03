@@ -1,7 +1,6 @@
 local awful = require("awful")
 local wibox = require("wibox")
-
-local helpers = require("helpers")
+local tbl = require("tide.util.table")
 
 local backdrop = {}
 
@@ -54,8 +53,8 @@ update_backdrop_geometry()
 ---@type fun() | nil
 local cb = nil
 
-backdrop_widget:buttons( --
-  helpers.table.map({ 1, 2, 3 }, function(n)
+backdrop_widget:buttons(
+  tbl.map({ 1, 2, 3 }, function(n)
     return awful.button({ "Any" }, n, function()
       if cb then
         cb()

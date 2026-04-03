@@ -1,11 +1,30 @@
 local awful = require("awful")
 local gtimer = require("gears.timer")
 local wibox = require("wibox")
-
-local htable = require("helpers.table")
-local hmouse = require("helpers.mouse")
+local tbl = require("tide.util.table")
 
 local click_away = {}
+
+-- https://github.com/awesomeWM/awesome/issues/3806
+local function remove_global_mousebinding(button)
+  local root_btns = root._buttons()
+
+  for _, v1 in ipairs(button) do
+    for i, v2 in ipairs(root_btns) do
+      if v1 == v2 then
+        table.remove(root_btns, i)
+      end
+    end
+  end
+
+  root._buttons(root_btns)
+end
+
+local function remove_global_mousebindings(buttons)
+  for _, v in ipairs(buttons) do
+    remove_global_mousebinding(v)
+  end
+end
 
 --- Create a click-away handler for a window
 --- @param window table The window to watch for clicks outside of
@@ -31,7 +50,7 @@ function click_away.create_handler(window, focus_events)
     end
   end
 
-  local root_binds = htable.map({ 1, 2, 3 }, function(n)
+  local root_binds = tbl.map({ 1, 2, 3 }, function(n)
     return awful.button({ "Any" }, n, cb_handler)
   end)
 
@@ -58,7 +77,7 @@ function click_away.create_handler(window, focus_events)
     gtimer.delayed_call(function()
       cb = nil
 
-      hmouse.remove_global_mousebindings(root_binds)
+      remove_global_mousebindings(root_binds)
       client.disconnect_signal("button::press", cb_handler)
       wibox.disconnect_signal("button::press", cb_handler)
 
