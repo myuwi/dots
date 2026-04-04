@@ -164,7 +164,7 @@ local function create_entry(app, i)
   end
 
   local is_selected = computed(function()
-    return i == selected_index:get()
+    return i + scroll_position:get() == selected_index:get()
   end)
 
   local entry = Container {
