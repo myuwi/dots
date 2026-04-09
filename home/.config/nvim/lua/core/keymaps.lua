@@ -34,3 +34,30 @@ vim.keymap.set("n", "<C-h>", "<C-w>h")
 vim.keymap.set("n", "<C-j>", "<C-w>j")
 vim.keymap.set("n", "<C-k>", "<C-w>k")
 vim.keymap.set("n", "<C-l>", "<C-w>l")
+
+local function copy_location()
+  local path = vim.fn.expand("%")
+  local location
+  local mode = vim.fn.mode()
+
+  local is_visual = mode == "v" or mode == "V" or mode == "\22" -- \22 = <C-v> (visual block)
+  if is_visual then
+    local start_line = vim.fn.line("v")
+    local end_line = vim.fn.line(".")
+    if start_line > end_line then
+      start_line, end_line = end_line, start_line
+    end
+    location = start_line == end_line and path .. ":" .. start_line or path .. ":" .. start_line .. "-" .. end_line
+  else
+    location = path .. ":" .. vim.fn.line(".")
+  end
+
+  vim.fn.setreg("+", location)
+  vim.notify("Copied: " .. location)
+
+  if is_visual then
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+  end
+end
+
+vim.keymap.set({ "n", "x" }, "<leader>yp", copy_location, opts("Copy file location"))
