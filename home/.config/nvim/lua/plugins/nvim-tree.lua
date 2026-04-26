@@ -2,6 +2,7 @@
 
 return {
   "nvim-tree/nvim-tree.lua",
+  version = "v1.16.0",
   dependencies = {
     "nvim-tree/nvim-web-devicons",
     "folke/snacks.nvim",
