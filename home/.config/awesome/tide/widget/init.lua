@@ -2,6 +2,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 
 local Widget = require("tide.core.widget")
+local anchor = require("tide.widget.anchor")
 local container = require("tide.widget.container")
 local flexible = require("tide.widget.flexible")
 local flex = require("tide.layout.flex")
@@ -20,6 +21,7 @@ end
 
 local widgets = {
   -- Single-Widget Containers
+  Anchor = make_widget(anchor),
   Container = make_widget(container),
   Center = make_widget(wibox.container.place),
   Flexible = make_widget(flexible),
