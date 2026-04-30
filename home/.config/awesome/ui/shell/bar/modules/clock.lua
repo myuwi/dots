@@ -3,35 +3,41 @@ local dpi = beautiful.xresources.apply_dpi
 
 local Container = require("tide.widget").Container
 local TextClock = require("tide.widget").TextClock
+local Calendar = require("ui.components").Calendar
+local Popover = require("ui.components").Popover
 
 local computed = require("tide.signal.computed")
-local watch = require("tide.signal.watch")
 
-local calendar_popup = require("ui.shell.bar.popups.calendar_popup")
-local calendar_visible = watch(calendar_popup, "visible")
+local function clock(_)
+  local calendar = Calendar {}
 
-local function clock(s)
-  local clock_widget = Container {
-    bg = computed(function()
-      return calendar_visible:get() and calendar_popup.screen == s and beautiful.bg_focus or nil
-    end),
-    border_width = 1,
-    border_color = computed(function()
-      return calendar_visible:get() and calendar_popup.screen == s and beautiful.border_focus
-        or beautiful.colors.transparent
-    end),
-    radius = dpi(4),
-    padding = { x = dpi(8) },
-    on_button_press = function(_, _, _, button)
-      if button == 1 then
-        calendar_popup.show()
+  return Popover {
+    placement = "bottom",
+    on_open_change = function(visible)
+      if visible then
+        calendar:reset()
       end
     end,
 
-    TextClock { "%d %b %H:%M" },
-  }
+    trigger = function(state)
+      return Container {
+        bg = computed(function()
+          return state.open:get() and beautiful.bg_bar_item_focus or nil
+        end),
+        radius = dpi(4),
+        padding = { x = dpi(8) },
+        on_button_press = function(_, _, _, button)
+          if button == 1 then
+            state.toggle()
+          end
+        end,
 
-  return clock_widget
+        TextClock { "%d %b %H:%M" },
+      }
+    end,
+
+    content = calendar,
+  }
 end
 
 return clock

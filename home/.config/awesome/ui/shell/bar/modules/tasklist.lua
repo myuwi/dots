@@ -2,6 +2,8 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
+local hcolor = require("helpers.color")
+
 local signal = require("tide.signal")
 local computed = require("tide.signal.computed")
 local watch = require("tide.signal.watch")
@@ -30,7 +32,7 @@ local function tasklist_buttons(c)
   return {
     awful.button({}, 1, function()
       if c == client.focus then
-        c.minimized = true
+        -- c.minimized = true
       else
         c:emit_signal("request::activate", "tasklist", {
           raise = true,
@@ -65,37 +67,32 @@ local function tasklist(s)
   awful.tag.attached_connect_signal(nil, "property::activated", update_clients)
 
   local tasklist_widget = Row {
-    spacing = dpi(4),
+    spacing = dpi(6),
     max_widget_size = dpi(480),
 
     For {
       each = clients,
       function(c)
         local active = watch(c, "active")
-        local minimized = watch(c, "minimized")
-        local urgent = watch(c, "urgent")
+        -- TODO: local minimized = watch(c, "minimized")
+        -- TODO: local urgent = watch(c, "urgent")
         local name = watch(c, "name")
 
         return Flexible {
           Container {
-            bg = computed(function()
-              return active:get() and beautiful.bg_focus or urgent:get() and beautiful.bg_urgent or nil
-            end),
-            border_width = 1,
-            border_color = computed(function()
-              return active:get() and beautiful.border_focus or beautiful.colors.transparent
-            end),
-            padding = { x = dpi(8), y = dpi(4) },
+            padding = { x = dpi(6), y = dpi(6) },
             radius = dpi(4),
             buttons = tasklist_buttons(c),
 
+            opacity = computed(function()
+              return active:get() and 1 or 0.5
+            end),
+
             Row {
-              spacing = dpi(6),
+              spacing = dpi(8),
               ClientIcon { client = c },
               Text {
-                color = computed(function()
-                  return minimized:get() and beautiful.fg_minimized or nil
-                end),
+                shadow = { x = 1, y = 1, blur = 8, color = hcolor.opacity("#000000", 0.6) },
                 name,
               },
             },

@@ -89,9 +89,14 @@ client.connect_signal("focus", function(c)
   c:raise()
 end)
 
--- Send clients to bottom of the z-order when they are minimized
+-- -- Send clients to bottom of the z-order when they are minimized
+-- client.connect_signal("property::minimized", function(c)
+--   c:lower()
+-- end)
+
+-- Disable minimize
 client.connect_signal("property::minimized", function(c)
-  c:lower()
+  c.minimized = false
 end)
 
 -- Disable stacked shadows in max layout

@@ -102,7 +102,7 @@ naughty.connect_signal("request::display", function(n)
               spacing = dpi(3),
               Text {
                 text = n.title,
-                font = beautiful.font_name .. " Bold " .. beautiful.font_size,
+                font = beautiful.font_family .. " Bold " .. beautiful.font_size,
                 forced_height = dpi(18),
               },
               Text {

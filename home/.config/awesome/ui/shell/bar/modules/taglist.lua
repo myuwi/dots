@@ -2,6 +2,8 @@ local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 
+local hcolor = require("helpers.color")
+
 local signal = require("tide.signal")
 local computed = require("tide.signal.computed")
 local watch = require("tide.signal.watch")
@@ -30,7 +32,7 @@ end
 
 local function taglist(s)
   local taglist_widget = Row {
-    spacing = dpi(4),
+    spacing = dpi(6),
     on_wheel_up = function()
       awful.tag.viewnext(s)
     end,
@@ -40,7 +42,7 @@ local function taglist(s)
 
     tbl.map(s.tags, function(t)
       local selected = watch(t, "selected")
-      local urgent = watch(t, "urgent")
+      -- TODO: local urgent = watch(t, "urgent")
       local client_count = signal(0)
 
       t:connect_signal("tagged", function()
@@ -52,23 +54,21 @@ local function taglist(s)
       end)
 
       return Container {
-        bg = computed(function()
-          return selected:get() and beautiful.bg_focus or urgent:get() and beautiful.bg_urgent or nil
-        end),
-        border_width = 1,
-        border_color = computed(function()
-          return selected:get() and beautiful.border_focus or beautiful.colors.transparent
-        end),
         visible = computed(function()
           return selected:get() or client_count:get() > 0
         end),
         radius = dpi(4),
-        forced_width = dpi(20),
+        forced_width = dpi(24),
         buttons = taglist_buttons(t),
 
+        opacity = computed(function()
+          return selected:get() and 1 or 0.5
+        end),
+
         Text {
-          text = t.index,
+          shadow = { x = 1, y = 1, blur = 8, color = hcolor.opacity("#000000", 0.6) },
           halign = "center",
+          t.index,
         },
       }
     end),

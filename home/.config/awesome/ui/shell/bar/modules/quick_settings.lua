@@ -1,19 +1,34 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
+local upower = require("lgi").UPowerGlib
 
 local helpers = require("helpers")
 
-local Popup = require("ui.popup")
 local Container = require("tide.widget").Container
 local Column = require("tide.widget").Column
-local Row = require("tide.widget").Row
 local Grid = require("tide.widget").Grid
+local Row = require("tide.widget").Row
+local Stack = require("tide.widget").Stack
 local Text = require("tide.widget").Text
 local Icon = require("ui.components").Icon
+local Popover = require("ui.components").Popover
 
 local signal = require("tide.signal")
 local computed = require("tide.signal.computed")
+
+local battery_state = require("state.battery")
+
+local function StyledIcon(args)
+  return Container {
+    padding = dpi(1),
+    Icon {
+      size = dpi(14),
+      color = args.color,
+      args[1],
+    },
+  }
+end
 
 local function Pill(args)
   local fg_color = computed(function()
@@ -94,30 +109,10 @@ local function on_screensaver_click()
   )
 end
 
--- TODO: get real statuses for wifi and bluetooth
-local quick_settings = Popup {
-  placement = function(w)
-    awful.placement.top_right(w, {
-      margins = beautiful.useless_gap * 2,
-      honor_workarea = true,
-    })
-  end,
-  padding = dpi(18),
-  on_click_outside = function(self)
-    self.visible = false
-  end,
-  on_blur = function(self)
-    self.visible = false
-  end,
-
-  Column {
+local function QuickSettingsContent(_)
+  -- TODO: get real statuses for wifi and bluetooth
+  return Column {
     spacing = dpi(6),
-
-    -- TODO: Move handler to Popup
-    on_mount = function()
-      update_screensaver_status()
-      update_compositor_status()
-    end,
 
     Grid {
       column_count = 3,
@@ -151,19 +146,95 @@ local quick_settings = Popup {
         enabled = screensaver_enabled,
       },
     },
-  },
-}
-
-quick_settings:set_xproperty("_ANIMATE", "slide-down")
-
-function quick_settings.hide()
-  quick_settings.visible = false
+  }
 end
 
-function quick_settings.show()
-  client.focus = nil
-  quick_settings.screen = mouse.screen
-  quick_settings.visible = true
+local function Volume(_)
+  return Stack {
+    StyledIcon { "volume-2", color = beautiful.colors.muted },
+    StyledIcon { "volume-1" },
+  }
+end
+
+local function Battery(_)
+  if not battery_state:get() then
+    return
+  end
+
+  return Row {
+    align_items = "center",
+    spacing = dpi(6),
+
+    Icon {
+      size = dpi(16),
+      computed(function()
+        local percentage = battery_state:get().percentage
+        local state = battery_state:get().state
+
+        if
+          state == upower.DeviceState.CHARGING
+          or state == upower.DeviceState.FULLY_CHARGED
+          or state == upower.DeviceState.PENDING_CHARGE
+        then
+          return "battery-charging"
+        end
+
+        if percentage > 80 then
+          return "battery-full"
+        elseif percentage > 40 then
+          return "battery-medium"
+        elseif percentage > 20 then
+          return "battery-low"
+        else
+          return "battery-warning"
+        end
+      end),
+    },
+    Text {
+      computed(function()
+        return battery_state:get().percentage .. "%"
+      end),
+    },
+  }
+end
+
+local function quick_settings()
+  return Popover {
+    placement = "bottom",
+    padding = dpi(18),
+    on_open_change = function(visible)
+      if visible then
+        update_screensaver_status()
+        update_compositor_status()
+      end
+    end,
+
+    trigger = function(state)
+      return Container {
+        bg = computed(function()
+          return state.open:get() and beautiful.bg_bar_item_focus or nil
+        end),
+        radius = dpi(4),
+        padding = { x = dpi(8) },
+        on_button_press = function(_, _, _, button)
+          if button == 1 then
+            state.toggle()
+          end
+        end,
+
+        -- TODO: show appropriate icons
+        Row {
+          align_items = "center",
+          spacing = dpi(8),
+          StyledIcon { "ethernet-port" },
+          Volume {},
+          Battery {},
+        },
+      }
+    end,
+
+    content = QuickSettingsContent {},
+  }
 end
 
 return quick_settings

@@ -8,14 +8,15 @@ local theme_path = gfs.get_configuration_dir() .. "theme/"
 
 local theme = {}
 
-theme.font_name = "Inter"
+theme.font_family = "Inter"
+theme.font_weight = "Medium"
 theme.font_size = 8.5
-theme.font = theme.font_name .. " " .. theme.font_size
+theme.font = theme.font_family .. " " .. theme.font_weight .. " " .. theme.font_size
 
 theme.icon_path = theme_path .. "assets/icons/"
 
 -- Source: https://www.pixiv.net/en/artworks/106390259
-theme.wallpaper = theme_path .. "assets/106390259_p0.jpg"
+theme.wallpaper = theme_path .. "assets/106390259_p1.jpg"
 
 local colors = require("theme.colors")
 
@@ -26,8 +27,10 @@ theme.bg_focus = hcolor.opacity(colors.muted, 0.15)
 theme.bg_hover = hcolor.opacity(colors.muted, 0.25)
 theme.bg_urgent = colors.urgent
 theme.bg_minimized = nil
-theme.bg_bar = colors.base
-theme.bg_systray = theme.bg_bar
+theme.bg_bar = colors.transparent
+theme.bg_bar_item = colors.transparent
+theme.bg_bar_item_focus = hcolor.opacity(hcolor.lighten(colors.text, 0.25), 0.15)
+theme.bg_systray = theme.bg_normal
 theme.bg_divider = colors.surface
 
 theme.fg_normal = colors.text
@@ -45,7 +48,7 @@ theme.bg_button_hover = theme.bg_hover
 theme.useless_gap = dpi(4)
 
 -- Corners
-theme.corner_radius = dpi(6)
+theme.corner_radius = dpi(8)
 
 -- Borders
 theme.border_width = dpi(1)
@@ -58,7 +61,7 @@ theme.border_hover = hcolor.opacity(colors.muted, 0.3)
 -- Bar
 theme.bar_height = dpi(40)
 theme.bar_padding = dpi(6)
-theme.bar_spacing = dpi(6)
+theme.bar_spacing = dpi(12)
 
 -- Calendar
 theme.calendar_fg_current = colors.surface

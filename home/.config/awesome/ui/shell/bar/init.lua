@@ -9,23 +9,22 @@ local Row = require("tide.widget").Row
 local taglist = require("ui.shell.bar.modules.taglist")
 local tasklist = require("ui.shell.bar.modules.tasklist")
 local systray = require("ui.shell.bar.modules.systray")
-local status = require("ui.shell.bar.modules.status")
+local quick_settings = require("ui.shell.bar.modules.quick_settings")
 local clock = require("ui.shell.bar.modules.clock")
 
 awful.screen.connect_for_each_screen(function(s)
   local is_primary = s == screen.primary
-  local bar_gap = beautiful.useless_gap * 2
+  local bar_gap = beautiful.useless_gap
 
   s.bar = Window {
     window = awful.wibar,
     screen = s,
     height = beautiful.bar_height,
-    margins = { top = bar_gap, left = bar_gap, right = bar_gap, bottom = 0 },
-    bg = beautiful.bg_bar,
-    radius = beautiful.corner_radius,
+    bg = "transparent",
+    margins = { top = bar_gap, bottom = -bar_gap },
 
     Container {
-      padding = beautiful.bar_padding,
+      padding = { x = beautiful.bar_padding * 2, y = beautiful.bar_padding },
 
       Row {
         spacing = beautiful.bar_spacing,
@@ -37,7 +36,7 @@ awful.screen.connect_for_each_screen(function(s)
         Row {
           spacing = beautiful.bar_spacing / 2,
           is_primary and systray() or nil,
-          is_primary and status() or nil,
+          is_primary and quick_settings() or nil,
           clock(s),
         },
       },
