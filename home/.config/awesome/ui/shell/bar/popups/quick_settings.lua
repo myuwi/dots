@@ -154,7 +154,7 @@ local quick_settings = Popup {
   },
 }
 
-helpers.window.set_prop(quick_settings, "_ANIMATE", "slide-down")
+quick_settings:set_xproperty("_ANIMATE", "slide-down")
 
 function quick_settings.hide()
   quick_settings.visible = false

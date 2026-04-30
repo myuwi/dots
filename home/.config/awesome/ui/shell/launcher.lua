@@ -327,7 +327,7 @@ local launcher_widget = Popup {
   },
 }
 
-helpers.window.set_prop(launcher_widget, "_ANIMATE", "slide-down")
+launcher_widget:set_xproperty("_ANIMATE", "slide-down")
 
 -- Setup
 

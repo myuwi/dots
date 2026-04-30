@@ -104,9 +104,9 @@ screen.connect_signal("arrange", function(s)
     local disable_shadow = (s.selected_tag and s.selected_tag.layout.name == "max") and i > 1
 
     if disable_shadow then
-      helpers.window.set_prop(c, "_SHADOW_DISABLE", 1)
+      c:set_xproperty("_SHADOW_DISABLE", true)
     else
-      helpers.window.set_prop(c, "_SHADOW_DISABLE", 0)
+      c:set_xproperty("_SHADOW_DISABLE", false)
     end
   end
 end)

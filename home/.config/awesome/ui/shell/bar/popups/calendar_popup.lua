@@ -1,7 +1,6 @@
 local awful = require("awful")
 local beautiful = require("beautiful")
 
-local helpers = require("helpers")
 local Popup = require("ui.popup")
 local Calendar = require("ui.components").Calendar
 
@@ -23,7 +22,7 @@ local calendar_popup = Popup {
   calendar,
 }
 
-helpers.window.set_prop(calendar_popup, "_ANIMATE", "slide-down")
+calendar_popup:set_xproperty("_ANIMATE", "slide-down")
 
 -- TODO: Somehow whitelist clock widget in bar to avoid closing and reopening on click
 -- TODO: Esc to hide, also refocus client which was unfocused in show()

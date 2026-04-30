@@ -83,7 +83,7 @@ local volume_widget = Popup {
   },
 }
 
-helpers.window.set_prop(volume_widget, "_ANIMATE", "slide-up")
+volume_widget:set_xproperty("_ANIMATE", "slide-up")
 
 local hide_volume_widget = gears.timer({
   timeout = 1,
