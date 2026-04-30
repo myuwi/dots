@@ -141,6 +141,11 @@ Widget = function(args)
       widget:add_button(awful.button({ "Any" }, 4, value))
     elseif key == "on_wheel_down" then
       widget:add_button(awful.button({ "Any" }, 5, value))
+    elseif type(key) == "string" and key:find("^on_.+_change$") then
+      local property_name = key:match("^on_(.+)_change$")
+      widget:connect_signal("property::" .. property_name, function()
+        value(widget[property_name], widget)
+      end)
     elseif type(key) == "string" and key:find("^on_") then
       -- e.g. "on_mouse_enter" -> "mouse::enter"
       local event_name = key:gsub("^on_", ""):gsub("_", "::", 1)
