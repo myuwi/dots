@@ -1,12 +1,44 @@
 local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
+local gtimer = require("gears.timer")
+local glib = require("lgi").GLib
 
 local Container = require("tide.widget").Container
-local TextClock = require("tide.widget").TextClock
+local Text = require("tide.widget").Text
 local Calendar = require("ui.components").Calendar
 local Popover = require("ui.components").Popover
 
+local signal = require("tide.signal")
 local computed = require("tide.signal.computed")
+
+local DateTime = glib.DateTime
+local TimeZone = glib.TimeZone
+
+local function calc_timeout(refresh)
+  return refresh - os.time() % refresh
+end
+
+local function create_time_signal(format)
+  local refresh = 60
+  local time = signal("")
+  local timer
+
+  local function update()
+    local str = DateTime.new_now(TimeZone.new_local()):format(format)
+    timer.timeout = calc_timeout(refresh)
+    timer:again()
+    time:set(str)
+    return true
+  end
+
+  timer = gtimer.start_new(refresh, update)
+
+  update()
+
+  return time
+end
+
+local time = create_time_signal("%d %b %H:%M")
 
 local function clock(_)
   local calendar = Calendar {}
@@ -32,7 +64,7 @@ local function clock(_)
           end
         end,
 
-        TextClock { "%d %b %H:%M" },
+        Text { text = time },
       }
     end,
 

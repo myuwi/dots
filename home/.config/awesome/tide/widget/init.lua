@@ -40,7 +40,6 @@ local widgets = {
   ProgressBar = make_widget(wibox.widget.progressbar),
   Systray = make_widget(wibox.widget.systray),
   Text = make_widget(text, "text"),
-  TextClock = make_widget(wibox.widget.textclock, "format"),
 }
 
 ---@diagnostic disable-next-line: param-type-mismatch

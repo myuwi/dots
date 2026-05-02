@@ -299,7 +299,6 @@ local watch = tide.signal.watch
 - `tide.widget.Image` - Image widget
 - `tide.widget.ProgressBar` - Progress bar
 - `tide.widget.Systray` - System tray
-- `tide.widget.TextClock` - Text clock
 
 ### Flow Control
 
