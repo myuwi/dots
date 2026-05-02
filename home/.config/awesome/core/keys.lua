@@ -5,6 +5,7 @@ local ruled = require("ruled")
 local helpers = require("helpers")
 
 local input_method = require("core.input_method")
+local tag_transition = require("core.tag_transition")
 
 ---@param mods string[]
 ---@param key string
@@ -203,7 +204,7 @@ local function view_tag(i)
     local screen = awful.screen.focused()
     local tag = screen.tags[i]
     if tag then
-      tag:view_only()
+      tag_transition.view_only(tag)
     end
   end
 end
@@ -213,7 +214,7 @@ local function move_to_tag(i)
     if client.focus then
       local tag = client.focus.screen.tags[i]
       if tag then
-        client.focus:move_to_tag(tag)
+        tag_transition.move_to_tag(client.focus, tag)
       end
     end
   end
@@ -224,7 +225,7 @@ local function toggle_tag(i)
     local screen = awful.screen.focused()
     local tag = screen.tags[i]
     if tag then
-      awful.tag.viewtoggle(tag)
+      tag_transition.view_toggle(tag)
     end
   end
 end

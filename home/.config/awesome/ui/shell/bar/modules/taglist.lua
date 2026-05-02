@@ -12,20 +12,21 @@ local Container = require("tide.widget").Container
 local Row = require("tide.widget").Row
 local Text = require("tide.widget").Text
 
+local tag_transition = require("core.tag_transition")
 local tbl = require("helpers.table")
 
 local function taglist_buttons(t)
   return {
     awful.button({}, 1, function()
-      t:view_only()
+      tag_transition.view_only(t)
     end),
     awful.button({ modkey }, 1, function()
       if client.focus then
-        client.focus:move_to_tag(t)
+        tag_transition.move_to_tag(client.focus, t)
       end
     end),
     awful.button({}, 3, function()
-      awful.tag.viewtoggle(t)
+      tag_transition.view_toggle(t)
     end),
   }
 end
@@ -34,10 +35,10 @@ local function taglist(s)
   local taglist_widget = Row {
     spacing = dpi(6),
     on_wheel_up = function()
-      awful.tag.viewnext(s)
+      tag_transition.view_next(s)
     end,
     on_wheel_down = function()
-      awful.tag.viewprev(s)
+      tag_transition.view_prev(s)
     end,
 
     tbl.map(s.tags, function(t)

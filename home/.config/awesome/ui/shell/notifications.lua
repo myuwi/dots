@@ -6,6 +6,7 @@ local naughty = require("naughty")
 
 local helpers = require("helpers")
 local tbl = require("helpers.table")
+local tag_transition = require("core.tag_transition")
 
 local tide = require("tide")
 local Notification = require("tide.core.notification")
@@ -148,7 +149,7 @@ naughty.connect_signal("request::display", function(n)
     if reason == naughty.notification_closed_reason.dismissed_by_user then
       local client = destroyed_notif.clients[1]
       if client then
-        client.first_tag:view_only()
+        tag_transition.view_only(client.first_tag)
         client:activate()
       end
     end

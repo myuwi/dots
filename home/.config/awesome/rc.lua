@@ -16,7 +16,7 @@ function debug_print(...)
   print(message)
 end
 
-awesome.register_xproperty("_ANIMATE", "string")
+awesome.register_xproperty("_WM_TRANSITION", "string")
 awesome.register_xproperty("_SHADOW_DISABLE", "boolean")
 
 require("errors")

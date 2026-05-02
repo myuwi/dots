@@ -327,7 +327,7 @@ local launcher_widget = Popup {
   },
 }
 
-launcher_widget:set_xproperty("_ANIMATE", "slide-down")
+launcher_widget:set_xproperty("_WM_TRANSITION", "slide-down")
 
 -- Setup
 

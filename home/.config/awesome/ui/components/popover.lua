@@ -101,7 +101,7 @@ local function Popover(args)
     end
   end)
 
-  popup:set_xproperty("_ANIMATE", args.animate or "slide-down")
+  popup:set_xproperty("_WM_TRANSITION", args.animate or "slide-down")
 
   local trigger_widget = type(args.trigger) == "function" and args.trigger(state) or args.trigger
 
