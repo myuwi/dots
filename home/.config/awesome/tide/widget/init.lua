@@ -6,6 +6,7 @@ local anchor = require("tide.widget.anchor")
 local container = require("tide.widget.container")
 local flexible = require("tide.widget.flexible")
 local flex = require("tide.layout.flex")
+local input = require("tide.widget.input")
 local text = require("tide.widget.text")
 
 local function make_widget(widget_constructor, child_prop)
@@ -37,6 +38,7 @@ local widgets = {
   -- TODO: merge ClientIcon and Image
   ClientIcon = make_widget(awful.widget.clienticon, "client"),
   Image = make_widget(wibox.widget.imagebox, "image"),
+  Input = make_widget(input),
   ProgressBar = make_widget(wibox.widget.progressbar),
   Systray = make_widget(wibox.widget.systray),
   Text = make_widget(text, "text"),

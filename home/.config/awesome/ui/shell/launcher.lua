@@ -13,9 +13,9 @@ local Column = require("tide.widget").Column
 local Row = require("tide.widget").Row
 local Flexible = require("tide.widget").Flexible
 local Image = require("tide.widget").Image
+local Input = require("tide.widget").Input
 local Text = require("tide.widget").Text
 local Icon = require("ui.components").Icon
-local Input = require("ui.components").Input
 
 local signal = require("tide.signal")
 local computed = require("tide.signal.computed")
@@ -125,23 +125,21 @@ end
 -- Widgets
 
 local text_input = Input {
+  forced_height = dpi(18),
   placeholder = "Search for apps...",
-  -- TODO: declarative keybind handling?
-  on_key_press = function(mods, key)
-    if key == "Escape" then
-      launcher.cancel()
+  on_escape = function()
+    launcher.cancel()
+  end,
+  on_submit = function()
+    local app = filtered_apps:get()[selected_index:get()]
+    if app then
+      launch(app)
+    else
+      awful.spawn.with_shell(query:get())
+      launcher.hide()
     end
-
-    if key == "Return" then
-      local app = filtered_apps:get()[selected_index:get()]
-      if app then
-        launch(app)
-      else
-        awful.spawn.with_shell(query:get())
-        launcher.hide()
-      end
-    end
-
+  end,
+  on_key_press = function(_, mods, key)
     local shift = mods[1] == "Shift"
 
     if key == "Tab" and shift or key == "Up" then
@@ -150,7 +148,7 @@ local text_input = Input {
       move_selection(1)
     end
   end,
-  on_text_changed = function(text)
+  on_text_change = function(text)
     query:set(text)
   end,
 }

@@ -12,7 +12,8 @@
       "mousegrabber",
       "root",
       "screen",
-      "tag"
+      "tag",
+      "utf8"
     ]
   },
   "workspace": {
