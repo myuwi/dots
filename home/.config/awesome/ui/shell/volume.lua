@@ -3,12 +3,8 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local gears = require("gears")
 
-local helpers = require("helpers")
-
 local signal = require("tide.signal")
-local effect = require("tide.signal.effect")
 local computed = require("tide.signal.computed")
-local track = require("tide.signal.track")
 
 local Popup = require("ui.popup")
 local Row = require("tide.widget").Row
@@ -19,7 +15,6 @@ local Icon = require("ui.components").Icon
 
 local volume = signal(0)
 local muted = signal(false)
-local hovered = signal(false)
 
 local function get_volume_svg()
   if muted:get() or volume:get() == 0 then
@@ -101,29 +96,6 @@ volume_widget.buttons = {
   end),
 }
 
-volume_widget:connect_signal("mouse::enter", function()
-  hovered:set(true)
-end)
-
-volume_widget:connect_signal("mouse::leave", function()
-  hovered:set(false)
-end)
-
--- Keep widget visible while hovered
-effect(function()
-  track(hovered)
-
-  if not volume_widget.visible then
-    return
-  end
-
-  if hovered:get() then
-    hide_volume_widget:stop()
-  else
-    hide_volume_widget:again()
-  end
-end)
-
 local volume_script = "wpctl get-volume @DEFAULT_SINK@"
 
 --- @param callback fun(volume: integer, muted: boolean)
@@ -145,9 +117,7 @@ awesome.connect_signal("signal::volume", function()
     muted:set(m)
 
     if volume_widget.visible then
-      if not hovered:get() then
-        hide_volume_widget:again()
-      end
+      hide_volume_widget:again()
     else
       volume_widget.visible = true
       hide_volume_widget:start()
