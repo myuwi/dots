@@ -95,6 +95,41 @@ local function swap_dir(dir)
   end
 end
 
+local function move_screen_dir(dir)
+  return function(c)
+    if screen.count() < 2 then
+      return
+    end
+
+    local screens = {}
+
+    for s in screen do
+      screens[#screens + 1] = s
+    end
+
+    table.sort(screens, function(a, b)
+      return a.geometry.x < b.geometry.x
+    end)
+
+    local current_index
+
+    for i, s in ipairs(screens) do
+      if s == c.screen then
+        current_index = i
+        break
+      end
+    end
+
+    if not current_index then
+      return
+    end
+
+    local step = dir == "left" and -1 or 1
+    local next_index = ((current_index - 1 + step) % #screens) + 1
+    c:move_to_screen(screens[next_index])
+  end
+end
+
 client.connect_signal("request::default_keybindings", function()
   awful.keyboard.append_client_keybindings(key_group("client", {
     { { modkey, "Shift" }, "q", close_window, "close" },
@@ -113,6 +148,9 @@ client.connect_signal("request::default_keybindings", function()
     { { modkey, "Shift" }, "j", swap_dir("down"), "swap with client below" },
     { { modkey, "Shift" }, "k", swap_dir("up"), "swap with client above" },
     { { modkey, "Shift" }, "l", swap_dir("right"), "swap with client on the right" },
+
+    { { modkey, "Control" }, "Left", move_screen_dir("left"), "move client to screen on the left" },
+    { { modkey, "Control" }, "Right", move_screen_dir("right"), "move client to screen on the right" },
   }))
 end)
 
