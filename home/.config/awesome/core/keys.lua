@@ -150,8 +150,8 @@ client.connect_signal("request::default_keybindings", function()
     { { modkey, "Shift" }, "k", swap_dir("up"), "swap with client above" },
     { { modkey, "Shift" }, "l", swap_dir("right"), "swap with client on the right" },
 
-    { { modkey, "Control" }, "Left", move_screen_dir("left"), "move client to screen on the left" },
-    { { modkey, "Control" }, "Right", move_screen_dir("right"), "move client to screen on the right" },
+    { { modkey, "Shift" }, "Left", move_screen_dir("left"), "move client to screen on the left" },
+    { { modkey, "Shift" }, "Right", move_screen_dir("right"), "move client to screen on the right" },
   }))
 end)
 
