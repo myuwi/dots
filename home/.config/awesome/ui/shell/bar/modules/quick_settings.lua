@@ -9,7 +9,6 @@ local Container = require("tide.widget").Container
 local Column = require("tide.widget").Column
 local Grid = require("tide.widget").Grid
 local Row = require("tide.widget").Row
-local Stack = require("tide.widget").Stack
 local Text = require("tide.widget").Text
 local Icon = require("ui.components").Icon
 local Popover = require("ui.components").Popover
@@ -18,6 +17,8 @@ local signal = require("tide.signal")
 local computed = require("tide.signal.computed")
 
 local battery_state = require("state.battery")
+local network_state = require("state.network")
+local audio_state = require("state.audio")
 
 local function StyledIcon(args)
   return Container {
@@ -31,8 +32,10 @@ local function StyledIcon(args)
 end
 
 local function Pill(args)
+  local enabled = args.enabled
+
   local fg_color = computed(function()
-    return args.enabled:get() and beautiful.colors.base or beautiful.fg_normal
+    return enabled:get() and beautiful.colors.base or beautiful.fg_normal
   end)
 
   return Column {
@@ -43,11 +46,11 @@ local function Pill(args)
       forced_height = dpi(44),
       forced_width = dpi(80),
       bg = computed(function()
-        return args.enabled:get() and beautiful.colors.accent or beautiful.bg_focus
+        return enabled:get() and beautiful.colors.accent or beautiful.bg_focus
       end),
       border_width = 1,
       border_color = computed(function()
-        return args.enabled:get() and beautiful.colors.accent or beautiful.border_focus
+        return enabled:get() and beautiful.colors.accent or beautiful.border_focus
       end),
       radius = beautiful.corner_radius,
 
@@ -110,7 +113,13 @@ local function on_screensaver_click()
 end
 
 local function QuickSettingsContent(_)
-  -- TODO: get real statuses for wifi and bluetooth
+  local network_enabled = computed(function()
+    return network_state.state:get().connected
+  end)
+  local network_name = computed(function()
+    return network_state.state:get().label
+  end)
+
   return Column {
     spacing = dpi(6),
 
@@ -120,10 +129,12 @@ local function QuickSettingsContent(_)
       homogenous = true,
 
       Pill {
-        icon = "ethernet-port",
-        name = "Wired",
+        icon = computed(function()
+          return network_state.state:get().icon
+        end),
+        name = network_name,
         on_click = on_network_click,
-        enabled = signal(true),
+        enabled = network_enabled,
         external = true,
       },
       Pill {
@@ -150,9 +161,21 @@ local function QuickSettingsContent(_)
 end
 
 local function Volume(_)
-  return Stack {
-    StyledIcon { "volume-2", color = beautiful.colors.muted },
-    StyledIcon { "volume-1" },
+  return StyledIcon {
+    computed(function()
+      return audio_state.state:get().icon
+    end),
+  }
+end
+
+local function Network(_)
+  return StyledIcon {
+    computed(function()
+      return network_state.state:get().icon
+    end),
+    color = computed(function()
+      return network_state.state:get().connected and beautiful.fg_normal or beautiful.colors.muted
+    end),
   }
 end
 
@@ -204,6 +227,8 @@ local function quick_settings()
     padding = dpi(18),
     on_open_change = function(visible)
       if visible then
+        network_state.refresh()
+        audio_state.refresh()
         update_screensaver_status()
         update_compositor_status()
       end
@@ -222,11 +247,10 @@ local function quick_settings()
           end
         end,
 
-        -- TODO: show appropriate icons
         Row {
           align_items = "center",
           spacing = dpi(8),
-          StyledIcon { "ethernet-port" },
+          Network {},
           Volume {},
           Battery {},
         },

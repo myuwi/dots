@@ -3,7 +3,6 @@ local beautiful = require("beautiful")
 local dpi = beautiful.xresources.apply_dpi
 local gears = require("gears")
 
-local signal = require("tide.signal")
 local computed = require("tide.signal.computed")
 
 local Popup = require("ui.popup")
@@ -13,26 +12,13 @@ local ProgressBar = require("tide.widget").ProgressBar
 local Text = require("tide.widget").Text
 local Icon = require("ui.components").Icon
 
-local volume = signal(0)
-local muted = signal(false)
-
-local function get_volume_svg()
-  if muted:get() or volume:get() == 0 then
-    return "volume-x"
-  end
-
-  if volume:get() >= 50 then
-    return "volume-2"
-  elseif volume:get() >= 20 then
-    return "volume-1"
-  else
-    return "volume"
-  end
-end
+local audio_state = require("state.audio")
 
 local volume_icon = Icon {
   size = dpi(18),
-  computed(get_volume_svg),
+  computed(function()
+    return audio_state.state:get().icon
+  end),
 }
 
 local volume_bar = ProgressBar {
@@ -41,13 +27,15 @@ local volume_bar = ProgressBar {
   color = beautiful.fg_focus,
   background_color = beautiful.bg_focus,
   max_value = 100,
-  value = volume,
+  value = computed(function()
+    return audio_state.state:get().volume
+  end),
   forced_height = dpi(6),
 }
 
 local volume_text = Text {
   text = computed(function()
-    return tostring(volume:get())
+    return tostring(audio_state.state:get().volume)
   end),
   halign = "center",
   valign = "center",
@@ -96,26 +84,8 @@ volume_widget.buttons = {
   end),
 }
 
-local volume_script = "wpctl get-volume @DEFAULT_SINK@"
-
---- @param callback fun(volume: integer, muted: boolean)
-local function get_audio_status(callback)
-  awful.spawn.easy_async(volume_script, function(stdout)
-    local volume_str = stdout:match("([%d.]+)")
-    local muted_str = stdout:match("MUTED")
-
-    local v = math.floor(tonumber(volume_str) * 100)
-    local m = muted_str ~= nil
-
-    callback(v, m)
-  end)
-end
-
 awesome.connect_signal("signal::volume", function()
-  get_audio_status(function(v, m)
-    volume:set(v)
-    muted:set(m)
-
+  audio_state.refresh(function()
     if volume_widget.visible then
       hide_volume_widget:again()
     else
