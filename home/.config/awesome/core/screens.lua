@@ -69,8 +69,8 @@ screen.connect_signal("request::wallpaper", function(s)
             from = { 0, 0 },
             to = { 0, 96 },
             stops = {
-              { 0, hcolor.opacity(beautiful.colors.black, 0.6) },
-              { 0.3, hcolor.opacity(beautiful.colors.black, 0.5) },
+              { 0, hcolor.opacity(beautiful.colors.black, 0.5) },
+              { 0.3, hcolor.opacity(beautiful.colors.black, 0.4) },
               { 1, hcolor.opacity(beautiful.colors.black, 0) },
             },
           },
