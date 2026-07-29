@@ -1,0 +1,63 @@
+theme = Rose Pine
+
+font-family = JetBrainsMono NF
+font-feature = -calt, -liga, -dlig
+font-size = 9.5
+
+window-padding-x = 12
+window-padding-y = 12
+window-padding-balance = true
+
+mouse-scroll-multiplier = 1
+
+app-notifications = no-clipboard-copy
+
+# Unbind defaults handled by wm/tmux/nvim
+
+# Windows
+keybind = ctrl+shift+n=unbind
+keybind = ctrl+shift+q=unbind
+keybind = alt+f4=unbind
+keybind = ctrl+enter=unbind
+
+# Tabs
+keybind = ctrl+tab=unbind
+keybind = ctrl+shift+tab=unbind
+keybind = ctrl+shift+t=unbind
+keybind = ctrl+shift+w=unbind
+keybind = ctrl+shift+arrow_left=unbind
+keybind = ctrl+shift+arrow_right=unbind
+keybind = ctrl+page_up=unbind
+keybind = ctrl+page_down=unbind
+keybind = alt+digit_1=unbind
+keybind = alt+1=unbind
+keybind = alt+digit_2=unbind
+keybind = alt+2=unbind
+keybind = alt+digit_3=unbind
+keybind = alt+3=unbind
+keybind = alt+digit_4=unbind
+keybind = alt+4=unbind
+keybind = alt+digit_5=unbind
+keybind = alt+5=unbind
+keybind = alt+digit_6=unbind
+keybind = alt+6=unbind
+keybind = alt+digit_7=unbind
+keybind = alt+7=unbind
+keybind = alt+digit_8=unbind
+keybind = alt+8=unbind
+keybind = alt+9=unbind
+
+# Splits
+keybind = ctrl+shift+o=unbind
+keybind = ctrl+shift+e=unbind
+keybind = ctrl+alt+arrow_up=unbind
+keybind = ctrl+alt+arrow_down=unbind
+keybind = ctrl+alt+arrow_left=unbind
+keybind = ctrl+alt+arrow_right=unbind
+keybind = super+ctrl+bracket_left=unbind
+keybind = super+ctrl+bracket_right=unbind
+keybind = super+ctrl+shift+arrow_up=unbind
+keybind = super+ctrl+shift+arrow_down=unbind
+keybind = super+ctrl+shift+arrow_left=unbind
+keybind = super+ctrl+shift+arrow_right=unbind
+keybind = ctrl+shift+enter=unbind
