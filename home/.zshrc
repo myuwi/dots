@@ -1,17 +1,3 @@
-export EDITOR='nvim'
-export VISUAL='nvim'
-
-export DOTFILES_DIR=$HOME/.dots
-
-typeset -U path PATH
-path=(
-  $HOME/.local/bin
-  $HOME/.cargo/bin
-  $DOTFILES_DIR/bin(N)
-  $path
-)
-export PATH
-
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
