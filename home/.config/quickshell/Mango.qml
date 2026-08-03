@@ -30,8 +30,8 @@ Singleton {
     property var allClients: []
     property var allTags: []
     property var focusHistory: []
+    property int focusedClientId: -1
 
-    readonly property int focusedClientId: allClients.find(client => client.is_focused)?.id ?? -1
     readonly property var clientsByFocus: {
         const ordered = [];
 
@@ -54,9 +54,17 @@ Singleton {
     }
 
     function updateClients(clients): void {
-        const focusedId = clients.find(client => client.is_focused)?.id ?? -1;
         allClients = clients;
-        focusHistory = [...(focusedId >= 0 ? [focusedId] : []), ...focusHistory.filter(clientId => clientId !== focusedId && clients.some(client => client.id === clientId))];
+        focusHistory = focusHistory.filter(clientId => clientId === focusedClientId || clients.some(client => client.id === clientId));
+    }
+
+    function updateFocusedClient(client): void {
+        const focusedId = client?.id ?? -1;
+        focusedClientId = focusedId;
+
+        if (focusedId > 0) {
+            focusHistory = [focusedId, ...focusHistory.filter(clientId => clientId !== focusedId)];
+        }
     }
 
     function tagsForMonitor(monitorName: string): var {
@@ -99,6 +107,11 @@ Singleton {
     Watch {
         stream: "all-clients"
         onReceived: payload => mango.updateClients(payload.clients ?? [])
+    }
+
+    Watch {
+        stream: "focusing-client"
+        onReceived: payload => mango.updateFocusedClient(payload)
     }
 
     Watch {
