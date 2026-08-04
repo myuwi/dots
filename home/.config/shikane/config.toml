@@ -2,8 +2,8 @@
 name = "Home Desktop"
 
 [[profile.output]]
-enable = true
 search = "m=KG251Q"
+enable = true
 mode = "preferred"
 position = "2560,320"
 scale = 1.0
@@ -11,8 +11,8 @@ transform = "normal"
 adaptive_sync = false
 
 [[profile.output]]
-enable = true
 search = "m=XG27ACDNG"
+enable = true
 mode = "2560x1440@180"
 position = "0,0"
 scale = 1.0
@@ -20,8 +20,8 @@ transform = "normal"
 adaptive_sync = false
 
 [[profile.output]]
-enable = true
 search = "m=T24B350"
+enable = true
 mode = "preferred"
 position = "-1920,400"
 scale = 1.0
@@ -32,8 +32,8 @@ adaptive_sync = false
 name = "Home Desktop Dual"
 
 [[profile.output]]
-enable = true
 search = "m=XG27ACDNG"
+enable = true
 mode = "2560x1440@360"
 position = "0,0"
 scale = 1.0
@@ -41,8 +41,8 @@ transform = "normal"
 adaptive_sync = false
 
 [[profile.output]]
-enable = true
 search = "m=T24B350"
+enable = true
 mode = "preferred"
 position = "-1920,400"
 scale = 1.0
