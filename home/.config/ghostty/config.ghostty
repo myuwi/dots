@@ -8,7 +8,7 @@ window-padding-x = 12
 window-padding-y = 12
 window-padding-balance = true
 
-mouse-scroll-multiplier = 1
+mouse-scroll-multiplier = precision:0.25,discrete:1
 
 app-notifications = no-clipboard-copy
 
