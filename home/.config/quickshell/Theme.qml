@@ -10,6 +10,7 @@ Singleton {
     readonly property color subtle: RosePine.subtle
     readonly property color muted: RosePine.muted
     readonly property color accent: RosePine.rose
+    readonly property color success: mix(RosePine.pine, RosePine.text, 0.25)
     readonly property color urgent: RosePine.love
 
     readonly property color itemSelected: withOpacity(muted, 0.15)
@@ -25,5 +26,15 @@ Singleton {
 
     function withOpacity(value: color, opacity: real): color {
         return Qt.rgba(value.r, value.g, value.b, opacity);
+    }
+
+    function mix(from: color, to: color, amount: real): color {
+        const ratio = Math.max(0, Math.min(1, amount));
+        return Qt.rgba(
+            from.r + (to.r - from.r) * ratio,
+            from.g + (to.g - from.g) * ratio,
+            from.b + (to.b - from.b) * ratio,
+            from.a + (to.a - from.a) * ratio,
+        );
     }
 }

@@ -12,4 +12,6 @@ Singleton {
     readonly property string mic: ""
     readonly property string micMuted: ""
     readonly property string mouse: ""
+    readonly property string bolt: ""
+    readonly property string batteryAndroidFull: ""
 }

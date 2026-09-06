@@ -135,11 +135,19 @@ PanelWindow {
         text: Qt.formatDateTime(clock.date, "hh:mm")
     }
 
-    Systray {
+    Row {
         anchors.right: parent.right
         anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
+        spacing: 12
 
-        hostWindow: bar
+        Systray {
+            anchors.verticalCenter: parent.verticalCenter
+            hostWindow: bar
+        }
+
+        Battery {
+            anchors.verticalCenter: parent.verticalCenter
+        }
     }
 }
