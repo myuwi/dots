@@ -60,6 +60,7 @@ return {
       nix = { "nixfmt" },
       nu = { "nufmt" },
       python = { "isort", "black" },
+      qml = { "qmlformat", "qmljsfmt" },
       sh = { "shfmt" },
       toml = { "oxfmt" },
       typst = { "typstyle" },
@@ -98,6 +99,7 @@ return {
     opts.formatters = {
       ["biome-check"] = { append_args = { "--indent-style=space" } },
       shfmt = { prepend_args = { "-i", "2" } },
+      qmljsfmt = { command = "qmljsfmt" },
     }
   end,
 }

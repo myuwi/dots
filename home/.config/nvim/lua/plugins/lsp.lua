@@ -68,6 +68,7 @@ return {
       { "oxlint", opts = { mason = false } },
       "prismals",
       "pyright",
+      { "qmlls", opts = { mason = false } },
       { "rust_analyzer", opts = { mason = false } },
       "lua_ls",
       "svelte",
