@@ -28,7 +28,7 @@ return {
   workspace_required = true,
   init_options = {
     settings = {
-      typeAware = true,
+      -- typeAware = true,
     },
   },
 }
