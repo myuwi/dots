@@ -1,7 +1,6 @@
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import QtQuick
-import QtQuick.Controls as Controls
 
 Row {
     id: root
@@ -58,9 +57,11 @@ Row {
                 }
             }
 
-            Controls.ToolTip.visible: mouseArea.containsMouse && (modelData.tooltipTitle !== "" || modelData.title !== "")
-            Controls.ToolTip.text: modelData.tooltipTitle || modelData.title
-            Controls.ToolTip.delay: 2000
+            Tooltip {
+                target: trayItem
+                shown: mouseArea.containsMouse && text !== ""
+                text: trayItem.modelData.tooltipTitle || trayItem.modelData.title
+            }
         }
     }
 }
