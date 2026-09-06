@@ -26,3 +26,6 @@ bindkey "^[[3~" delete-char
 
 eval "$(mise activate zsh)"
 eval "$(starship init zsh)"
+
+export DIRENV_LOG_FORMAT=""
+eval "$(direnv hook zsh)"

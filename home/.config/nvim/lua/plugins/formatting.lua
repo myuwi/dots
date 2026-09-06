@@ -57,6 +57,7 @@ return {
       go = { "goimports", "gofmt" },
       lua = { "stylua" },
       fennel = { "fnlfmt" },
+      nix = { "nixfmt" },
       nu = { "nufmt" },
       python = { "isort", "black" },
       sh = { "shfmt" },

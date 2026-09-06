@@ -63,6 +63,7 @@ return {
       "jsonls",
       "lemminx",
       "marksman",
+      { "nixd", opts = { mason = false } },
       "nushell",
       { "oxlint", opts = { mason = false } },
       "prismals",
