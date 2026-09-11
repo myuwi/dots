@@ -45,8 +45,10 @@
   };
 
   programs.mango.enable = true;
+  programs.dconf.enable = true;
   hardware.brillo.enable = true;
   services.upower.enable = true;
+  services.gvfs.enable = true;
 
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
@@ -97,6 +99,7 @@
     # Apps
     pkgs.firefox
     pkgs.ghostty
+    pkgs.nautilus
   ];
 
   users.users.miika = {
