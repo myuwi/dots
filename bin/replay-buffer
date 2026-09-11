@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # When gsr saves a replay, it runs this script with the video path as $1.
 if [ -n "$1" ]; then

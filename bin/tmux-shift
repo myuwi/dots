@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 current=$(tmux display-message -p '#I')
 target=$1
