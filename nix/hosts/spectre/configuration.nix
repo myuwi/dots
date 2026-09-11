@@ -53,6 +53,11 @@
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
   ];
+  fonts.fontconfig.defaultFonts = {
+    serif = [ ];
+    sansSerif = [ ];
+    monospace = [ ];
+  };
 
   environment.pathsToLink = [ "/share/nix-direnv" ];
 
