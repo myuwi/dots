@@ -1,6 +1,21 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    inputs.mangowm.nixosModules.mango
+  ];
+
+  nixpkgs.config.allowUnfree = true;
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+  nix.settings.auto-optimise-store = true;
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.systemd-boot.configurationLimit = 10;
@@ -24,6 +39,67 @@
 
   programs.zsh.enable = true;
 
+  services.displayManager.ly = {
+    enable = true;
+    x11Support = false;
+  };
+
+  programs.mango.enable = true;
+  hardware.brillo.enable = true;
+  services.upower.enable = true;
+
+  fonts.packages = [
+    pkgs.nerd-fonts.jetbrains-mono
+  ];
+  fonts.fontconfig.defaultFonts.monospace = [ "JetBrainsMono Nerd Font Mono" ];
+
+  environment.pathsToLink = [ "/share/nix-direnv" ];
+
+  environment.systemPackages = [
+    # Shell
+    pkgs.direnv
+    pkgs.eza
+    pkgs.fzf
+    pkgs.nix-direnv
+    pkgs.starship
+    pkgs.tmux
+
+    # Development
+    pkgs.claude-code
+    pkgs.gcc
+    pkgs.git
+    pkgs.gnumake
+    pkgs.lazygit
+    pkgs.stow
+
+    # Neovim
+    pkgs.fd
+    pkgs.neovim
+    pkgs.ripgrep
+    pkgs.tree-sitter
+    pkgs.unzip
+
+    # Nix
+    pkgs.nixfmt
+
+    # Mango
+    pkgs.adwaita-icon-theme
+    pkgs.awww
+    pkgs.fuzzel
+    pkgs.grim
+    pkgs.jq
+    pkgs.lxqt.lxqt-policykit
+    pkgs.playerctl
+    pkgs.shikane
+    pkgs.slurp
+    pkgs.wl-clip-persist
+    pkgs.wl-clipboard
+
+    # Apps
+    pkgs.firefox
+    pkgs.ghostty
+  ];
+
   users.users.miika = {
     isNormalUser = true;
     uid = 1000;
@@ -35,24 +111,6 @@
       "audio"
     ];
   };
-
-  nixpkgs.config.allowUnfree = true;
-
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-  nix.settings.auto-optimise-store = true;
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 30d";
-  };
-
-  environment.systemPackages = [
-    pkgs.git
-    pkgs.neovim
-  ];
 
   system.stateVersion = "26.05";
 }
