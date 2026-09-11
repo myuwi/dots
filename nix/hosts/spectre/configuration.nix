@@ -107,6 +107,7 @@
     pkgs.jq
     pkgs.lxqt.lxqt-policykit
     pkgs.playerctl
+    pkgs.quickshell
     pkgs.shikane
     pkgs.slurp
     pkgs.wl-clip-persist
