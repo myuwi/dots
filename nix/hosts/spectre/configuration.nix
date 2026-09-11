@@ -116,6 +116,7 @@
     pkgs.firefox
     pkgs.ghostty
     pkgs.nautilus
+    pkgs.vesktop
   ];
 
   users.users.miika = {
