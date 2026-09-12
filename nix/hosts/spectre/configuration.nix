@@ -102,18 +102,23 @@
 
   environment.systemPackages = [
     # Shell
+    pkgs.btop
     pkgs.direnv
     pkgs.eza
+    pkgs.file
     pkgs.fzf
     pkgs.nix-direnv
     pkgs.nushell
     pkgs.starship
     pkgs.tmux
+    pkgs.unzip
+    pkgs.zip
 
     # Development
     pkgs.claude-code
     pkgs.gcc
     pkgs.git
+    pkgs.gh
     pkgs.gnumake
     pkgs.lazygit
     pkgs.nixfmt
