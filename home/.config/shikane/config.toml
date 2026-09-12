@@ -48,3 +48,15 @@ position = "-1920,400"
 scale = 1.0
 transform = "normal"
 adaptive_sync = false
+
+[[profile]]
+name = "Spectre"
+
+[[profile.output]]
+search = "n=eDP-1"
+enable = true
+mode = "preferred"
+position = "0,0"
+scale = 1.0
+transform = "normal"
+adaptive_sync = false
