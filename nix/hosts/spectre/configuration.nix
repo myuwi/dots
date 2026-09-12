@@ -46,6 +46,16 @@
 
   programs.mango.enable = true;
   programs.dconf.enable = true;
+  programs.dconf.profiles.user.databases = [
+    {
+      settings."org/gnome/desktop/interface" = {
+        gtk-theme = "adw-gtk3";
+        icon-theme = "Adwaita";
+        cursor-theme = "Adwaita";
+        color-scheme = "default";
+      };
+    }
+  ];
   hardware.brillo.enable = true;
   services.upower.enable = true;
   services.gvfs.enable = true;
@@ -120,6 +130,7 @@
     pkgs.stylua
 
     # Mango
+    pkgs.adw-gtk3
     pkgs.adwaita-icon-theme
     pkgs.awww
     pkgs.fuzzel
