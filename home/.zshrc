@@ -6,10 +6,7 @@ setopt autocd extendedglob nonomatch nobeep hist_ignore_dups hist_ignore_space
 alias ls='eza -a --group-directories-first'
 alias ll='eza -la --group-directories-first'
 alias cal='cal -mw'
-alias yt-dl='yt-dlp'
 alias lg='lazygit'
-alias ld='lazydocker'
-alias sxiv='nsxiv'
 
 autoload -Uz compinit && compinit
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'

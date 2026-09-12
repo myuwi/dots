@@ -8,7 +8,6 @@ return {
   "akinsho/toggleterm.nvim",
   keys = {
     { "<leader>lg", toggle("lazygit"), desc = "Open LazyGit" },
-    { "<leader>ld", toggle("lazydocker"), desc = "Open LazyDocker" },
   },
   opts = function()
     local highlights = require("rose-pine.plugins.toggleterm")
