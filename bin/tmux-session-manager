@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SEARCH_DIRS=("$HOME/repos" "$HOME/Code")
+SEARCH_DIRS=("$HOME/Projects")
 EXTRA_DIRS=("$HOME/.dots")
 
 existing_sessions=$(tmux list-sessions -F "#S" 2>/dev/null)
