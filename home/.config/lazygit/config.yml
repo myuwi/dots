@@ -1,6 +1,7 @@
 
 git:
   autoFetch: false
+  overrideGpg: true
 
 gui:
   fileTreeSortOrder: foldersFirst
