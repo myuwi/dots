@@ -50,6 +50,12 @@
   services.upower.enable = true;
   services.gvfs.enable = true;
 
+  services.gnome.gnome-keyring.enable = true;
+  programs.ssh.enableAskPassword = true;
+  programs.ssh.askPassword = "${pkgs.gcr_4}/libexec/gcr4-ssh-askpass";
+  systemd.packages = [ pkgs.gcr_4 ];
+  systemd.user.sockets.gcr-ssh-agent.wantedBy = [ "sockets.target" ];
+
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
     pkgs.inter
