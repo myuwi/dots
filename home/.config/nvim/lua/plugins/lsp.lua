@@ -33,8 +33,6 @@ end
 return {
   "neovim/nvim-lspconfig",
   dependencies = {
-    { "mason-org/mason.nvim", opts = {} },
-    "mason-org/mason-lspconfig.nvim",
     "saghen/blink.cmp",
     "b0o/schemastore.nvim",
     { "folke/neoconf.nvim", opts = {} },
@@ -52,24 +50,21 @@ return {
     servers = {
       "biome",
       "clojure_lsp",
-      { "denols", opts = { mason = false } },
+      "denols",
       "elixirls",
       "emmet_ls",
       "eslint",
       "fennel_ls",
-      { "gleam", opts = { mason = false } },
-      "glsl_analyzer",
+      "gleam",
       "gopls",
       "jsonls",
-      "lemminx",
-      "marksman",
-      { "nixd", opts = { mason = false } },
-      "nushell",
-      { "oxlint", opts = { mason = false } },
-      "prismals",
-      { "qmlls", opts = { mason = false } },
-      { "rust_analyzer", opts = { mason = false } },
       "lua_ls",
+      "marksman",
+      "nixd",
+      "nushell",
+      "oxlint",
+      "qmlls",
+      "rust_analyzer",
       "svelte",
       "tailwindcss",
       "taplo",
@@ -97,9 +92,6 @@ return {
     },
   },
   config = function(_, opts)
-    local mason_lspconfig = require("mason-lspconfig")
-    local mason_lspconfig_servers = vim.tbl_keys(require("mason-lspconfig.mappings").get_mason_map().lspconfig_to_package)
-
     vim.api.nvim_create_autocmd("LspAttach", {
       group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
       callback = function(args)
@@ -109,34 +101,11 @@ return {
       end,
     })
 
-    local capabilities = require("blink.cmp").get_lsp_capabilities()
-
     vim.lsp.config("*", {
-      capabilities = capabilities,
+      capabilities = require("blink.cmp").get_lsp_capabilities(),
     })
 
-    local ensure_installed = {}
-
-    for _, server in ipairs(opts.servers) do
-      server = type(server) == "table" and server or { server }
-
-      local server_name = server[1]
-      local server_opts = server.opts or {}
-
-      local use_mason = server_opts.mason ~= false and vim.tbl_contains(mason_lspconfig_servers, server_name)
-
-      if use_mason then
-        ensure_installed[#ensure_installed + 1] = server_name
-      else
-        vim.lsp.enable(server_name)
-      end
-    end
-
-    mason_lspconfig.setup({
-      automatic_enable = true,
-      ensure_installed = ensure_installed,
-    })
-
+    vim.lsp.enable(opts.servers)
     vim.diagnostic.config(opts.diagnostic)
   end,
 }
