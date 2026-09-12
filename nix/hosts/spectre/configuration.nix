@@ -63,8 +63,20 @@
   services.gnome.gnome-keyring.enable = true;
   programs.ssh.enableAskPassword = true;
   programs.ssh.askPassword = "${pkgs.gcr_4}/libexec/gcr4-ssh-askpass";
-  systemd.packages = [ pkgs.gcr_4 ];
+  systemd.packages = [
+    pkgs.gcr_4
+    pkgs.xdg-user-dirs
+  ];
   systemd.user.sockets.gcr-ssh-agent.wantedBy = [ "sockets.target" ];
+  systemd.user.services.xdg-user-dirs.wantedBy = [ "graphical-session.target" ];
+  environment.etc."xdg/user-dirs.defaults".text = ''
+    DOWNLOAD=Downloads
+    DOCUMENTS=Documents
+    MUSIC=Music
+    PICTURES=Pictures
+    VIDEOS=Videos
+    PROJECTS=Projects
+  '';
 
   fonts.packages = [
     pkgs.nerd-fonts.jetbrains-mono
