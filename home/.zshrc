@@ -24,7 +24,7 @@ bindkey "^H" backward-kill-word
 bindkey "^[[3;5~" kill-word
 bindkey "^[[3~" delete-char
 
-eval "$(mise activate zsh)"
+command -v mise >/dev/null && eval "$(mise activate zsh)"
 eval "$(starship init zsh)"
 
 export DIRENV_LOG_FORMAT=""
