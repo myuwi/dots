@@ -59,7 +59,6 @@ return {
       fennel = { "fnlfmt" },
       nix = { "nixfmt" },
       nu = { "nufmt" },
-      python = { "isort", "black" },
       qml = { "qmlformat", "qmljsfmt" },
       sh = { "shfmt" },
       toml = { "oxfmt" },

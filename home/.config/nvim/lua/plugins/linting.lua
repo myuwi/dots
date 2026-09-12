@@ -3,11 +3,10 @@
 return {
   "mfussenegger/nvim-lint",
   dependencies = { "folke/snacks.nvim" },
+  enabled = false,
   opts = {
     events = { "BufWritePost", "BufReadPost", "TextChanged", "TextChangedI" },
-    linters_by_ft = {
-      python = { "flake8" },
-    },
+    linters_by_ft = {},
   },
   config = function(_, opts)
     local lint = require("lint")
