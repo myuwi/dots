@@ -11,6 +11,10 @@
       url = "github:mangowm/mango";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    qmljsfmt = {
+      url = "github:myuwi/qmljsfmt";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -20,14 +24,25 @@
       disko,
       ...
     }:
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in
     {
       nixosConfigurations.spectre = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+        inherit system;
         specialArgs = { inherit inputs; };
         modules = [
           disko.nixosModules.disko
           ./nix/hosts/spectre/disk-config.nix
           ./nix/hosts/spectre/configuration.nix
+        ];
+      };
+
+      devShells.${system}.default = pkgs.mkShell {
+        packages = [
+          pkgs.qt6.qtdeclarative
+          inputs.qmljsfmt.packages.${system}.default
         ];
       };
     };

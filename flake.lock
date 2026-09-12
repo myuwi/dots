@@ -113,11 +113,32 @@
         "type": "github"
       }
     },
+    "qmljsfmt": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789205526,
+        "narHash": "sha256-mXlwxRs/A6vTltHlwKc9Yy6gRijKzSa4iqkRQTPcDyk=",
+        "owner": "myuwi",
+        "repo": "qmljsfmt",
+        "rev": "2ae65f70adaa33d8c41eba6e76e6abba293debf5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "myuwi",
+        "repo": "qmljsfmt",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disko": "disko",
         "mangowm": "mangowm",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "qmljsfmt": "qmljsfmt"
       }
     },
     "scenefx": {

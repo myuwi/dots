@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-# Qt 6 does not symlink qmlformat into a directory on PATH.
-exec /usr/lib/qt6/bin/qmlformat "$@"
