@@ -8,6 +8,8 @@ alias ll='eza -la --group-directories-first'
 alias cal='cal -mw'
 alias lg='lazygit'
 
+alias nrs="sudo nixos-rebuild switch --flake ~/.dots"
+
 autoload -Uz compinit && compinit
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' menu select
