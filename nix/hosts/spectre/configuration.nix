@@ -55,7 +55,7 @@
     pkgs.inter
     pkgs.material-symbols
     pkgs.noto-fonts
-    (pkgs.runCommandNoCC "murecho" { } ''
+    (pkgs.runCommand "murecho" { } ''
       install -Dm444 ${
         pkgs.fetchurl {
           url = "https://raw.githubusercontent.com/google/fonts/5174b3333331c966c38f4355d50b03ca1c1df2f9/ofl/murecho/Murecho%5Bwght%5D.ttf";
@@ -78,6 +78,7 @@
     pkgs.eza
     pkgs.fzf
     pkgs.nix-direnv
+    pkgs.nushell
     pkgs.starship
     pkgs.tmux
 
@@ -87,17 +88,30 @@
     pkgs.git
     pkgs.gnumake
     pkgs.lazygit
+    pkgs.nixfmt
     pkgs.stow
 
     # Neovim
-    pkgs.fd
     pkgs.neovim
+    pkgs.fd
     pkgs.ripgrep
     pkgs.tree-sitter
-    pkgs.unzip
 
-    # Nix
-    pkgs.nixfmt
+    # LSP
+    pkgs.emmet-ls
+    pkgs.lua-language-server
+    pkgs.marksman
+    pkgs.nixd
+    pkgs.taplo
+    pkgs.typescript-language-server
+    pkgs.vscode-langservers-extracted
+    pkgs.yaml-language-server
+
+    # Formatters
+    pkgs.nufmt
+    pkgs.oxfmt
+    pkgs.shfmt
+    pkgs.stylua
 
     # Mango
     pkgs.adwaita-icon-theme
