@@ -116,6 +116,7 @@
 
     # Development
     pkgs.claude-code
+    pkgs.codex
     pkgs.gcc
     pkgs.git
     pkgs.gh
