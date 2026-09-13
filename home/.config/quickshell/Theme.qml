@@ -21,7 +21,7 @@ Singleton {
     readonly property string fontFamily: "Inter"
     readonly property string iconFamily: "Material Symbols Rounded"
     readonly property int fontWeight: Font.Medium
-    // Point size (not pixels) to match awesome's Pango font description.
+    // Point size, not pixels
     readonly property real fontSize: 8.5
 
     function withOpacity(value: color, opacity: real): color {

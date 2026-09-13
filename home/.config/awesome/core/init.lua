@@ -1,6 +1,0 @@
-require("awful.autofocus")
-require(... .. ".autostart")
-require(... .. ".clients")
-require(... .. ".keys")
-require(... .. ".rules")
-require(... .. ".screens")

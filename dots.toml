@@ -6,5 +6,3 @@
 
 ".config/*" = true
 ".config/alacritty" = false
-".config/awesome" = false
-".config/picom" = false
