@@ -64,6 +64,7 @@
       ExecStart = "${pkgs.brillo}/bin/brillo -qc -S 25";
     };
   };
+  services.thermald.enable = true;
   services.upower.enable = true;
   services.gvfs.enable = true;
 
