@@ -69,7 +69,7 @@ def build-plan []: nothing -> table<pattern: string, source: string, target: str
     | flatten
   )
 
-  let candidates = (
+  let matched = (
     $manifest | where enabled == true
     | each {|e|
         let rows = ($e.pattern | expand)
@@ -81,34 +81,22 @@ def build-plan []: nothing -> table<pattern: string, source: string, target: str
     | flatten
     | where {|r| not ($excluded | any {|x| $r.target | is-at-or-under $x }) }
   )
-
-  # Most specific pattern wins when two produce the same target
-  let deduped = (
-    $candidates | group-by target | transpose target rows | each {|g|
-      let ranked = ($g.rows | sort-by {|r| $r.pattern | specificity } --reverse)
-      if ($ranked | length) > 1 and (($ranked.0.pattern | specificity) == ($ranked.1.pattern | specificity)) {
-        let pats = ($ranked | get pattern | str join ", ")
-        error make {msg: $"ambiguous: ($g.target) claimed equally by: ($pats)"}
-      }
-      $ranked.0
-    }
-  )
+  let candidates = ($matched | uniq-by target)
 
   # A directory is never linked whole when another entry claims something inside it
-  let suppressed = (
-    $deduped | where {|r| $deduped | any {|o| $o.target | is-under $r.target } }
+  let dropped = (
+    $candidates | where {|r| $candidates | any {|o| $o.target | is-under $r.target } } | get target
   )
 
-  # Subtracting from a glob is intended; suppressing an exact entry contradicts it
-  let exact = ($suppressed | where {|r| not ($r.pattern | str contains "*") })
+  # Any pattern claiming a dropped target counts, not just the one uniq-by kept
+  let exact = ($matched | where {|r| $r.target in $dropped and not ($r.pattern | str contains "*") })
   if ($exact | is-not-empty) {
     let bad = ($exact | first)
-    let claimant = ($deduped | where {|o| $o.target | is-under $bad.target } | get pattern.0)
+    let claimant = ($candidates | where {|o| $o.target | is-under $bad.target } | get pattern.0)
     error make {msg: $"($bad.pattern) cannot be linked as a directory: ($claimant) claims a path inside it; use ($bad.pattern)/* instead"}
   }
 
-  let dropped = ($suppressed | get target)
-  $deduped | where {|r| $r.target not-in $dropped } | sort-by target
+  $candidates | where {|r| $r.target not-in $dropped } | sort-by target
 }
 
 def load-manifest []: nothing -> table<pattern: string, enabled: bool> {
@@ -139,16 +127,6 @@ def expand []: string -> table<pattern: string, source: string, target: string> 
       source: $src
       target: ($nu.home-dir | path join ($src | path relative-to $root))
     }
-  }
-}
-
-# Literal path segments before the first glob; exact patterns rank highest
-def specificity []: string -> int {
-  let pattern = $in
-  if not ($pattern | str contains "*") {
-    999
-  } else {
-    $pattern | split row "/" | enumerate | where {|s| $s.item | str contains "*"} | get 0.index
   }
 }
 
