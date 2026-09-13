@@ -30,6 +30,26 @@ def "main status" []: nothing -> table<state: string, target: string, source: st
   $checked | append $stale | sort-by state target
 }
 
+# Create the links the plan calls for
+def "main link" [--dry-run]: nothing -> table<action: string, target: string, source: string> {
+  build-plan | each {|r|
+    let action = (match (link-state $r.target $r.source) {
+      "ok" => "ok"
+      "missing" => (if $dry_run { "would create" } else { create-link $r.target $r.source; "created" })
+      "wrong" => (if $dry_run { "would relink" } else { rm $r.target; create-link $r.target $r.source; "relinked" })
+      "conflict" => "conflict"
+    })
+    {action: $action, target: ($r.target | shorten), source: ($r.source | shorten)}
+  }
+  | where action != "ok"
+}
+
+# Point target at source, creating any missing parent directories
+def create-link [target: string, source: string] {
+  mkdir ($target | path dirname)
+  ^ln -s $source $target
+}
+
 # Remove links into home/ that the plan no longer claims
 def "main prune" [--dry-run]: nothing -> table<action: string, target: string, points-to: string> {
   let claimed = (build-plan | get target)
@@ -141,7 +161,7 @@ def specificity []: string -> int {
 
 # How a target compares to the source it should point at
 def link-state [target: string, source: string]: nothing -> string {
-  let kind = ($target | path type)
+  let kind = ($target | path type | default "")
   if $kind == "" {
     "missing"
   } else if $kind != "symlink" {
