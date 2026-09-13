@@ -160,6 +160,7 @@
     pkgs.fuzzel
     pkgs.grim
     pkgs.jq
+    pkgs.libnotify
     pkgs.lxqt.lxqt-policykit
     pkgs.playerctl
     pkgs.quickshell
