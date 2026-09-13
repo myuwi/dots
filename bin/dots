@@ -177,10 +177,12 @@ def link-target []: string -> string {
 # Every symlink under $HOME that points into the repo's home/ tree
 def managed-links []: nothing -> table<link: string, points-to: string> {
   let root = (source-root)
-  glob $"($nu.home-dir)/**/*" --depth 4 --exclude ["**/.cache/**" "**/.local/state/**"]
-  | where {|p| ($p | path type) == "symlink" }
-  | each {|p| {link: $p, points-to: ($p | link-target)} }
+  ^find $nu.home-dir -type l -printf "%p\t%l\n"
+  | lines
+  | parse "{link}\t{raw}"
+  | insert points-to {|l| $l.link | path dirname | path join $l.raw | path expand --no-symlink }
   | where {|l| $l.points-to | is-at-or-under $root }
+  | select link points-to
 }
 
 def shorten-paths []: table -> table {
