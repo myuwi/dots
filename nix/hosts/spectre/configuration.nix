@@ -122,7 +122,6 @@
     pkgs.gnumake
     pkgs.lazygit
     pkgs.nixfmt
-    pkgs.stow
 
     # Neovim
     pkgs.neovim

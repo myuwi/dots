@@ -32,7 +32,7 @@ A set of configuration files I use on my Linux machines.
 $ git clone --recurse-submodules https://github.com/myuwi/dots.git .dots
 $ cd .dots
 
-$ just stow
+$ ./bin/dots link
 ```
 
 ## Shots
