@@ -167,8 +167,10 @@
     pkgs.quickshell
     pkgs.shikane
     pkgs.slurp
+    pkgs.swayidle
     pkgs.wl-clip-persist
     pkgs.wl-clipboard
+    pkgs.wlopm
 
     # Apps
     pkgs.firefox
