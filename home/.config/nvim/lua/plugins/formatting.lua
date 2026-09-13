@@ -97,6 +97,7 @@ return {
 
     opts.formatters = {
       ["biome-check"] = { append_args = { "--indent-style=space" } },
+      nufmt = { args = { "--stdin" }, stdin = true },
       shfmt = { prepend_args = { "-i", "2" } },
       qmljsfmt = { command = "qmljsfmt" },
     }
