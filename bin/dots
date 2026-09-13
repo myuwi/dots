@@ -30,6 +30,22 @@ def "main status" []: nothing -> table<state: string, target: string, source: st
   $checked | append $stale | sort-by state target
 }
 
+# Remove links into home/ that the plan no longer claims
+def "main prune" [--dry-run]: nothing -> table<action: string, target: string, points-to: string> {
+  let claimed = (build-plan | get target)
+
+  managed-links
+  | where {|l| $l.link not-in $claimed }
+  | each {|l|
+      if not $dry_run { rm $l.link }
+      {
+        action: (if $dry_run { "would remove" } else { "removed" })
+        target: ($l.link | shorten)
+        points-to: ($l.points-to | shorten)
+      }
+    }
+}
+
 # Resolve the manifest into a concrete source -> target plan
 def build-plan []: nothing -> table<pattern: string, source: string, target: string> {
   let manifest = (load-manifest)
