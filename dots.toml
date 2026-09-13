@@ -1,0 +1,11 @@
+[dotfiles]
+".profile" = true
+".zprofile" = true
+".zshenv" = true
+".zshrc" = true
+
+".config/*" = true
+".config/alacritty" = false
+".config/awesome" = false
+".config/picom" = false
+".config/zathura" = false
