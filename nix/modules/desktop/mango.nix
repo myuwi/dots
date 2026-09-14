@@ -1,8 +1,12 @@
 { inputs, pkgs, ... }:
 {
-  imports = [ inputs.mangowm.nixosModules.mango ];
-
   programs.mango.enable = true;
+  # Pinned before scenefx 0.5 (mangowm/mango#1196), plus a layer-surface guard
+  programs.mango.package =
+    inputs.mangowm.packages.${pkgs.stdenv.hostPlatform.system}.mango.overrideAttrs
+      (old: {
+        patches = (old.patches or [ ]) ++ [ ../../patches/mango-buttonpress-skip-layersurface.patch ];
+      });
 
   environment.systemPackages = [
     pkgs.awww

@@ -1,0 +1,12 @@
+--- a/src/mango.c
++++ b/src/mango.c
+@@ -2411,6 +2411,9 @@
+ 
+ 		mods = mods | hard_mods;
+ 
++		if (l)
++			break;
++
+ 		for (ji = 0; ji < config.mouse_bindings_count; ji++) {
+ 			if (config.mouse_bindings_count < 1)
+ 				break;
