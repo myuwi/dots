@@ -128,6 +128,7 @@
     pkgs.gcc
     pkgs.git
     pkgs.gh
+    pkgs.gh-markdown-preview
     pkgs.gnumake
     pkgs.lazygit
     pkgs.nixfmt
