@@ -1,4 +1,3 @@
-export DOTFILES_DIR=$HOME/.dots
 
 prepend_path() {
   case ":$PATH:" in
@@ -7,7 +6,7 @@ prepend_path() {
   esac
 }
 
-[ -d "$DOTFILES_DIR/bin" ] && prepend_path "$DOTFILES_DIR/bin"
+[ -d "$HOME/.dots/bin" ] && prepend_path "$HOME/.dots/bin"
 prepend_path "$HOME/.cargo/bin"
 prepend_path "$HOME/.local/bin"
 
