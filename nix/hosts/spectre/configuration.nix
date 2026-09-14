@@ -76,6 +76,10 @@
     pkgs.xdg-user-dirs
   ];
   systemd.user.sockets.gcr-ssh-agent.wantedBy = [ "sockets.target" ];
+  systemd.user.services.gcr-ssh-agent.serviceConfig.ExecStart = [
+    ""
+    "${pkgs.gcr_4}/libexec/gcr-ssh-agent --base-dir %t/gcr -- -t 15m"
+  ];
   systemd.user.services.xdg-user-dirs.wantedBy = [ "graphical-session.target" ];
   environment.etc."xdg/user-dirs.defaults".text = ''
     DOWNLOAD=Downloads
