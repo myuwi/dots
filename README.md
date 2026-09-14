@@ -21,8 +21,6 @@
 > I don't advise you to straight up just install these configs on your machine, as they are very much adapted to my specific workflow, but feel free to take inspiration.
 
 ```sh
-$ git clone https://github.com/myuwi/dots.git .dots
-$ cd .dots
-
-$ ./bin/dots apply
+$ git clone https://github.com/myuwi/dots.git ~/.dots
+$ ~/.dots/bin/dots apply
 ```
