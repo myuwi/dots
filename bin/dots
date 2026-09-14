@@ -51,13 +51,13 @@ def as-action []: string -> string {
 
 def run-action [action: record] {
   match $action.state {
-    "missing" => { create-link $action.target $action.source }
-    "wrong" => {
+    missing => { create-link $action.target $action.source }
+    wrong => {
       rm $action.target
       create-link $action.target $action.source
     }
-    "stale" => { rm $action.target }
-    "conflict" => { }
+    stale => { rm $action.target }
+    conflict => { }
   }
 }
 
