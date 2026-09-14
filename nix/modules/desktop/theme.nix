@@ -15,5 +15,6 @@
   environment.systemPackages = [
     pkgs.adw-gtk3
     pkgs.adwaita-icon-theme
+    pkgs.papirus-icon-theme
   ];
 }
