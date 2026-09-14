@@ -35,7 +35,7 @@
         modules = [
           disko.nixosModules.disko
           ./nix/hosts/spectre/disk-config.nix
-          ./nix/hosts/spectre/configuration.nix
+          ./nix/hosts/spectre
         ];
       };
 
