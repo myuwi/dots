@@ -2,6 +2,7 @@
 {
   imports = [
     ./applications.nix
+    ./firefox.nix
     ./fonts.nix
     ./keyring.nix
     ./mango.nix

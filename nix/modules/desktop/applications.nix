@@ -1,7 +1,6 @@
 { pkgs, ... }:
 {
   environment.systemPackages = [
-    pkgs.firefox
     pkgs.ghostty
     pkgs.nautilus
     pkgs.file-roller
