@@ -1,6 +1,11 @@
-[dotfiles]
-".config" = { source = "home/.config/*", exclude = ["alacritty"] }
+# Shell
 ".profile" = "home/.profile"
 ".zprofile" = "home/.zprofile"
 ".zshenv" = "home/.zshenv"
 ".zshrc" = "home/.zshrc"
+
+# Config
+".config" = { source = "home/.config/*", exclude = ["alacritty"] }
+
+# Scripts
+".local/bin" = "bin/*"

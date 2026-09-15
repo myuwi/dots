@@ -56,9 +56,9 @@ def load-manifest [repo: path]: nothing -> table<target: string, source: string,
   if not ($file | path exists) {
     error make {msg: $"manifest not found: ($file)"}
   }
-  let entries = open $file | get -o dotfiles
+  let entries = open $file
   if ($entries | is-empty) {
-    error make {msg: $"($file): missing or empty [dotfiles] table"}
+    error make {msg: $"($file): no entries"}
   }
   $entries | transpose target spec | each {|r|
     let spec = if ($r.spec | describe) == "string" { {source: $r.spec} } else { $r.spec }
@@ -71,7 +71,7 @@ def load-manifest [repo: path]: nothing -> table<target: string, source: string,
 
 def expand-entry [repo: path]: record -> table<source: string, target: string> {
   let entry = $in
-  let target = $nu.home-dir | path join $entry.target
+  let target = $nu.home-dir | path join $entry.target | path expand --no-symlink
 
   if ($entry.source | str contains "*") {
     let matches = glob ($repo | path join $entry.source)

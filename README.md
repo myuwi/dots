@@ -10,10 +10,10 @@
 
 ## Layout
 
-- `home/` - configuration files, symlinked into `$HOME`
+- `home/` - configuration files, symlinked into `~`
 - `nix/` - NixOS configuration for my machines
-- `bin/` - scripts on `$PATH`
-- `dots.toml` - link manifest for `home/`
+- `bin/` - scripts, symlinked into `~/.local/bin`
+- `dots.toml` - symlink manifest
 
 ## Setup
 

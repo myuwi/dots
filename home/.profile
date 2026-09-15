@@ -6,7 +6,6 @@ prepend_path() {
   esac
 }
 
-[ -d "$HOME/.dots/bin" ] && prepend_path "$HOME/.dots/bin"
 prepend_path "$HOME/.cargo/bin"
 prepend_path "$HOME/.local/bin"
 
