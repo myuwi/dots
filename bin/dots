@@ -1,114 +1,58 @@
 #!/usr/bin/env nu
 
+const REPO = path self | path expand | path dirname --num-levels 2
+
 # Manage dotfile symlinks declaratively
 def main [] { help main }
 
-# Resolve the manifest into a link plan
-def "main resolve" []: nothing -> table<pattern: string, source: string, target: string> {
-  build-plan
-}
-
 # Compare the resolved link plan against what's on disk
 def "main status" []: nothing -> table<state: string, target: string, source: string> {
-  survey | shorten-paths | sort-by state target
+  diff-plan (resolve-plan $REPO) (managed-links $REPO)
+  | format-paths
+  | sort-by state target
 }
 
 # Apply the resolved link plan
-def "main apply" [--dry-run]: nothing -> table<action: string, target: string, source: string> {
-  let actions = survey | where state != "ok"
-  if not $dry_run {
-    $actions | each {|a| run-action $a } | ignore
-  }
-  $actions | shorten-paths | update state {|a| $a.state | as-action } | rename --column {state: action}
-}
-
-# The state of every path the manifest covers, stale links first
-def survey []: nothing -> table<state: string, target: string, source: string> {
-  let plan = (build-plan)
-  let claimed = $plan | get target
-
-  # Stale links go first: one may be a directory the plan now links inside
-  let stale = managed-links | where {|l| $l.link not-in $claimed }
-  let doomed = $stale | get link
-
-  $stale
-  | each {|l| {state: "stale", target: $l.link, source: $l.points-to} }
-  | append (
-    $plan
-    | each {|r| {state: (link-state $r.target $r.source $doomed), target: $r.target, source: $r.source} }
-  )
-}
-
-# What apply does about a target in each state
-def as-action []: string -> string {
-  match $in {
-    missing => "create"
-    wrong => "relink"
-    stale => "remove"
-    conflict => "conflict"
-  }
-}
-
-def run-action [action: record] {
-  match $action.state {
-    missing => { create-link $action.target $action.source }
-    wrong => {
-      rm $action.target
-      create-link $action.target $action.source
+def "main apply" [
+  --dry-run # Report the actions without touching anything
+]: nothing -> oneof<table<action: string, target: string, source: string>, nothing> {
+  let actions = diff-plan (resolve-plan $REPO) (managed-links $REPO)
+  | where state != "ok"
+  | rename --column {state: action}
+  | update action {|r|
+      match $r.action {
+        missing => "create"
+        wrong => "relink"
+        stale => "remove"
+        conflict => "conflict"
+      }
     }
-    stale => { rm $action.target }
-    conflict => { }
+
+  if not $dry_run {
+    for row in $actions { run-action $row }
+  }
+  if ($actions | is-not-empty) {
+    $actions
+    | format-paths
+    | sort-by action target
   }
 }
 
-# Point target at source, creating any missing parent directories
-def create-link [target: string, source: string] {
-  mkdir ($target | path dirname)
-  ^ln -s $source $target
-}
+def resolve-plan [repo: path]: nothing -> table<source: string, target: string> {
+  let plan = load-manifest $repo | each {|e| $e | expand-entry $repo } | flatten
 
-# Resolve the manifest into a concrete source -> target plan
-def build-plan []: nothing -> table<pattern: string, source: string, target: string> {
-  let manifest = (load-manifest)
-
-  let excluded = (
-    $manifest
-    | where not enabled
-    | each {|e| $e.pattern | expand | get target }
-    | flatten
-  )
-
-  let matched = (
-    $manifest | where enabled | each {|e|
-      let hits = $e.pattern | expand
-      if ($hits | is-empty) { error make {msg: $"pattern matches nothing: ($e.pattern)"} }
-      $hits
-    } | flatten
-    | where {|r| not ($excluded | any {|x| $r.target | is-at-or-under $x }) }
-  )
-  let candidates = $matched | uniq-by target
-
-  # A directory is never linked whole when another entry claims something inside it
-  let dropped = (
-    $candidates | where {|r| $candidates | any {|o| $o.target | is-under $r.target } } | get target
-  )
-
-  # Any pattern claiming a dropped target counts, not just the one uniq-by kept
-  let exact = (
-    $matched
-    | where {|r| $r.target in $dropped and not ($r.pattern | str contains "*") }
-  )
-  if ($exact | is-not-empty) {
-    let bad = $exact | first
-    let claimant = $candidates | where {|o| $o.target | is-under $bad.target } | get pattern.0
-    error make {msg: $"($bad.pattern) cannot be linked as a directory: ($claimant) claims a path inside it; use ($bad.pattern)/* instead"}
+  let nested = $plan | where {|r| $plan | any {|o| $r.target | is-under $o.target } }
+  if ($nested | is-not-empty) {
+    let inner = $nested | first
+    let outer = $plan | where {|o| $inner.target | is-under $o.target } | first
+    error make {msg: $"($inner.target | shorten) is inside ($outer.target | shorten), which is linked as well"}
   }
 
-  $candidates | where {|r| $r.target not-in $dropped } | sort-by target
+  $plan | sort-by target
 }
 
-def load-manifest []: nothing -> table<pattern: string, enabled: bool> {
-  let file = repo-root | path join "dots.toml"
+def load-manifest [repo: path]: nothing -> table<target: string, source: string, exclude: list<string>> {
+  let file = $repo | path join "dots.toml"
   if not ($file | path exists) {
     error make {msg: $"manifest not found: ($file)"}
   }
@@ -116,36 +60,69 @@ def load-manifest []: nothing -> table<pattern: string, enabled: bool> {
   if ($entries | is-empty) {
     error make {msg: $"($file): missing or empty [dotfiles] table"}
   }
-  let rows = $entries | transpose pattern enabled
-  let bad = $rows | where {|r| ($r.enabled | describe) != "bool" }
-  if ($bad | is-not-empty) {
-    let names = $bad | get pattern | str join ", "
-    error make {msg: $"($file): values must be true or false, got: ($names)"}
-  }
-  $rows
-}
-
-# Every source path a pattern matches, with the target it maps to
-def expand []: string -> table<pattern: string, source: string, target: string> {
-  let pattern = $in
-  let root = (source-root)
-  glob ($root | path join $pattern) | each {|src|
-    {
-      pattern: $pattern
-      source: $src
-      target: ($nu.home-dir | path join ($src | path relative-to $root))
+  $entries | transpose target spec | each {|r|
+    let spec = if ($r.spec | describe) == "string" { {source: $r.spec} } else { $r.spec }
+    if not (($spec | describe | str starts-with "record") and "source" in $spec) {
+      error make {msg: $"($file): ($r.target) must be a source path or a table with a source"}
     }
+    {target: $r.target, source: $spec.source, exclude: ($spec | get -o exclude | default [])}
   }
 }
 
-# How a target compares to the source it should point at, counting doomed links as gone
-def link-state [target: string, source: string, doomed: list<string> = []]: nothing -> string {
-  let kind = (
-    if ($doomed | any {|d| $target | is-under $d }) { "" } else {
-      $target | path type | default ""
+def expand-entry [repo: path]: record -> table<source: string, target: string> {
+  let entry = $in
+  let target = $nu.home-dir | path join $entry.target
+
+  if ($entry.source | str contains "*") {
+    let matches = glob ($repo | path join $entry.source)
+    if ($matches | is-empty) {
+      error make {msg: $"source matches nothing: ($entry.source)"}
     }
-  )
-  if $kind == "" {
+
+    # Targets keep the path below the glob, so a nested match stays nested
+    let root = $repo | path join ($entry.source | glob-root)
+    $matches
+    | each {|src| {source: $src, name: ($src | path relative-to $root)} }
+    | where {|r| $r.name not-in $entry.exclude }
+    | each {|r| {source: $r.source, target: ($target | path join $r.name)} }
+  } else {
+    let source = $repo | path join $entry.source
+    if not ($source | path exists) {
+      error make {msg: $"source not found: ($entry.source)"}
+    }
+    [
+      {source: $source, target: $target}
+    ]
+  }
+}
+
+def managed-links [repo: path]: nothing -> table<link: string, points-to: string> {
+  ^find $nu.home-dir -xdev -maxdepth 4 -type l -printf "%p\t%l\n"
+  | lines
+  | parse "{link}\t{raw}"
+  | insert points-to {|l| $l.link | path dirname | path join $l.raw | path expand --no-symlink }
+  | where {|l| ($l.points-to | is-at-or-under $repo) and not ($l.link | is-at-or-under $repo) }
+  | select link points-to
+}
+
+def diff-plan [plan: table<source: string, target: string>, links: table<link: string, points-to: string>]: nothing -> table<state: string, target: string, source: string> {
+  let claimed = $plan | get target
+
+  # Stale links go first: one may be a directory the plan now links inside
+  let stale = $links | where {|l| $l.link not-in $claimed }
+  let removals = $stale | get link
+
+  let removed = $stale | each {|l| {state: "stale", target: $l.link, source: $l.points-to} }
+  let planned = $plan | each {|r| {state: (link-state $r.target $r.source $removals), target: $r.target, source: $r.source} }
+
+  $removed | append $planned
+}
+
+def link-state [target: string, source: string, removals: list<string>]: nothing -> string {
+  let kind: oneof<string, nothing> = $target | path type
+
+  # A path under a pending removal counts as missing: removals are applied first
+  if $kind == null or ($removals | any {|r| $target | is-under $r }) {
     "missing"
   } else if $kind != "symlink" {
     "conflict"
@@ -156,37 +133,38 @@ def link-state [target: string, source: string, doomed: list<string> = []]: noth
   }
 }
 
-# Where a symlink points, resolved to an absolute path without following it
 def link-target []: string -> string {
   let link = $in
-  let parent = $link | path dirname
-  let raw = ls --long -a $parent | where name == $link | get target.0
-  $parent | path join $raw | path expand --no-symlink
+  $link | path dirname | path join (^readlink $link | str trim) | path expand --no-symlink
 }
 
-# Every symlink under $HOME that points into the repo's home/ tree
-def managed-links []: nothing -> table<link: string, points-to: string> {
-  let root = (source-root)
-  ^find $nu.home-dir -type l -printf "%p\t%l\n"
-  | lines
-  | parse "{link}\t{raw}"
-  | insert points-to {|l| $l.link | path dirname | path join $l.raw | path expand --no-symlink }
-  | where {|l| $l.points-to | is-at-or-under $root }
-  | select link points-to
+def run-action [row: record] {
+  match $row.action {
+    create => { create-link $row.target $row.source }
+    relink => {
+      rm $row.target
+      create-link $row.target $row.source
+    }
+    remove => { rm $row.target }
+    conflict => { }
+  }
 }
 
-def shorten-paths []: table -> table {
+def create-link [target: string, source: string] {
+  mkdir ($target | path dirname)
+  ^ln -s $source $target
+}
+
+def format-paths []: table -> table {
   update target {|r| $r.target | shorten } | update source {|r| $r.source | shorten }
 }
 
-# Paths read more clearly relative to $HOME
 def shorten []: string -> string {
-  let p = $in
-  if ($p | str starts-with $"($nu.home-dir)/") {
-    $"~/($p | path relative-to $nu.home-dir)"
-  } else {
-    $p
-  }
+  $in | str replace --regex $"^($nu.home-dir)/" "~/"
+}
+
+def glob-root []: string -> string {
+  $in | split row "/" | take until {|p| $p | str contains "*" } | path join
 }
 
 def is-under [parent: string]: string -> bool {
@@ -195,12 +173,4 @@ def is-under [parent: string]: string -> bool {
 
 def is-at-or-under [parent: string]: string -> bool {
   $in == $parent or ($in | is-under $parent)
-}
-
-def source-root []: nothing -> string {
-  repo-root | path join "home"
-}
-
-def repo-root []: nothing -> string {
-  $env.CURRENT_FILE | path dirname | path dirname
 }
