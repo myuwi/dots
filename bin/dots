@@ -97,7 +97,7 @@ def expand-entry [repo: path]: record -> table<source: string, target: string> {
 }
 
 def managed-links [repo: path]: nothing -> table<link: string, points-to: string> {
-  ^find $nu.home-dir -xdev -maxdepth 4 -type l -printf "%p\t%l\n"
+  ^find $nu.home-dir -xdev -maxdepth 6 -type l -printf "%p\t%l\n"
   | lines
   | parse "{link}\t{raw}"
   | insert points-to {|l| $l.link | path dirname | path join $l.raw | path expand --no-symlink }
