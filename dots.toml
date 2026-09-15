@@ -5,7 +5,8 @@
 ".zshrc" = "home/.zshrc"
 
 # Config
-".config" = { source = "home/.config/*", exclude = ["alacritty"] }
+".config" = { source = "home/.config/*", exclude = ["alacritty", "mozilla"] }
+".config/mozilla/firefox/default/chrome" = "home/.config/mozilla/firefox/chrome"
 
 # Scripts
 ".local/bin" = "bin/*"
