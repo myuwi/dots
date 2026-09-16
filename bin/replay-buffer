@@ -1,11 +1,27 @@
 #!/usr/bin/env bash
 
-# When gsr saves a replay, it runs this script with the video path as $1.
-if [ -n "$1" ]; then
-  notify-send "Replay saved" "$1"
+# gsr save callback: $1=filepath, $2=type (regular|replay|screenshot)
+if [ -n "$2" ]; then
+  notify-send -a "Replay buffer" "Replay saved" "$1"
   exit 0
 fi
 
+case "${1:-start}" in
+save)
+  exec pkill -SIGUSR1 -f "^gpu-screen-recorder"
+  ;;
+start) ;;
+*)
+  echo "usage: ${0##*/} [start|save]" >&2
+  exit 1
+  ;;
+esac
+
 self="$(realpath "$0")"
-exec gpu-screen-recorder -w DP-2 -a default_output -a game_sink.monitor -a rnnoise_source \
-  -f 60 -r 90 -fm vfr -tune performance -replay-storage ram -k hevc_vulkan -bm cbr -q 35000 -c mp4 -sc "$self" -o ~/Videos
+exec gpu-screen-recorder \
+  -w DP-2 \
+  -a 'name:Desktop|default_output' \
+  -a 'name:Game|game_sink.monitor' \
+  -a 'name:Microphone|rnnoise_source' \
+  -f 60 -r 90 -fm vfr -tune performance -replay-storage ram \
+  -k hevc_vulkan -bm cbr -q 35000 -c mp4 -sc "$self" -o ~/Videos
