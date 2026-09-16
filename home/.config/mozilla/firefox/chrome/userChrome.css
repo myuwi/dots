@@ -60,6 +60,13 @@
   width: 24px !important;
 }
 
+/* Only show the close button on active or hovered tabs */
+#tabbrowser-tabs[orient="horizontal"]
+  .tabbrowser-tab:not([selected], [multiselected], :hover, :focus-within)
+  .tab-close-button {
+  visibility: hidden !important;
+}
+
 /* Hide the tab bar when a single tab is open */
 #TabsToolbar:has(#tabbrowser-tabs tab):not(
     :has(
