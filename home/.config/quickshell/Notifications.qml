@@ -21,6 +21,7 @@ Scope {
         id: win
 
         WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.namespace: "notifications"
 
         screen: Config.mainScreen
         color: "transparent"
@@ -32,8 +33,8 @@ Scope {
             right: true
         }
         margins {
-            bottom: 10
-            right: 10
+            bottom: 12
+            right: 12
         }
 
         implicitWidth: list.implicitWidth
@@ -48,9 +49,19 @@ Scope {
                 id: rep
                 model: server.trackedNotifications
 
-                delegate: NotificationItem {
+                delegate: Item {
+                    id: wrapper
                     required property var modelData
-                    notification: modelData
+
+                    Layout.fillWidth: true
+                    implicitWidth: card.implicitWidth
+                    implicitHeight: card.implicitHeight
+
+                    NotificationItem {
+                        id: card
+                        anchors.right: parent.right
+                        notification: wrapper.modelData
+                    }
                 }
             }
         }

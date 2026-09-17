@@ -1,7 +1,11 @@
 import Quickshell
 import Quickshell.Services.Notifications
+import Quickshell.Widgets
+import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
+
+// TODO: Animate and make flickable
 
 Rectangle {
     id: root
@@ -9,6 +13,11 @@ Rectangle {
     required property Notification notification
 
     readonly property int pad: 18
+    readonly property int padY: 24
+    readonly property int minWidth: 216
+    readonly property int maxWidth: 360
+    readonly property int rightInset: notification.image !== "" ? pad + 96 : pad
+    readonly property int contentMaxWidth: maxWidth - pad - rightInset
     readonly property var visibleActions: {
         const actions = [];
         for (const action of notification.actions) {
@@ -19,13 +28,11 @@ Rectangle {
         return actions;
     }
 
-    Layout.preferredWidth: 360
-    implicitHeight: layout.implicitHeight + pad * 2
+    implicitWidth: Math.max(minWidth, Math.min(layout.implicitWidth + pad + rightInset, maxWidth))
+    implicitHeight: layout.implicitHeight + padY * 2
 
     color: Theme.bg
     radius: 8
-    border.width: 1
-    border.color: RosePine.overlay
 
     function invokeDefaultAction(): void {
         for (const action of notification.actions) {
@@ -61,78 +68,117 @@ Rectangle {
         }
     }
 
+    // Border below the cover art so the art can paint over it.
+    Rectangle {
+        anchors.fill: parent
+        color: "transparent"
+        radius: root.radius
+        border.width: 1
+        border.color: RosePine.overlay
+    }
+
+    // Floating cover art, faded into the card background.
+    ClippingRectangle {
+        anchors.fill: parent
+        radius: root.radius
+        color: "transparent"
+        visible: root.notification.image !== ""
+
+        Image {
+            id: coverArt
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.topMargin: -8
+            anchors.bottomMargin: -8
+            width: height
+            sourceSize.width: 150
+            sourceSize.height: 150
+            source: root.notification.image
+            fillMode: Image.PreserveAspectFit
+            visible: false
+        }
+
+        LinearGradient {
+            id: coverMask
+            anchors.fill: coverArt
+            visible: false
+            start: Qt.point(0, 0)
+            end: Qt.point(width, 0)
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0) }
+                GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.3) }
+                GradientStop { position: 0.55; color: Qt.rgba(1, 1, 1, 0.65) }
+                GradientStop { position: 0.7; color: Qt.rgba(1, 1, 1, 0.88) }
+                GradientStop { position: 0.85; color: Qt.rgba(1, 1, 1, 1) }
+                GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 1) }
+            }
+        }
+
+        OpacityMask {
+            anchors.fill: coverArt
+            source: coverArt
+            maskSource: coverMask
+        }
+    }
+
     ColumnLayout {
         id: layout
         anchors.fill: parent
-        anchors.margins: root.pad
+        anchors.leftMargin: root.pad
+        anchors.topMargin: root.padY
+        anchors.bottomMargin: root.padY
+        anchors.rightMargin: root.rightInset
         spacing: 12
 
-        // App name
-        RowLayout {
-            spacing: 6
+        ColumnLayout {
+            spacing: 3
+            Layout.fillWidth: true
 
-            Image {
-                source: root.notification.appIcon !== "" ? Quickshell.iconPath(root.notification.appIcon) : ""
-                visible: root.notification.appIcon !== ""
-                sourceSize.width: 18
-                sourceSize.height: 18
-                Layout.preferredWidth: 18
-                Layout.preferredHeight: 18
+            RowLayout {
+                spacing: 6
+                Layout.fillWidth: true
+                Layout.bottomMargin: 3
+
+                Image {
+                    source: root.notification.appIcon !== "" ? Quickshell.iconPath(root.notification.appIcon) : ""
+                    visible: root.notification.appIcon !== ""
+                    sourceSize.width: 18
+                    sourceSize.height: 18
+                    Layout.preferredWidth: 18
+                    Layout.preferredHeight: 18
+                }
+
+                Text {
+                    text: root.notification.appName
+                    color: Theme.text
+                    font.family: Theme.fontFamily
+                    font.weight: Theme.fontWeight
+                    font.pointSize: Theme.fontSizeSm
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                }
             }
 
             Text {
-                text: root.notification.appName
+                text: root.notification.summary
+                color: Theme.text
+                font.family: Theme.fontFamily
+                font.weight: Font.Bold
+                font.pointSize: Theme.fontSize
+                wrapMode: Text.Wrap
+                Layout.maximumWidth: root.contentMaxWidth
+            }
+
+            Text {
+                text: root.notification.body
                 color: Theme.text
                 font.family: Theme.fontFamily
                 font.weight: Theme.fontWeight
                 font.pointSize: Theme.fontSize
-                elide: Text.ElideRight
-                Layout.fillWidth: true
-            }
-        }
-
-        // Image + summary/body
-        RowLayout {
-            spacing: 12
-
-            Image {
-                source: root.notification.image
-                visible: root.notification.image !== ""
-                sourceSize.width: 60
-                sourceSize.height: 60
-                fillMode: Image.PreserveAspectCrop
-                Layout.preferredWidth: 60
-                Layout.preferredHeight: 60
-                Layout.alignment: Qt.AlignTop
-            }
-
-            ColumnLayout {
-                spacing: 3
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignTop
-                Layout.topMargin: 6
-                Layout.bottomMargin: 6
-
-                Text {
-                    text: root.notification.summary
-                    color: Theme.text
-                    font.family: Theme.fontFamily
-                    font.weight: Font.Bold
-                    font.pointSize: Theme.fontSize
-                    wrapMode: Text.Wrap
-                    Layout.fillWidth: true
-                }
-
-                Text {
-                    text: root.notification.body
-                    color: Theme.text
-                    font.family: Theme.fontFamily
-                    font.weight: Theme.fontWeight
-                    font.pointSize: Theme.fontSize
-                    visible: text !== ""
-                    wrapMode: Text.Wrap
-                    Layout.fillWidth: true
-                }
+                visible: text !== ""
+                wrapMode: Text.Wrap
+                Layout.maximumWidth: root.contentMaxWidth
             }
         }
 
