@@ -4,6 +4,9 @@
 ".zshenv" = "home/.zshenv"
 ".zshrc" = "home/.zshrc"
 
+# Git
+".gitconfig" = "home/.gitconfig"
+
 # Config
 ".config" = { source = "home/.config/*", exclude = ["alacritty", "mozilla"] }
 ".config/mozilla/firefox/default/chrome" = "home/.config/mozilla/firefox/chrome"
