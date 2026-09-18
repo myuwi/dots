@@ -5,12 +5,12 @@ import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 
-// TODO: Animate and make flickable
-
 Rectangle {
     id: root
 
     required property Notification notification
+
+    signal closeRequested(bool byUser)
 
     readonly property int pad: 18
     readonly property int padY: 24
@@ -34,22 +34,20 @@ Rectangle {
     color: Theme.bg
     radius: 8
 
-    function invokeDefaultAction(): void {
+    function activateDefault(): void {
         for (const action of notification.actions) {
             if (action.identifier === "default") {
                 action.invoke();
                 return;
             }
         }
-
-        notification.dismiss();
     }
 
     // Auto-dismiss (expireTimeout is ms; <=0 means unset/never, so fall back).
     Timer {
         interval: root.notification.expireTimeout > 0 ? root.notification.expireTimeout : 5000
         running: !hoverHandler.hovered
-        onTriggered: root.notification.expire()
+        onTriggered: root.closeRequested(false)
     }
 
     HoverHandler {
@@ -61,9 +59,10 @@ Rectangle {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onClicked: event => {
             if (event.button === Qt.LeftButton) {
-                root.invokeDefaultAction();
+                root.activateDefault();
+                root.closeRequested(true);
             } else if (event.button === Qt.RightButton) {
-                root.notification.expire();
+                root.closeRequested(true);
             }
         }
     }
