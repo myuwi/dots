@@ -4,7 +4,7 @@
 
 def speed-for [appid: string]: nothing -> string {
   match $appid {
-    "osu!" => "-0.225"
+    "osu!" => "0.1"
     _ => "0.0"
   }
 }
