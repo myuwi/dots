@@ -1,8 +1,8 @@
 import Quickshell
 import Quickshell.Services.Notifications
 import Quickshell.Widgets
-import Qt5Compat.GraphicalEffects
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 
 Rectangle {
@@ -57,7 +57,7 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: event => {
+        onClicked: (event) => {
             if (event.button === Qt.LeftButton) {
                 root.activateDefault();
                 root.closeRequested(true);
@@ -98,26 +98,29 @@ Rectangle {
             visible: false
         }
 
-        LinearGradient {
+        Rectangle {
             id: coverMask
             anchors.fill: coverArt
             visible: false
-            start: Qt.point(0, 0)
-            end: Qt.point(width, 0)
+            layer.enabled: true
             gradient: Gradient {
+                orientation: Gradient.Horizontal
+                // qmlformat off
                 GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0) }
-                GradientStop { position: 0.35; color: Qt.rgba(1, 1, 1, 0.3) }
-                GradientStop { position: 0.55; color: Qt.rgba(1, 1, 1, 0.65) }
-                GradientStop { position: 0.7; color: Qt.rgba(1, 1, 1, 0.88) }
                 GradientStop { position: 0.85; color: Qt.rgba(1, 1, 1, 1) }
                 GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 1) }
+                // qmlformat on
             }
         }
 
-        OpacityMask {
+        MultiEffect {
             anchors.fill: coverArt
             source: coverArt
+            maskEnabled: true
             maskSource: coverMask
+            // Default threshold/spread is a near-hard cutoff; widen it across the full alpha range to get a smooth fade
+            maskThresholdMin: 0.5
+            maskSpreadAtMin: 1.0
         }
     }
 
@@ -140,7 +143,10 @@ Rectangle {
                 Layout.bottomMargin: 3
 
                 Image {
-                    source: root.notification.appIcon !== "" ? Quickshell.iconPath(root.notification.appIcon) : ""
+                    source:
+                        root.notification.appIcon !== ""
+                            ? Quickshell.iconPath(root.notification.appIcon)
+                            : ""
                     visible: root.notification.appIcon !== ""
                     sourceSize.width: 18
                     sourceSize.height: 18
