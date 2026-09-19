@@ -8,6 +8,7 @@
     ../../modules/shell.nix
     ../../modules/nvidia.nix
     ../../modules/desktop
+    ../../modules/capture.nix
     ./pipewire.nix
   ];
 
