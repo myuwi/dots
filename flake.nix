@@ -39,6 +39,16 @@
         ];
       };
 
+      nixosConfigurations.tako = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs; };
+        modules = [
+          disko.nixosModules.disko
+          ./nix/hosts/tako/disk-config.nix
+          ./nix/hosts/tako
+        ];
+      };
+
       devShells.${system}.default = pkgs.mkShell {
         packages = [
           pkgs.qt6.qtdeclarative
