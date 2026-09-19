@@ -2,6 +2,7 @@
 {
   imports = [
     ./applications.nix
+    ./audio.nix
     ./firefox.nix
     ./fonts.nix
     ./keyring.nix
