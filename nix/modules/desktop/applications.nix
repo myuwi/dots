@@ -7,6 +7,7 @@
     pkgs.loupe
     pkgs.mpv
     pkgs.gimp
+    pkgs.pavucontrol
     pkgs.vesktop
   ];
 }
