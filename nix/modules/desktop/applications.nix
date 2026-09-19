@@ -17,6 +17,13 @@
       '';
     })
     pkgs.pavucontrol
-    pkgs.vesktop
+    (pkgs.vesktop.override {
+      withSystemVencord = true;
+      vencord = pkgs.vencord.overrideAttrs (old: {
+        postPatch = (old.postPatch or "") + ''
+          cp -r ${../../vencord-plugins} src/userplugins
+        '';
+      });
+    })
   ];
 }
