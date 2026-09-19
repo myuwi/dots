@@ -4,6 +4,7 @@
     pkgs.ghostty
     pkgs.nautilus
     pkgs.file-roller
+    pkgs.gnome-calculator
     pkgs.loupe
     pkgs.mpv
     pkgs.gimp
