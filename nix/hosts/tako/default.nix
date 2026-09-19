@@ -9,6 +9,7 @@
     ../../modules/nvidia.nix
     ../../modules/desktop
     ../../modules/capture.nix
+    ../../modules/gaming.nix
     ./pipewire.nix
   ];
 
