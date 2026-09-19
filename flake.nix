@@ -8,7 +8,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mangowm = {
-      url = "github:mangowm/mango/adc12390758caf3599a4921c0cd6374adda8f000";
+      url = "github:mangowm/mango/9d4f4fd46baa096e20e2cb98e629fde10fd7be38";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     qmljsfmt = {
