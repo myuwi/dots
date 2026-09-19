@@ -24,4 +24,14 @@
     pkgs.wl-clipboard
     pkgs.wlopm
   ];
+
+  systemd.user.services.swayidle = {
+    description = "Idle management daemon";
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.swayidle}/bin/swayidle -w";
+      Restart = "on-failure";
+    };
+  };
 }
