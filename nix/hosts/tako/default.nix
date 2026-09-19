@@ -18,5 +18,11 @@
 
   zramSwap.enable = true;
 
+  fileSystems."/mnt/hdd1" = {
+    device = "/dev/disk/by-uuid/CA1A8FE81A8FD03D";
+    fsType = "ntfs3";
+    options = [ "uid=1000" "nofail" ];
+  };
+
   system.stateVersion = "26.05";
 }
