@@ -1,20 +1,20 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-/* Reorder toolbars */
+/* reorder toolbars */
 #navigator-toolbox #nav-bar {
   order: 0;
 }
-#navigator-toolbox #PersonalToolbar {
+#navigator-toolbox #TabsToolbar {
   order: 2;
 }
-#navigator-toolbox #TabsToolbar {
+#navigator-toolbox #PersonalToolbar {
   order: 3;
 }
 #navigator-toolbox #notifications-toolbar {
   order: 4;
 }
 
-/* Disable unwanted borders and shadows */
+/* disable unwanted borders and shadows */
 .tab-background {
   box-shadow: unset !important;
 }
@@ -29,45 +29,48 @@
   }
 }
 
-/* Expand tabs to fill the tab bar */
+/* slimmer tabs */
+*|*:root {
+  --tab-min-height: 30px !important;
+  --tab-margin-block: 0px !important;
+}
+
+/* expand tabs to fill the tab bar */
 #tabbrowser-tabs[orient="horizontal"] {
   --tab-max-width: 100% !important;
 }
-
 #tabbrowser-tabs[orient="horizontal"] .tabbrowser-tab[fadein]:not([pinned]) {
   transition: max-width 100ms linear !important;
 }
 
+/* center tab content */
 .tab-icon-stack {
   margin-left: auto !important;
 }
-
 .tab-content {
   display: flex;
   flex-direction: row;
   justify-content: center !important;
   align-items: center !important;
 }
-
 .tab-label-container {
   flex: 0 !important;
   margin-right: auto !important;
   max-width: min-content !important;
 }
-
 #tabbrowser-tabs[orient="horizontal"] .tab-close-button {
   padding-inline-start: var(--tab-close-button-padding) !important;
   width: 24px !important;
 }
 
-/* Only show the close button on active or hovered tabs */
+/* only show the close button on active or hovered tabs */
 #tabbrowser-tabs[orient="horizontal"]
   .tabbrowser-tab:not([selected], [multiselected], :hover, :focus-within)
   .tab-close-button {
   visibility: hidden !important;
 }
 
-/* Hide the tab bar when a single tab is open */
+/* hide the tab bar when a single tab is open */
 #TabsToolbar:has(#tabbrowser-tabs tab):not(
     :has(
       #tabbrowser-tabs
@@ -79,7 +82,23 @@
   visibility: collapse !important;
 }
 
-/* Shorter tabs */
+/* match toolbar horizontal paddings */
 *|*:root {
-  --tab-min-height: 34px !important;
+  --toolbar-padding-inline: var(--dimension-4) !important;
+}
+#navigator-toolbox #TabsToolbar,
+#navigator-toolbox #PersonalToolbar {
+  padding-inline: var(--dimension-2) !important;
+}
+
+/* match vertical gaps */
+#navigator-toolbox #PersonalToolbar {
+  margin-top: var(--dimension-4);
+}
+#navigator-toolbox #PersonalToolbar toolbarbutton {
+  margin-block: 0 !important;
+}
+
+#navigator-toolbox {
+  padding-bottom: var(--dimension-4);
 }
