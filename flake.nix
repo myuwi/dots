@@ -19,6 +19,10 @@
       url = "github:myuwi/qmljsfmt";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    vencord-plugins = {
+      url = "github:myuwi/vencord-plugins";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

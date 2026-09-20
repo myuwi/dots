@@ -24,7 +24,7 @@
       withSystemVencord = true;
       vencord = pkgs.vencord.overrideAttrs (old: {
         postPatch = (old.postPatch or "") + ''
-          cp -r ${../../vencord-plugins} src/userplugins
+          cp -r ${inputs.vencord-plugins}/plugins src/userplugins
         '';
       });
     })

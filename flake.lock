@@ -138,7 +138,8 @@
         "helium": "helium",
         "mangowm": "mangowm",
         "nixpkgs": "nixpkgs",
-        "qmljsfmt": "qmljsfmt"
+        "qmljsfmt": "qmljsfmt",
+        "vencord-plugins": "vencord-plugins"
       }
     },
     "scenefx": {
@@ -159,6 +160,26 @@
       "original": {
         "owner": "wlrfx",
         "repo": "scenefx",
+        "type": "github"
+      }
+    },
+    "vencord-plugins": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789921563,
+        "narHash": "sha256-8OPwSoyXmU+yVvC3gBTiseRAeiPHLMsPHWtfgY3BKXU=",
+        "owner": "myuwi",
+        "repo": "vencord-plugins",
+        "rev": "35350155aeee6dbd650cc145ee598a5cadcf7019",
+        "type": "github"
+      },
+      "original": {
+        "owner": "myuwi",
+        "repo": "vencord-plugins",
         "type": "github"
       }
     }
