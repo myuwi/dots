@@ -2,7 +2,6 @@ import Quickshell
 import Quickshell.Services.Notifications
 import Quickshell.Widgets
 import QtQuick
-import QtQuick.Effects
 import QtQuick.Layouts
 
 Rectangle {
@@ -12,12 +11,10 @@ Rectangle {
 
     signal closeRequested(bool byUser)
 
-    readonly property int pad: 18
-    readonly property int padY: 24
-    readonly property int minWidth: 216
-    readonly property int rightInset: notification.image !== "" ? pad + 96 : pad
-    readonly property int maxWidth: 360 - pad + rightInset / 2
-    readonly property int contentMaxWidth: maxWidth - pad - rightInset
+    readonly property int pad: 20
+    readonly property int padY: 20
+    readonly property int imageSize: 52
+    readonly property bool hasImage: notification.image !== ""
     readonly property var visibleActions: {
         const actions = [];
         for (const action of notification.actions) {
@@ -28,11 +25,13 @@ Rectangle {
         return actions;
     }
 
-    implicitWidth: Math.max(minWidth, Math.min(layout.implicitWidth + pad + rightInset, maxWidth))
+    implicitWidth: layout.implicitWidth + pad * 2
     implicitHeight: layout.implicitHeight + padY * 2
 
     color: Theme.bg
     radius: 8
+    border.width: 1
+    border.color: RosePine.overlay
 
     function activateDefault(): void {
         for (const action of notification.actions) {
@@ -67,168 +66,145 @@ Rectangle {
         }
     }
 
-    // Border below the cover art so the art can paint over it.
-    Rectangle {
-        anchors.fill: parent
-        color: "transparent"
-        radius: root.radius
-        border.width: 1
-        border.color: RosePine.overlay
-    }
-
-    // Floating cover art, faded into the card background.
-    ClippingRectangle {
-        anchors.fill: parent
-        radius: root.radius
-        color: "transparent"
-        visible: root.notification.image !== ""
-
-        Image {
-            id: coverArt
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.topMargin: -8
-            anchors.bottomMargin: -8
-            width: height
-            sourceSize.width: 150
-            sourceSize.height: 150
-            source: root.notification.image
-            fillMode: Image.PreserveAspectFit
-            visible: false
-        }
-
-        Rectangle {
-            id: coverMask
-            anchors.fill: coverArt
-            visible: false
-            layer.enabled: true
-            gradient: Gradient {
-                orientation: Gradient.Horizontal
-                // qmlformat off
-                GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0) }
-                GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 1) }
-                // qmlformat on
-            }
-        }
-
-        MultiEffect {
-            anchors.fill: coverArt
-            source: coverArt
-            maskEnabled: true
-            maskSource: coverMask
-            // Default threshold/spread is a near-hard cutoff; widen it across the full alpha range to get a smooth fade
-            maskThresholdMin: 0.5
-            maskSpreadAtMin: 1.0
-        }
-    }
-
-    ColumnLayout {
+    RowLayout {
         id: layout
         anchors.fill: parent
         anchors.leftMargin: root.pad
         anchors.topMargin: root.padY
         anchors.bottomMargin: root.padY
-        anchors.rightMargin: root.rightInset
+        anchors.rightMargin: root.pad
         spacing: 12
 
+        // Cover art, cropped to a rounded square.
+        ClippingRectangle {
+            Layout.alignment: Qt.AlignTop
+            Layout.preferredWidth: root.imageSize
+            Layout.preferredHeight: root.imageSize
+            radius: 8
+            color: "transparent"
+            visible: root.hasImage
+
+            Image {
+                anchors.fill: parent
+                source: root.notification.image
+                sourceSize.width: root.imageSize * 2
+                sourceSize.height: root.imageSize * 2
+                fillMode: Image.PreserveAspectCrop
+            }
+        }
+
         ColumnLayout {
-            spacing: 3
+            spacing: 12
             Layout.fillWidth: true
+            Layout.minimumWidth: 212
+            Layout.maximumWidth: 320
 
-            RowLayout {
-                spacing: 6
+            ColumnLayout {
+                spacing: 0
                 Layout.fillWidth: true
-                Layout.bottomMargin: 3
 
-                Image {
-                    source:
-                        root.notification.appIcon !== ""
-                            ? Quickshell.iconPath(root.notification.appIcon)
-                            : ""
-                    visible: root.notification.appIcon !== ""
-                    sourceSize.width: 18
-                    sourceSize.height: 18
-                    Layout.preferredWidth: 18
-                    Layout.preferredHeight: 18
+                RowLayout {
+                    spacing: 6
+                    Layout.fillWidth: true
+                    Layout.bottomMargin: 4
+
+                    Image {
+                        source:
+                            root.notification.appIcon !== ""
+                                ? Quickshell.iconPath(root.notification.appIcon)
+                                : ""
+                        visible: root.notification.appIcon !== ""
+                        sourceSize.width: 16
+                        sourceSize.height: 16
+                        Layout.preferredWidth: 16
+                        Layout.preferredHeight: 16
+                    }
+
+                    Text {
+                        text: root.notification.appName
+                        color: Theme.text
+                        font.family: Theme.fontFamily
+                        font.weight: Theme.fontWeight
+                        font.pixelSize: 10
+                        lineHeight: 16
+                        lineHeightMode: Text.FixedHeight
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
+                    }
                 }
 
                 Text {
-                    text: root.notification.appName
+                    text: root.notification.summary
+                    color: Theme.text
+                    font.family: Theme.fontFamily
+                    font.weight: Font.Bold
+                    font.pixelSize: 11
+                    lineHeight: 16
+                    lineHeightMode: Text.FixedHeight
+                    wrapMode: Text.Wrap
+                    maximumLineCount: 1
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                }
+
+                Text {
+                    text: root.notification.body
                     color: Theme.text
                     font.family: Theme.fontFamily
                     font.weight: Theme.fontWeight
-                    font.pointSize: Theme.fontSizeSm
+                    font.pixelSize: 11
+                    lineHeight: 16
+                    lineHeightMode: Text.FixedHeight
+                    visible: text !== ""
+                    wrapMode: Text.Wrap
+                    maximumLineCount: 2
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
             }
 
-            Text {
-                text: root.notification.summary
-                color: Theme.text
-                font.family: Theme.fontFamily
-                font.weight: Font.Bold
-                font.pointSize: Theme.fontSize
-                wrapMode: Text.Wrap
-                maximumLineCount: 1
-                elide: Text.ElideRight
-                Layout.maximumWidth: root.contentMaxWidth
-            }
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 6
+                visible: actionRepeater.count > 0
 
-            Text {
-                text: root.notification.body
-                color: Theme.text
-                font.family: Theme.fontFamily
-                font.weight: Theme.fontWeight
-                font.pointSize: Theme.fontSize
-                visible: text !== ""
-                wrapMode: Text.Wrap
-                maximumLineCount: 1
-                elide: Text.ElideRight
-                Layout.maximumWidth: root.contentMaxWidth
-            }
-        }
+                Repeater {
+                    id: actionRepeater
 
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 6
-            visible: actionRepeater.count > 0
+                    model: root.visibleActions
 
-            Repeater {
-                id: actionRepeater
+                    delegate: Rectangle {
+                        required property var modelData
 
-                model: root.visibleActions
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 28
+                        radius: 8
+                        color: actionMouseArea.containsMouse ? Theme.itemHovered : Theme.surface
 
-                delegate: Rectangle {
-                    required property var modelData
+                        Text {
+                            anchors.centerIn: parent
+                            width: parent.width - 16
+                            text: parent.modelData.text
+                            color: Theme.text
+                            font.family: Theme.fontFamily
+                            font.weight: Theme.fontWeight
+                            font.pixelSize: 11
+                            lineHeight: 16
+                            lineHeightMode: Text.FixedHeight
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
+                        }
 
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 28
-                    radius: 8
-                    color: actionMouseArea.containsMouse ? Theme.itemHovered : Theme.surface
+                        MouseArea {
+                            id: actionMouseArea
 
-                    Text {
-                        anchors.fill: parent
-                        anchors.margins: 8
-                        text: parent.modelData.text
-                        color: Theme.text
-                        font.family: Theme.fontFamily
-                        font.weight: Theme.fontWeight
-                        font.pointSize: Theme.fontSize
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        elide: Text.ElideRight
-                    }
-
-                    MouseArea {
-                        id: actionMouseArea
-
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        acceptedButtons: Qt.LeftButton
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: parent.modelData.invoke()
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            acceptedButtons: Qt.LeftButton
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: parent.modelData.invoke()
+                        }
                     }
                 }
             }
