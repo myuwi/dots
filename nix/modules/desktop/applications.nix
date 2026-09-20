@@ -14,7 +14,9 @@
       paths = [ pkgs.gimp ];
       buildInputs = [ pkgs.makeWrapper ];
       postBuild = ''
-        wrapProgram $out/bin/gimp --set GDK_BACKEND x11
+        for bin in gimp gimp-3 gimp-3.2; do
+          wrapProgram $out/bin/$bin --set GDK_BACKEND x11
+        done
       '';
     })
     pkgs.pavucontrol
