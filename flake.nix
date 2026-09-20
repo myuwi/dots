@@ -11,6 +11,10 @@
       url = "github:mangowm/mango/9d4f4fd46baa096e20e2cb98e629fde10fd7be38";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    helium = {
+      url = "github:amaanq/helium-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     qmljsfmt = {
       url = "github:myuwi/qmljsfmt";
       inputs.nixpkgs.follows = "nixpkgs";

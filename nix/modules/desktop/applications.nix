@@ -1,10 +1,11 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 {
   environment.systemPackages = [
     pkgs.ghostty
     pkgs.nautilus
     pkgs.file-roller
     pkgs.gnome-calculator
+    inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.helium
     pkgs.loupe
     pkgs.mpv
     # Force X11: GIMP's Preferences (Input Devices) crashes on native Wayland (GNOME/gimp#7609)

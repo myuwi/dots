@@ -38,6 +38,26 @@
         "type": "github"
       }
     },
+    "helium": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789753911,
+        "narHash": "sha256-wEApV4jnenWrOP1yfE3PnXgN7qSt1+JfQdScoEwQYB8=",
+        "owner": "amaanq",
+        "repo": "helium-flake",
+        "rev": "bbfcf825f0db4d0be62128c073dddb30da47d932",
+        "type": "github"
+      },
+      "original": {
+        "owner": "amaanq",
+        "repo": "helium-flake",
+        "type": "github"
+      }
+    },
     "mangowm": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -115,6 +135,7 @@
     "root": {
       "inputs": {
         "disko": "disko",
+        "helium": "helium",
         "mangowm": "mangowm",
         "nixpkgs": "nixpkgs",
         "qmljsfmt": "qmljsfmt"
