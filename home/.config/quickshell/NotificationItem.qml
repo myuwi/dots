@@ -15,8 +15,8 @@ Rectangle {
     readonly property int pad: 18
     readonly property int padY: 24
     readonly property int minWidth: 216
-    readonly property int maxWidth: 360
     readonly property int rightInset: notification.image !== "" ? pad + 96 : pad
+    readonly property int maxWidth: 360 - pad + rightInset / 2
     readonly property int contentMaxWidth: maxWidth - pad - rightInset
     readonly property var visibleActions: {
         const actions = [];
@@ -107,7 +107,6 @@ Rectangle {
                 orientation: Gradient.Horizontal
                 // qmlformat off
                 GradientStop { position: 0.0; color: Qt.rgba(1, 1, 1, 0) }
-                GradientStop { position: 0.85; color: Qt.rgba(1, 1, 1, 1) }
                 GradientStop { position: 1.0; color: Qt.rgba(1, 1, 1, 1) }
                 // qmlformat on
             }
@@ -172,6 +171,8 @@ Rectangle {
                 font.weight: Font.Bold
                 font.pointSize: Theme.fontSize
                 wrapMode: Text.Wrap
+                maximumLineCount: 1
+                elide: Text.ElideRight
                 Layout.maximumWidth: root.contentMaxWidth
             }
 
@@ -183,6 +184,8 @@ Rectangle {
                 font.pointSize: Theme.fontSize
                 visible: text !== ""
                 wrapMode: Text.Wrap
+                maximumLineCount: 1
+                elide: Text.ElideRight
                 Layout.maximumWidth: root.contentMaxWidth
             }
         }
