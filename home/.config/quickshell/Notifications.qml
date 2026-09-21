@@ -40,9 +40,9 @@ Scope {
             id: list
             anchors.bottom: parent.bottom
             anchors.right: parent.right
-            anchors.bottomMargin: 12
-            anchors.rightMargin: 12
-            spacing: 8
+            anchors.bottomMargin: Tokens.spacing.lg
+            anchors.rightMargin: Tokens.spacing.lg
+            spacing: Tokens.spacing.md
 
             Repeater {
                 id: rep
@@ -74,18 +74,18 @@ Scope {
                     ]
 
                     Behavior on opacity {
-                        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                        NumberAnimation { duration: Tokens.duration.md; easing.type: Tokens.easing.standard }
                     }
                     Behavior on appearanceScale {
-                        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+                        NumberAnimation { duration: Tokens.duration.md; easing.type: Tokens.easing.standard }
                     }
 
                     NumberAnimation {
                         id: swipeSettle
                         target: wrapper
                         property: "swipeOffset"
-                        duration: 160
-                        easing.type: Easing.OutCubic
+                        duration: Tokens.duration.md
+                        easing.type: Tokens.easing.standard
                     }
 
                     Component.onCompleted: wrapper.open = true
@@ -140,7 +140,7 @@ Scope {
                     Timer {
                         id: closeTimer
                         property bool byUser: false
-                        interval: 160
+                        interval: Tokens.duration.md
                         onTriggered: closeTimer.byUser ? wrapper.modelData.dismiss() : wrapper.modelData.expire()
                     }
                 }
