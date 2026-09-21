@@ -91,7 +91,14 @@
   padding-inline: var(--dimension-2) !important;
 }
 
+#navigator-toolbox #nav-bar #urlbar-container {
+  --urlbar-container-height: 32 !important;
+  padding-block: 0;
+}
+
 /* match vertical gaps */
+#navigator-toolbox #nav-bar,
+#TabsToolbar,
 #navigator-toolbox #PersonalToolbar {
   margin-top: var(--dimension-4);
 }
