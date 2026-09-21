@@ -14,9 +14,9 @@ PanelWindow {
 
     implicitHeight: 32
 
-    // Absorb half of mango's gappov.
+    // Absorb mango's gappov.
     exclusionMode: ExclusionMode.Normal
-    exclusiveZone: implicitHeight - 4
+    exclusiveZone: implicitHeight - 8
 
     // Tags for this bar's monitor, streamed from the compositor.
     ListModel {
