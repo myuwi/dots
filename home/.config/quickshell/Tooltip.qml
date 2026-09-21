@@ -51,14 +51,11 @@ PopupWindow {
         border.width: 1
         border.color: RosePine.overlay
 
-        Text {
+        Label {
             id: label
 
             anchors.centerIn: parent
-            color: Theme.text
             text: root.text
-            font.family: Theme.fontFamily
-            font.pointSize: Theme.fontSize
         }
     }
 }

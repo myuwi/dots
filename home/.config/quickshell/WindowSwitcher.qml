@@ -288,17 +288,10 @@ Scope {
                                     }
                                 }
 
-                                Text {
+                                Label {
                                     width: 84
-                                    height: 12
                                     text: card.modelData.title
-                                    color: Theme.text
-                                    font.family: Theme.fontFamily
-                                    font.weight: Theme.fontWeight
-                                    font.pointSize: Theme.fontSize
                                     horizontalAlignment: Text.AlignHCenter
-                                    verticalAlignment: Text.AlignVCenter
-                                    elide: Text.ElideRight
                                 }
                             }
 

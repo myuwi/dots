@@ -28,15 +28,12 @@ Item {
             width: baseIcon.implicitWidth
             height: baseIcon.implicitHeight
 
-            Text {
+            Icon {
                 id: baseIcon
 
                 anchors.centerIn: parent
                 color: Theme.muted
-
                 text: Icons.batteryAndroidFull
-                font.family: Theme.iconFamily
-                font.pointSize: Theme.fontSize * 1.6
             }
 
             Item {
@@ -46,7 +43,7 @@ Item {
                 width: parent.width * root.chargeLevel
                 clip: true
 
-                Text {
+                Icon {
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     color: root.charging
@@ -56,27 +53,21 @@ Item {
                           : Theme.text
 
                     text: Icons.batteryAndroidFull
-                    font.family: Theme.iconFamily
-                    font.pointSize: Theme.fontSize * 1.6
                 }
             }
 
-            Text {
+            Icon {
                 anchors.centerIn: parent
                 visible: root.charging
-                color: Theme.text
-
+                size: Tokens.icon.xs
                 text: Icons.bolt
-                font.family: Theme.iconFamily
-                font.pointSize: Theme.fontSize
-                renderType: Text.NativeRendering
                 font.variableAxes: ({
                     FILL: 1,
                 })
             }
         }
 
-        Text {
+        Label {
             anchors.verticalCenter: parent.verticalCenter
             color: root.percentage <= 20 && UPower.onBattery ? Theme.urgent : Theme.text
             text: `${root.percentage}%`

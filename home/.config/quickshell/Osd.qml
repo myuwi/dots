@@ -135,30 +135,22 @@ Scope {
                     visible: Boolean(osd.display?.icon || osd.display?.label || osd.display?.value)
                     spacing: 8
 
-                    Text {
+                    Icon {
                         text: osd.display?.icon ?? ""
                         visible: text !== ""
-                        color: Theme.text
-                        font.family: Theme.iconFamily
-                        font.pointSize: Theme.fontSize * 1.6
                     }
 
-                    Text {
+                    Label {
                         text: osd.display?.label ?? ""
                         visible: text !== ""
-                        color: Theme.text
-                        font.family: Theme.fontFamily
-                        font.weight: Font.Bold
-                        font.pointSize: Theme.fontSize
+                        font: Tokens.font.title
                         Layout.fillWidth: true
                     }
 
-                    Text {
+                    Label {
                         text: osd.display?.value ?? ""
                         visible: text !== ""
                         color: Theme.muted
-                        font.family: Theme.fontFamily
-                        font.pointSize: Theme.fontSize
                     }
                 }
 

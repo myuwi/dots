@@ -128,10 +128,8 @@ PanelWindow {
         }
     }
 
-    Text {
+    Label {
         anchors.centerIn: parent
-        color: Theme.text
-
         text: Qt.formatDateTime(clock.date, "hh:mm")
     }
 
