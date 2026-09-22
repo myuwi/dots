@@ -51,5 +51,10 @@ Singleton {
             pixelSize: 11,
             weight: Font.Bold,
         })
+        readonly property font display: Qt.font({
+            family: Theme.fontFamily,
+            pixelSize: 12,
+            weight: Theme.fontWeight,
+        })
     }
 }

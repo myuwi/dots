@@ -130,6 +130,7 @@ PanelWindow {
 
     Label {
         anchors.centerIn: parent
+        font: Tokens.font.display
         text: Qt.formatDateTime(clock.date, "hh:mm")
     }
 
