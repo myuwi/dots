@@ -40,7 +40,7 @@ Scope {
             return;
         }
 
-        visibleClients = Mango.clientsByFocus.filter(client => Mango.clientIsVisible(client));
+        visibleClients = Mango.clientsByFocus.filter((client) => Mango.clientIsVisible(client));
 
         if (visibleClients.length === 0) {
             return;
@@ -172,7 +172,7 @@ Scope {
             anchors.fill: parent
             focus: switcher.shown
 
-            Keys.onPressed: event => {
+            Keys.onPressed: (event) => {
                 if (event.key === Qt.Key_Tab) {
                     switcher.cycle(event.modifiers & Qt.ShiftModifier ? -1 : 1);
                     event.accepted = true;
@@ -188,8 +188,12 @@ Scope {
                 }
             }
 
-            Keys.onReleased: event => {
-                if (event.key === Qt.Key_Meta || event.key === Qt.Key_Super_L || event.key === Qt.Key_Super_R) {
+            Keys.onReleased: (event) => {
+                if (
+                    event.key === Qt.Key_Meta ||
+                    event.key === Qt.Key_Super_L ||
+                    event.key === Qt.Key_Super_R
+                ) {
                     switcher.commit();
                     event.accepted = true;
                 }
@@ -251,14 +255,23 @@ Scope {
                                 switcher.desktopApplications;
                                 return DesktopEntries.heuristicLookup(modelData.appid);
                             }
-                            readonly property string iconName: desktopEntry?.icon || modelData.appid || "application-x-executable"
+                            readonly property string iconName:
+                                desktopEntry?.icon || modelData.appid || "application-x-executable"
 
                             width: 108
                             height: 126
                             radius: 8
-                            color: mouseArea.containsMouse ? Theme.itemHovered : selected ? Theme.itemSelected : "transparent"
+                            color: mouseArea.containsMouse
+                                ? Theme.itemHovered
+                                : selected
+                                  ? Theme.itemSelected
+                                  : "transparent"
                             border.width: 1
-                            border.color: mouseArea.containsMouse ? Theme.itemHoveredBorder : selected ? Theme.itemSelectedBorder : "transparent"
+                            border.color: mouseArea.containsMouse
+                                ? Theme.itemHoveredBorder
+                                : selected
+                                  ? Theme.itemSelectedBorder
+                                  : "transparent"
 
                             Behavior on color {
                                 ColorAnimation {
@@ -284,7 +297,10 @@ Scope {
                                         anchors.centerIn: parent
                                         width: 60
                                         height: 60
-                                        source: Quickshell.iconPath(card.iconName, "application-x-executable")
+                                        source: Quickshell.iconPath(
+                                            card.iconName,
+                                            "application-x-executable",
+                                        )
                                     }
                                 }
 

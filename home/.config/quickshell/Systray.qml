@@ -21,7 +21,11 @@ Row {
             height: 18
 
             function showMenu(): void {
-                const pos = trayItem.mapToItem(root.hostWindow.contentItem, trayItem.width, trayItem.height);
+                const pos = trayItem.mapToItem(
+                    root.hostWindow.contentItem,
+                    trayItem.width,
+                    trayItem.height,
+                );
                 modelData.display(root.hostWindow, pos.x, pos.y);
             }
 
@@ -37,10 +41,9 @@ Row {
                 acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
                 hoverEnabled: true
 
-                onClicked: mouse => {
+                onClicked: (mouse) => {
                     if (mouse.button === Qt.RightButton) {
-                        if (trayItem.modelData.hasMenu)
-                            trayItem.showMenu();
+                        if (trayItem.modelData.hasMenu) trayItem.showMenu();
                     } else if (mouse.button === Qt.MiddleButton) {
                         trayItem.modelData.secondaryActivate();
                     } else if (trayItem.modelData.onlyMenu && trayItem.modelData.hasMenu) {
@@ -50,7 +53,7 @@ Row {
                     }
                 }
 
-                onWheel: wheel => {
+                onWheel: (wheel) => {
                     if (wheel.angleDelta.y !== 0) {
                         trayItem.modelData.scroll(wheel.angleDelta.y, false);
                     }

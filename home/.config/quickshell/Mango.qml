@@ -17,7 +17,7 @@ Singleton {
         running: true
 
         stdout: SplitParser {
-            onRead: data => {
+            onRead: (data) => {
                 try {
                     watcher.received(JSON.parse(data));
                 } catch (error) {
@@ -36,7 +36,7 @@ Singleton {
         const ordered = [];
 
         for (const clientId of focusHistory) {
-            const client = allClients.find(candidate => candidate.id === clientId);
+            const client = allClients.find((candidate) => candidate.id === clientId);
             if (client) {
                 ordered.push(client);
             }
@@ -45,7 +45,7 @@ Singleton {
         // Until every client has appeared in the focus history, retain Mango's
         // tiling order as a stable fallback.
         for (const client of allClients) {
-            if (!ordered.some(candidate => candidate.id === client.id)) {
+            if (!ordered.some((candidate) => candidate.id === client.id)) {
                 ordered.push(client);
             }
         }
@@ -55,7 +55,10 @@ Singleton {
 
     function updateClients(clients): void {
         allClients = clients;
-        focusHistory = focusHistory.filter(clientId => clientId === focusedClientId || clients.some(client => client.id === clientId));
+        focusHistory = focusHistory.filter(
+            (clientId) =>
+                clientId === focusedClientId || clients.some((client) => client.id === clientId),
+        );
     }
 
     function updateFocusedClient(client): void {
@@ -63,18 +66,27 @@ Singleton {
         focusedClientId = focusedId;
 
         if (focusedId > 0) {
-            focusHistory = [focusedId, ...focusHistory.filter(clientId => clientId !== focusedId)];
+            focusHistory = [
+                focusedId,
+                ...focusHistory.filter((clientId) => clientId !== focusedId),
+            ];
         }
     }
 
     function tagsForMonitor(monitorName: string): var {
-        return allTags.find(entry => entry.monitor === monitorName)?.tags ?? [];
+        return allTags.find((entry) => entry.monitor === monitorName)?.tags ?? [];
     }
 
     function clientIsVisible(client): bool {
-        const isVisible = client.is_global || tagsForMonitor(client.monitor).some(tag => tag.is_active && client.tags.includes(tag.index));
+        const isVisible =
+            client.is_global ||
+            tagsForMonitor(client.monitor).some(
+                (tag) => tag.is_active && client.tags.includes(tag.index),
+            );
 
-        return isVisible && !client.is_minimized && !client.is_scratchpad && !client.is_namedscratchpad;
+        return (
+            isVisible && !client.is_minimized && !client.is_scratchpad && !client.is_namedscratchpad
+        );
     }
 
     function focusClient(clientId: int): void {
@@ -85,7 +97,11 @@ Singleton {
 
     function viewTag(monitorName: string, tagIndex: int): void {
         if (monitorName !== "" && tagIndex > 0) {
-            Quickshell.execDetached(["mmsg", "dispatch", `viewcrossmon,${tagIndex},${monitorName}`]);
+            Quickshell.execDetached([
+                "mmsg",
+                "dispatch",
+                `viewcrossmon,${tagIndex},${monitorName}`,
+            ]);
         }
     }
 
@@ -95,7 +111,7 @@ Singleton {
             return;
         }
 
-        const currentIndex = tags.findIndex(tag => tag.is_active);
+        const currentIndex = tags.findIndex((tag) => tag.is_active);
         if (currentIndex < 0) {
             return;
         }
@@ -106,16 +122,16 @@ Singleton {
 
     Watch {
         stream: "all-clients"
-        onReceived: payload => mango.updateClients(payload.clients ?? [])
+        onReceived: (payload) => mango.updateClients(payload.clients ?? [])
     }
 
     Watch {
         stream: "focusing-client"
-        onReceived: payload => mango.updateFocusedClient(payload)
+        onReceived: (payload) => mango.updateFocusedClient(payload)
     }
 
     Watch {
         stream: "all-tags"
-        onReceived: payload => mango.allTags = payload.all_tags ?? []
+        onReceived: (payload) => (mango.allTags = payload.all_tags ?? [])
     }
 }

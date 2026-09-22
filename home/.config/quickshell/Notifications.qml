@@ -12,7 +12,7 @@ Scope {
         bodySupported: true
         actionsSupported: true
 
-        onNotification: notification => {
+        onNotification: (notification) => {
             notification.tracked = true;
         }
     }
@@ -86,14 +86,22 @@ Scope {
                             xScale: wrapper.appearanceScale
                             yScale: wrapper.appearanceScale
                         },
-                        Translate { x: wrapper.swipeOffset }
+                        Translate {
+                            x: wrapper.swipeOffset
+                        }
                     ]
 
                     Behavior on opacity {
-                        NumberAnimation { duration: Tokens.duration.md; easing.type: Tokens.easing.standard }
+                        NumberAnimation {
+                            duration: Tokens.duration.md
+                            easing.type: Tokens.easing.standard
+                        }
                     }
                     Behavior on appearanceScale {
-                        NumberAnimation { duration: Tokens.duration.md; easing.type: Tokens.easing.standard }
+                        NumberAnimation {
+                            duration: Tokens.duration.md
+                            easing.type: Tokens.easing.standard
+                        }
                     }
 
                     NumberAnimation {
@@ -107,8 +115,7 @@ Scope {
                     Component.onCompleted: wrapper.open = true
 
                     function close(byUser: bool): void {
-                        if (!wrapper.open)
-                            return;
+                        if (!wrapper.open) return;
                         wrapper.open = false;
                         closeTimer.byUser = byUser;
                         closeTimer.start();
@@ -124,7 +131,7 @@ Scope {
                         id: card
                         anchors.right: parent.right
                         notification: wrapper.modelData
-                        onCloseRequested: byUser => wrapper.close(byUser)
+                        onCloseRequested: (byUser) => wrapper.close(byUser)
                     }
 
                     DragHandler {
@@ -136,7 +143,8 @@ Scope {
 
                         onActiveTranslationChanged: {
                             if (active)
-                                wrapper.swipeOffset = wrapper.swipeStartOffset + activeTranslation.x;
+                                wrapper.swipeOffset =
+                                    wrapper.swipeStartOffset + activeTranslation.x;
                         }
                         onActiveChanged: {
                             if (active) {
@@ -145,7 +153,10 @@ Scope {
                                 return;
                             }
                             if (Math.abs(wrapper.swipeOffset) >= card.width * 0.3) {
-                                wrapper.settleSwipe(Math.sign(wrapper.swipeOffset) * Math.max(Math.abs(wrapper.swipeOffset), card.width));
+                                wrapper.settleSwipe(
+                                    Math.sign(wrapper.swipeOffset) *
+                                        Math.max(Math.abs(wrapper.swipeOffset), card.width),
+                                );
                                 wrapper.close(true);
                             } else {
                                 wrapper.settleSwipe(0);
@@ -157,7 +168,9 @@ Scope {
                         id: closeTimer
                         property bool byUser: false
                         interval: Tokens.duration.md
-                        onTriggered: closeTimer.byUser ? wrapper.modelData.dismiss() : wrapper.modelData.expire()
+                        onTriggered: closeTimer.byUser
+                            ? wrapper.modelData.dismiss()
+                            : wrapper.modelData.expire()
                     }
                 }
             }

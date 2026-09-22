@@ -34,14 +34,14 @@ PanelWindow {
             }
         }
 
-        const visibleTags = tags.filter(tag => tag.index <= lastVisibleTag);
+        const visibleTags = tags.filter((tag) => tag.index <= lastVisibleTag);
 
         for (let i = 0; i < visibleTags.length; i++) {
             const tag = visibleTags[i];
             const roles = {
                 tagIndex: tag.index,
                 active: tag.is_active,
-                urgent: tag.is_urgent
+                urgent: tag.is_urgent,
             };
 
             if (i < tagsModel.count) {
@@ -119,7 +119,7 @@ PanelWindow {
             anchors.fill: parent
             acceptedButtons: Qt.NoButton
 
-            onWheel: wheel => {
+            onWheel: (wheel) => {
                 if (wheel.angleDelta.y !== 0) {
                     Mango.cycleTag(bar.screen?.name ?? "", wheel.angleDelta.y > 0 ? 1 : -1);
                     wheel.accepted = true;
