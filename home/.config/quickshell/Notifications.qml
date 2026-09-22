@@ -34,10 +34,21 @@ Scope {
             left: true
             right: true
         }
-        mask: Region { item: list }
+        // One region per card, so the empty space beside and between cards does not eat clicks
+        mask: Region {
+            regions: {
+                const out = [];
+                for (let i = 0; i < rep.count; i++) {
+                    const wrapper = rep.itemAt(i);
+                    if (wrapper) {
+                        out.push(wrapper.maskRegion);
+                    }
+                }
+                return out;
+            }
+        }
 
         ColumnLayout {
-            id: list
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.bottomMargin: Tokens.spacing.lg
@@ -52,12 +63,17 @@ Scope {
                     id: wrapper
                     required property var modelData
 
+                    readonly property Region maskRegion: Region {
+                        item: wrapper
+                        radius: Tokens.rounding.md
+                    }
+
                     property bool open: false
                     property real appearanceScale: open ? 1 : 0.96
                     property real swipeOffset: 0
                     property real swipeStartOffset: 0
 
-                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignRight
                     implicitWidth: card.implicitWidth
                     implicitHeight: card.implicitHeight
 
@@ -65,8 +81,8 @@ Scope {
                     // Scale around the card's edge before moving it with the swipe.
                     transform: [
                         Scale {
-                            origin.x: wrapper.swipeOffset < 0 ? card.x : card.x + card.width
-                            origin.y: card.y + card.height / 2
+                            origin.x: wrapper.swipeOffset < 0 ? 0 : wrapper.width
+                            origin.y: wrapper.height / 2
                             xScale: wrapper.appearanceScale
                             yScale: wrapper.appearanceScale
                         },
