@@ -67,7 +67,7 @@ PanelWindow {
         id: tagArea
 
         anchors.left: parent.left
-        anchors.leftMargin: 12
+        anchors.leftMargin: Tokens.spacing.lg
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: tagRow.implicitWidth
@@ -76,7 +76,7 @@ PanelWindow {
             id: tagRow
 
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 6
+            spacing: Tokens.spacing.sm
 
             Repeater {
                 model: tagsModel
@@ -88,7 +88,7 @@ PanelWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     width: active ? 26 : 6
                     height: active ? 8 : 6
-                    radius: height / 2
+                    radius: Tokens.rounding.full
                     color: urgent ? Theme.urgent : active ? Theme.text : Theme.muted
 
                     Behavior on width {
@@ -136,9 +136,9 @@ PanelWindow {
 
     Row {
         anchors.right: parent.right
-        anchors.rightMargin: 12
+        anchors.rightMargin: Tokens.spacing.lg
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 12
+        spacing: Tokens.spacing.lg
 
         Systray {
             anchors.verticalCenter: parent.verticalCenter

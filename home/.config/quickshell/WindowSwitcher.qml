@@ -210,11 +210,14 @@ Scope {
             id: popup
 
             anchors.centerIn: parent
-            width: Math.min(cards.implicitWidth + 24, window.width - 48)
-            height: cards.implicitHeight + 24
+            width: Math.min(
+                cards.implicitWidth + Tokens.spacing.lg * 2,
+                window.width - Tokens.spacing.lg * 4,
+            )
+            height: cards.implicitHeight + Tokens.spacing.lg * 2
 
             color: Theme.bg
-            radius: 8
+            radius: Tokens.rounding.md
             border.width: 1
             border.color: RosePine.overlay
 
@@ -227,7 +230,7 @@ Scope {
                 id: viewport
 
                 anchors.fill: parent
-                anchors.margins: 12
+                anchors.margins: Tokens.spacing.lg
                 contentWidth: cards.implicitWidth
                 contentHeight: cards.implicitHeight
                 boundsBehavior: Flickable.StopAtBounds
@@ -236,7 +239,7 @@ Scope {
                 Row {
                     id: cards
 
-                    spacing: 6
+                    spacing: Tokens.spacing.sm
 
                     Repeater {
                         id: cardRepeater
@@ -260,7 +263,7 @@ Scope {
 
                             width: 108
                             height: 126
-                            radius: 8
+                            radius: Tokens.rounding.md
                             color: mouseArea.containsMouse
                                 ? Theme.itemHovered
                                 : selected
@@ -287,7 +290,7 @@ Scope {
 
                             Column {
                                 anchors.centerIn: parent
-                                spacing: 6
+                                spacing: Tokens.spacing.sm
 
                                 Item {
                                     width: 84

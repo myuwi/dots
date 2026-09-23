@@ -120,20 +120,20 @@ Scope {
             implicitHeight: layout.implicitHeight + 32
 
             color: Theme.bg
-            radius: 8
+            radius: Tokens.rounding.md
             border.width: 1
             border.color: RosePine.overlay
 
             ColumnLayout {
                 id: layout
                 anchors.fill: parent
-                anchors.margins: 16
-                spacing: 12
+                anchors.margins: Tokens.spacing.xl
+                spacing: Tokens.spacing.lg
 
                 RowLayout {
                     Layout.fillWidth: true
                     visible: Boolean(osd.display?.icon || osd.display?.label || osd.display?.value)
-                    spacing: 8
+                    spacing: Tokens.spacing.md
 
                     Icon {
                         text: osd.display?.icon ?? ""

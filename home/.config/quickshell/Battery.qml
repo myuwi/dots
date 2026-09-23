@@ -19,7 +19,7 @@ Item {
     Row {
         id: content
 
-        spacing: 4
+        spacing: Tokens.spacing.xs
 
         Item {
             id: batteryIcon

@@ -8,7 +8,7 @@ PopupWindow {
     property string text: ""
     property bool shown: false
     property int delay: 1000
-    property int outerMargin: 4
+    property int outerMargin: Tokens.spacing.xs
 
     anchor.item: target
     anchor.edges: Edges.Bottom
@@ -44,10 +44,10 @@ PopupWindow {
 
         anchors.fill: parent
         anchors.margins: root.outerMargin
-        implicitWidth: label.implicitWidth + 16
-        implicitHeight: label.implicitHeight + 10
+        implicitWidth: label.implicitWidth + Tokens.spacing.md * 2
+        implicitHeight: label.implicitHeight + Tokens.spacing.xs * 2
         color: Theme.surface
-        radius: 4
+        radius: Tokens.rounding.sm
         border.width: 1
         border.color: RosePine.overlay
 

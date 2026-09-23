@@ -26,7 +26,9 @@ Singleton {
     }
 
     readonly property QtObject rounding: QtObject {
+        readonly property int sm: 4
         readonly property int md: 8
+        readonly property int full: 9999
     }
 
     readonly property QtObject icon: QtObject {

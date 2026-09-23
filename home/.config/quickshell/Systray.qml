@@ -7,7 +7,7 @@ Row {
 
     required property var hostWindow
 
-    spacing: 8
+    spacing: Tokens.spacing.md
 
     Repeater {
         model: SystemTray.items
@@ -17,8 +17,8 @@ Row {
 
             required property var modelData
 
-            width: 18
-            height: 18
+            width: Tokens.icon.md
+            height: Tokens.icon.md
 
             function showMenu(): void {
                 const pos = trayItem.mapToItem(
