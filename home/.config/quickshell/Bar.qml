@@ -93,22 +93,22 @@ PanelWindow {
 
                     Behavior on width {
                         NumberAnimation {
-                            duration: 180
-                            easing.type: Easing.OutCubic
+                            duration: Tokens.duration.md
+                            easing.type: Tokens.easing.standard
                         }
                     }
 
                     Behavior on height {
                         NumberAnimation {
-                            duration: 180
-                            easing.type: Easing.OutCubic
+                            duration: Tokens.duration.md
+                            easing.type: Tokens.easing.standard
                         }
                     }
 
                     Behavior on color {
                         ColorAnimation {
-                            duration: 150
-                            easing.type: Easing.OutCubic
+                            duration: Tokens.duration.sm
+                            easing.type: Tokens.easing.standard
                         }
                     }
                 }

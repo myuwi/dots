@@ -278,13 +278,15 @@ Scope {
 
                             Behavior on color {
                                 ColorAnimation {
-                                    duration: 100
+                                    duration: Tokens.duration.sm
+                                    easing.type: Tokens.easing.standard
                                 }
                             }
 
                             Behavior on border.color {
                                 ColorAnimation {
-                                    duration: 100
+                                    duration: Tokens.duration.sm
+                                    easing.type: Tokens.easing.standard
                                 }
                             }
 

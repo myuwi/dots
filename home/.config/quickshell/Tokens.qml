@@ -18,6 +18,7 @@ Singleton {
     }
 
     readonly property QtObject duration: QtObject {
+        readonly property int sm: 100
         readonly property int md: 160
     }
 
