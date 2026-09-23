@@ -20,6 +20,7 @@
       '';
     })
     pkgs.pavucontrol
+    pkgs.qbittorrent
     (pkgs.vesktop.override {
       withSystemVencord = true;
       vencord = pkgs.vencord.overrideAttrs (old: {
