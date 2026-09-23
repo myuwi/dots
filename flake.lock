@@ -119,11 +119,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789205526,
-        "narHash": "sha256-mXlwxRs/A6vTltHlwKc9Yy6gRijKzSa4iqkRQTPcDyk=",
+        "lastModified": 1790177247,
+        "narHash": "sha256-fXIr11ds4FB9tlJLzj8Ar1Ekw7EoON3dyq4vK8C1mRU=",
         "owner": "myuwi",
         "repo": "qmljsfmt",
-        "rev": "2ae65f70adaa33d8c41eba6e76e6abba293debf5",
+        "rev": "7855255f0c5d24a9b1419cb199385a1e5814b161",
         "type": "github"
       },
       "original": {
