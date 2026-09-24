@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
-# gsr save callback: $1=filepath, $2=type (regular|replay|screenshot)
-if [ -n "$2" ]; then
-  notify-send -a "Replay buffer" "Replay saved" "$1"
-  exit 0
-fi
+sock="${XDG_RUNTIME_DIR:-/tmp}/gsr.sock"
 
 case "${1:-start}" in
 save)
-  exec pkill -SIGUSR1 -f gpu-screen-recorder
+  if ! out="$(gsr-cli -ipc "$sock" save-replay 2>&1)"; then
+    notify-send -u critical -a "Replay buffer" "Save failed" "$out"
+    exit 1
+  fi
+  notify-send -a "Replay buffer" "Replay saved" "$out"
+  exit 0
   ;;
 start) ;;
 *)
@@ -17,11 +18,10 @@ start) ;;
   ;;
 esac
 
-self="$(realpath "$0")"
 exec gpu-screen-recorder \
   -w DP-2 \
   -a 'name:Desktop|default_output' \
   -a 'name:Game|game_sink.monitor' \
   -a 'name:Microphone|rnnoise_source' \
   -f 60 -r 90 -fm vfr -tune performance -replay-storage ram \
-  -k hevc_vulkan -bm cbr -q 35000 -c mp4 -sc "$self" -o ~/Videos
+  -k hevc_vulkan -bm cbr -q 35000 -c mp4 -ipc "$sock" -o ~/Videos
