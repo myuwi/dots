@@ -20,6 +20,7 @@
       '';
     })
     pkgs.pavucontrol
+    pkgs.proton-vpn
     pkgs.qbittorrent
     (pkgs.vesktop.override {
       withSystemVencord = true;
