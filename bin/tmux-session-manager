@@ -3,7 +3,11 @@
 SEARCH_DIRS=("$HOME/Projects")
 EXTRA_DIRS=("$HOME/.dots")
 
-existing_sessions=$(tmux list-sessions -F "#S" 2>/dev/null)
+existing_sessions=$(
+  tmux list-sessions -F '#{session_last_attached} #S' 2>/dev/null |
+    sort -rn |
+    cut -d' ' -f2-
+)
 
 dirs=$(
   {
