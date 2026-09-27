@@ -20,6 +20,7 @@
     pkgs.shikane
     pkgs.slurp
     pkgs.swayidle
+    pkgs.wayfreeze
     pkgs.wl-clip-persist
     pkgs.wl-clipboard
     pkgs.wlopm
