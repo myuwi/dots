@@ -1,0 +1,12 @@
+--- a/lib/logitech_receiver/settings_templates.py
++++ b/lib/logitech_receiver/settings_templates.py
+@@ -1110,6 +1110,9 @@
+             self._value = {key: value}
+ 
+         result = self.write(self._value, save)
++        # write() only persists when the value differs, but _value was mutated in place above
++        if result is not None:
++            self.update(self._value, save)
+         return result[key] if isinstance(result, dict) else result
+ 
+     class validator_class(settings_validator.ChoicesMapValidator):
