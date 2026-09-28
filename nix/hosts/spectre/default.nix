@@ -6,6 +6,7 @@
     ../../modules/system.nix
     ../../modules/users.nix
     ../../modules/shell.nix
+    ../../modules/docker.nix
     ../../modules/laptop.nix
     ../../modules/desktop
   ];
