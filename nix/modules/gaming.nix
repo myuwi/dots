@@ -6,6 +6,8 @@
     patches = (old.patches or [ ]) ++ [ ../patches/solaar/persist-dpi-extended.patch ];
   });
 
+  hardware.wooting.enable = true;
+
   programs.steam.enable = true;
 
   environment.systemPackages = [
