@@ -1,7 +1,7 @@
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
-setopt autocd extendedglob nonomatch nobeep hist_ignore_dups hist_ignore_space
+setopt autocd extendedglob nonomatch nobeep hist_ignore_dups hist_ignore_space nosharehistory
 
 alias ls='eza -a --group-directories-first'
 alias ll='eza -la --group-directories-first'
