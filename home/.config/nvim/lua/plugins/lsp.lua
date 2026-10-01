@@ -106,6 +106,7 @@ return {
     })
 
     vim.lsp.enable(opts.servers)
+    vim.lsp.document_color.enable(false)
     vim.diagnostic.config(opts.diagnostic)
   end,
 }
