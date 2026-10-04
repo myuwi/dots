@@ -30,6 +30,7 @@
     description = "Idle management daemon";
     wantedBy = [ "graphical-session.target" ];
     partOf = [ "graphical-session.target" ];
+    path = [ pkgs.wlopm ];
     serviceConfig = {
       ExecStart = "${pkgs.swayidle}/bin/swayidle -w";
       Restart = "on-failure";
