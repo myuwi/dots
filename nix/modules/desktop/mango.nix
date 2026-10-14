@@ -6,6 +6,10 @@
     inputs.mangowm.packages.${pkgs.stdenv.hostPlatform.system}.mango.overrideAttrs
       (old: {
         patches = (old.patches or [ ]) ++ [ ../../patches/mango/skip-mousebind-on-layersurface.patch ];
+        postInstall = (old.postInstall or "") + ''
+          substituteInPlace $out/share/wayland-sessions/mango.desktop \
+            --replace-fail "DesktopNames=mango;wlroots" "DesktopNames=mango;wlroots;X-NIXOS-SYSTEMD-AWARE"
+        '';
       });
 
   environment.systemPackages = [
@@ -25,6 +29,13 @@
     pkgs.wl-clipboard
     pkgs.wlopm
   ];
+
+  systemd.user.targets.mango-session = {
+    description = "mango compositor session";
+    bindsTo = [ "graphical-session.target" ];
+    wants = [ "graphical-session-pre.target" ];
+    after = [ "graphical-session-pre.target" ];
+  };
 
   systemd.user.services.swayidle = {
     description = "Idle management daemon";
