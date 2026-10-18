@@ -15,7 +15,11 @@ in
 {
   programs.firefox = {
     enable = true;
-    preferences."toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+    preferences = {
+      "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+      # Compositor frame-callback vsync flickers on scroll/zoom under mango.
+      "widget.wayland.vsync.enabled" = false;
+    };
   };
 
   systemd.user.tmpfiles.users.miika.rules = [
