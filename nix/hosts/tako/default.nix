@@ -12,6 +12,7 @@
     ../../modules/desktop
     ../../modules/capture.nix
     ../../modules/gaming.nix
+    ../../modules/android.nix
     ./pipewire.nix
   ];
 
