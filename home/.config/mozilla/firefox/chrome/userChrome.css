@@ -1,5 +1,10 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
+*|*:root {
+  --uc-space-xs: 2px;
+  --uc-space-sm: 4px;
+}
+
 #navigator-toolbox {
   background-color: var(--toolbar-background-color);
 }
@@ -88,11 +93,11 @@
 
 /* match toolbar horizontal paddings */
 *|*:root {
-  --toolbar-padding-inline: var(--space-xsmall) !important;
+  --toolbar-padding-inline: var(--uc-space-sm) !important;
 }
 #navigator-toolbox #TabsToolbar,
 #navigator-toolbox #PersonalToolbar {
-  padding-inline: var(--space-xxsmall) !important;
+  padding-inline: var(--uc-space-xs) !important;
 }
 
 #navigator-toolbox #nav-bar #urlbar-container {
@@ -103,12 +108,12 @@
 #navigator-toolbox #nav-bar,
 #TabsToolbar,
 #navigator-toolbox #PersonalToolbar {
-  margin-top: var(--space-xsmall);
+  margin-top: var(--uc-space-sm);
 }
 #navigator-toolbox #PersonalToolbar toolbarbutton {
   margin-block: 0 !important;
 }
 
 #navigator-toolbox {
-  padding-bottom: var(--space-xsmall);
+  padding-bottom: var(--uc-space-sm);
 }
