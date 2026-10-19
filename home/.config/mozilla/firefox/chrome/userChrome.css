@@ -88,28 +88,27 @@
 
 /* match toolbar horizontal paddings */
 *|*:root {
-  --toolbar-padding-inline: var(--dimension-4) !important;
+  --toolbar-padding-inline: var(--space-xsmall) !important;
 }
 #navigator-toolbox #TabsToolbar,
 #navigator-toolbox #PersonalToolbar {
-  padding-inline: var(--dimension-2) !important;
+  padding-inline: var(--space-xxsmall) !important;
 }
 
 #navigator-toolbox #nav-bar #urlbar-container {
-  --urlbar-container-height: 32 !important;
-  padding-block: 0;
+  padding-block: 0 !important;
 }
 
 /* match vertical gaps */
 #navigator-toolbox #nav-bar,
 #TabsToolbar,
 #navigator-toolbox #PersonalToolbar {
-  margin-top: var(--dimension-4);
+  margin-top: var(--space-xsmall);
 }
 #navigator-toolbox #PersonalToolbar toolbarbutton {
   margin-block: 0 !important;
 }
 
 #navigator-toolbox {
-  padding-bottom: var(--dimension-4);
+  padding-bottom: var(--space-xsmall);
 }
