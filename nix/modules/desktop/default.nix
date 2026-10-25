@@ -18,4 +18,6 @@
   };
 
   services.gvfs.enable = true;
+
+  security.soteria.enable = true;
 }
