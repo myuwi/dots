@@ -1,11 +1,24 @@
-{ inputs, pkgs, ... }:
+{ config, inputs, pkgs, ... }:
+let
+  system = pkgs.stdenv.hostPlatform.system;
+  scenefx = inputs.scenefx.packages.${system}.default.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [
+      ../../patches/scenefx/fix-shadow-clip-inset.patch
+      # NVIDIA falls back to mediump, misplacing rounded borders (mangowm/mango#1196)
+      ../../patches/scenefx/force-highp-fragment-precision.patch
+    ];
+  });
+in
 {
   programs.mango.enable = true;
-  # Pinned before scenefx 0.5 (mangowm/mango#1196), plus a mousebind guard.
   programs.mango.package =
-    inputs.mangowm.packages.${pkgs.stdenv.hostPlatform.system}.mango.overrideAttrs
+    (inputs.mangowm.packages.${system}.mango.override { inherit scenefx; }).overrideAttrs
       (old: {
-        patches = (old.patches or [ ]) ++ [ ../../patches/mango/skip-mousebind-on-layersurface.patch ];
+        patches = (old.patches or [ ]) ++ [
+          ../../patches/mango/allow-release-bind-after-other-keys.patch
+          ../../patches/mango/keep-app-size-for-tiled-spawn.patch
+          ../../patches/mango/skip-mousebind-on-layersurface.patch
+        ];
         postInstall = (old.postInstall or "") + ''
           substituteInPlace $out/share/wayland-sessions/mango.desktop \
             --replace-fail "DesktopNames=mango;wlroots" "DesktopNames=mango;wlroots;X-NIXOS-SYSTEMD-AWARE"
@@ -28,10 +41,6 @@
     pkgs.wl-clipboard
   ];
 
-  systemd.user.targets.mango-session = {
-    description = "mango compositor session";
-    bindsTo = [ "graphical-session.target" ];
-    wants = [ "graphical-session-pre.target" ];
-    after = [ "graphical-session-pre.target" ];
-  };
+  # Ships mango-session.target, which mango starts on launch
+  systemd.packages = [ config.programs.mango.package ];
 }

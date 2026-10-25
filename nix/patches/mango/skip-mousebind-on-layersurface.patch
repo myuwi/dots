@@ -1,12 +1,14 @@
---- a/src/mango.c
-+++ b/src/mango.c
-@@ -2411,6 +2411,9 @@
+diff --git a/src/input/pointer.c b/src/input/pointer.c
+index d5c03fb6..065171e1 100644
+--- a/src/input/pointer.c
++++ b/src/input/pointer.c
+@@ -1827,6 +1827,9 @@ bool pointer_process_button_press(struct wlr_pointer_button_event *event) {
  
- 		mods = mods | hard_mods;
+ 		mods = keyboard_hard_modifiers();
  
 +		if (l)
 +			break;
 +
  		for (ji = 0; ji < config.mouse_bindings_count; ji++) {
- 			if (config.mouse_bindings_count < 1)
- 				break;
+ 			m = &config.mouse_bindings[ji];
+ 

@@ -1,0 +1,89 @@
+--- a/render/fx_renderer/shaders/blur_effects.frag
++++ b/render/fx_renderer/shaders/blur_effects.frag
+@@ -1,8 +1,4 @@
+-#ifdef GL_FRAGMENT_PRECISION_HIGH
+ precision highp float;
+-#else
+-precision mediump float;
+-#endif
+ 
+ varying vec2 v_texcoord;
+ uniform sampler2D tex;
+--- a/render/fx_renderer/shaders/box_shadow.frag
++++ b/render/fx_renderer/shaders/box_shadow.frag
+@@ -1,10 +1,6 @@
+ // Writeup: https://madebyevan.com/shaders/fast-rounded-rectangle-shadows/
+ 
+-#ifdef GL_FRAGMENT_PRECISION_HIGH
+ precision highp float;
+-#else
+-precision mediump float;
+-#endif
+ 
+ varying vec4 v_color;
+ varying vec2 v_texcoord;
+--- a/render/fx_renderer/shaders/quad.frag
++++ b/render/fx_renderer/shaders/quad.frag
+@@ -4,11 +4,7 @@
+ #error "Missing shader preamble"
+ #endif
+ 
+-#ifdef GL_FRAGMENT_PRECISION_HIGH
+ precision highp float;
+-#else
+-precision mediump float;
+-#endif
+ 
+ varying vec4 v_color;
+ varying vec2 v_texcoord;
+--- a/render/fx_renderer/shaders/quad_grad.frag
++++ b/render/fx_renderer/shaders/quad_grad.frag
+@@ -1,10 +1,6 @@
+ #define LEN %d
+ 
+-#ifdef GL_FRAGMENT_PRECISION_HIGH
+ precision highp float;
+-#else
+-precision mediump float;
+-#endif
+ 
+ varying vec4 v_color;
+ varying vec2 v_texcoord;
+--- a/render/fx_renderer/shaders/quad_grad_round.frag
++++ b/render/fx_renderer/shaders/quad_grad_round.frag
+@@ -1,10 +1,6 @@
+ #define LEN %d
+ 
+-#ifdef GL_FRAGMENT_PRECISION_HIGH
+ precision highp float;
+-#else
+-precision mediump float;
+-#endif
+ 
+ varying vec4 v_color;
+ varying vec2 v_texcoord;
+--- a/render/fx_renderer/shaders/quad_round.frag
++++ b/render/fx_renderer/shaders/quad_round.frag
+@@ -1,8 +1,4 @@
+-#ifdef GL_FRAGMENT_PRECISION_HIGH
+ precision highp float;
+-#else
+-precision mediump float;
+-#endif
+ 
+ varying vec4 v_color;
+ varying vec2 v_texcoord;
+--- a/render/fx_renderer/shaders/tex.frag
++++ b/render/fx_renderer/shaders/tex.frag
+@@ -13,11 +13,7 @@
+ #extension GL_OES_EGL_image_external : require
+ #endif
+ 
+-#ifdef GL_FRAGMENT_PRECISION_HIGH
+ precision highp float;
+-#else
+-precision mediump float;
+-#endif
+ 
+ varying vec2 v_texcoord;
+ 

@@ -1,0 +1,17 @@
+diff --git a/src/manage/client.c b/src/manage/client.c
+index c7d0fba1..f5632327 100644
+--- a/src/manage/client.c
++++ b/src/manage/client.c
+@@ -2264,6 +2264,12 @@ static void client_negotiate_initial_size(Client *c, Monitor *rule_mon,
+ 		return;
+ 	}
+ 
++	// Let tiled windows pick their own first size so it is remembered as their
++	// floating size (mangowm/mango#1511).
++	c->mon = saved_mon;
++	c->tags = saved_tags;
++	return;
++
+ 	uint32_t tag = get_mon_curtag(m);
+ 	const Layout *layout = m->pertag->ltidxs[tag];
+ 	if (!layout || !layout->predict) {

@@ -8,7 +8,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     mangowm = {
-      url = "github:mangowm/mango/9d4f4fd46baa096e20e2cb98e629fde10fd7be38";
+      url = "github:mangowm/mango";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.scenefx.follows = "scenefx";
+    };
+    # Patched in nix/modules/desktop/mango.nix; tracks main ahead of mango's lock.
+    scenefx = {
+      url = "github:wlrfx/scenefx";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     helium = {

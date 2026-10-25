@@ -1,0 +1,16 @@
+diff --git a/src/input/keyboard.c b/src/input/keyboard.c
+index 344bc258..e588a138 100644
+--- a/src/input/keyboard.c
++++ b/src/input/keyboard.c
+@@ -614,11 +614,6 @@ int32_t keyboard_check_keybinding(uint32_t state, bool is_locked, uint32_t mods,
+ 			state != WL_KEYBOARD_KEY_STATE_RELEASED)
+ 			continue;
+ 
+-		if (state == WL_KEYBOARD_KEY_STATE_RELEASED &&
+-			keycode != server.last_hold_keycode) {
+-			continue;
+-		}
+-
+ 		k = &config.key_bindings[ji];
+ 		if ((k->iscommonmode ||
+ 			 (k->isdefaultmode && server.key_mode.isdefault) ||
