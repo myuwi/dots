@@ -1,0 +1,4 @@
+node_blacklist = [
+  { name = "^Virtual game sink output$" },
+  { name = "^All Connected Outputs output$" },
+]

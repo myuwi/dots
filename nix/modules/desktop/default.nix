@@ -5,6 +5,7 @@
     ./audio.nix
     ./firefox.nix
     ./fonts.nix
+    ./idle.nix
     ./keyring.nix
     ./mango.nix
     ./theme.nix

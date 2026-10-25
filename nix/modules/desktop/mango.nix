@@ -23,11 +23,9 @@
     pkgs.quickshell
     pkgs.shikane
     pkgs.slurp
-    pkgs.swayidle
     pkgs.wayfreeze
     pkgs.wl-clip-persist
     pkgs.wl-clipboard
-    pkgs.wlopm
   ];
 
   systemd.user.targets.mango-session = {
@@ -35,16 +33,5 @@
     bindsTo = [ "graphical-session.target" ];
     wants = [ "graphical-session-pre.target" ];
     after = [ "graphical-session-pre.target" ];
-  };
-
-  systemd.user.services.swayidle = {
-    description = "Idle management daemon";
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    path = [ pkgs.wlopm ];
-    serviceConfig = {
-      ExecStart = "${pkgs.swayidle}/bin/swayidle -w";
-      Restart = "on-failure";
-    };
   };
 }

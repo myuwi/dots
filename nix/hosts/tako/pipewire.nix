@@ -14,6 +14,10 @@
             "node.name" = "game_sink";
             "node.description" = "Virtual game sink";
           };
+          "playback.props" = {
+            "node.name" = "game_sink_output";
+            "node.description" = "Virtual game sink output";
+          };
         };
       }
     ];
