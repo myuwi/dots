@@ -1,4 +1,9 @@
-{ config, inputs, pkgs, ... }:
+{
+  config,
+  inputs,
+  pkgs,
+  ...
+}:
 let
   system = pkgs.stdenv.hostPlatform.system;
   scenefx = inputs.scenefx.packages.${system}.default.overrideAttrs (old: {
@@ -17,6 +22,7 @@ in
         patches = (old.patches or [ ]) ++ [
           ../../patches/mango/allow-release-bind-after-other-keys.patch
           ../../patches/mango/keep-app-size-for-tiled-spawn.patch
+          ../../patches/mango/keep-float-geom-across-monitors.patch
           ../../patches/mango/skip-mousebind-on-layersurface.patch
         ];
         postInstall = (old.postInstall or "") + ''

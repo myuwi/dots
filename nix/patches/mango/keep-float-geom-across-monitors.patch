@@ -1,0 +1,57 @@
+diff --git a/src/dispatch/bind.c b/src/dispatch/bind.c
+index a64df77..4c6176c 100644
+--- a/src/dispatch/bind.c
++++ b/src/dispatch/bind.c
+@@ -1550,11 +1550,16 @@ int32_t tag_monitor(const Arg *arg) {
+ 		oldmon->sel = NULL;
+ 	}
+ 
++	/* client_set_monitor clamps float_geom against the new monitor before it
++	 * is scaled, so scale from the size the window had on the old one. */
++	struct wlr_box old_float_geom = c->float_geom;
++
+ 	client_set_monitor(c, m, newtags, true);
+ 	client_update_oldmonname_record(c, m);
+ 
+ 	reset_foreign_tolevel(c, oldmon, c->mon);
+ 
++	c->float_geom = old_float_geom;
+ 	c->float_geom.width =
+ 		(int32_t)(c->float_geom.width * c->mon->w.width / oldmon->w.width);
+ 	c->float_geom.height =
+diff --git a/src/input/pointer.c b/src/input/pointer.c
+index d5c03fb..bc15449 100644
+--- a/src/input/pointer.c
++++ b/src/input/pointer.c
+@@ -1116,6 +1116,7 @@ void pointer_end_grab_client(bool follow_pointer) {
+ 										gc->geom.y + gc->geom.height / 2);
+ 	if (!target_mon)
+ 		target_mon = gc->mon;
++	Monitor *old_mon = gc->mon;
+ 	set_selected_monitor(target_mon);
+ 	client_update_oldmonname_record(gc, server.selected_monitor);
+ 	client_set_monitor(gc, server.selected_monitor, 0, true);
+@@ -1134,6 +1135,23 @@ void pointer_end_grab_client(bool follow_pointer) {
+ 	if (gc->drag_to_tile && config.drag_tile_to_tile) {
+ 		pointer_place_drag_tile(gc);
+ 		gc->float_geom = gc->drag_tile_float_backup_geom;
++		/* The backup may sit on another monitor; carry it over like tagmon
++		 * does so untiling doesn't send the window back. If its center is
++		 * off-screen, it belongs to the monitor the drag started on. */
++		Monitor *float_mon =
++			monitor_at_point(gc->float_geom.x + gc->float_geom.width / 2,
++							 gc->float_geom.y + gc->float_geom.height / 2);
++		if (!float_mon)
++			float_mon = old_mon;
++		if (float_mon && float_mon != gc->mon) {
++			gc->float_geom.width = (int32_t)(gc->float_geom.width *
++											 gc->mon->w.width / float_mon->w.width);
++			gc->float_geom.height =
++				(int32_t)(gc->float_geom.height * gc->mon->w.height /
++						  float_mon->w.height);
++			gc->float_geom =
++				client_center_geometry(gc, gc->mon, gc->float_geom, 0, 0);
++		}
+ 	} else if (!border_resize || moved) {
+ 		apply_window_snap(gc);
+ 	}
