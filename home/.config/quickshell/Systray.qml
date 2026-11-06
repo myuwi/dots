@@ -17,8 +17,8 @@ Row {
 
             required property var modelData
 
-            width: Tokens.icon.md
-            height: Tokens.icon.md
+            width: Tokens.icon.sm
+            height: Tokens.icon.sm
 
             function showMenu(): void {
                 const pos = trayItem.mapToItem(
