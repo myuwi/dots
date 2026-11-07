@@ -5,6 +5,7 @@ import Quickshell
 import qs.launcher
 
 ShellRoot {
+    Desktop {}
     Bar {}
     Notifications {}
     Osd {}

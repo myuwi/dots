@@ -63,6 +63,8 @@ PanelWindow {
         precision: SystemClock.Minutes
     }
 
+    OutsideClickArea {}
+
     Item {
         id: tagArea
 

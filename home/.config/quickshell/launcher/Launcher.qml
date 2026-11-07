@@ -49,6 +49,11 @@ Scope {
         }
     }
 
+    ClickOutside {
+        active: launcher.shown
+        onClicked: launcher.close()
+    }
+
     SearchEngine {
         id: engine
 
