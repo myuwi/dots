@@ -1,26 +1,4 @@
-diff --git a/src/dispatch/bind.c b/src/dispatch/bind.c
-index a64df77..4c6176c 100644
---- a/src/dispatch/bind.c
-+++ b/src/dispatch/bind.c
-@@ -1550,11 +1550,16 @@ int32_t tag_monitor(const Arg *arg) {
- 		oldmon->sel = NULL;
- 	}
- 
-+	/* client_set_monitor clamps float_geom against the new monitor before it
-+	 * is scaled, so scale from the size the window had on the old one. */
-+	struct wlr_box old_float_geom = c->float_geom;
-+
- 	client_set_monitor(c, m, newtags, true);
- 	client_update_oldmonname_record(c, m);
- 
- 	reset_foreign_tolevel(c, oldmon, c->mon);
- 
-+	c->float_geom = old_float_geom;
- 	c->float_geom.width =
- 		(int32_t)(c->float_geom.width * c->mon->w.width / oldmon->w.width);
- 	c->float_geom.height =
 diff --git a/src/input/pointer.c b/src/input/pointer.c
-index d5c03fb..bc15449 100644
 --- a/src/input/pointer.c
 +++ b/src/input/pointer.c
 @@ -1116,6 +1116,7 @@ void pointer_end_grab_client(bool follow_pointer) {
@@ -31,7 +9,7 @@ index d5c03fb..bc15449 100644
  	set_selected_monitor(target_mon);
  	client_update_oldmonname_record(gc, server.selected_monitor);
  	client_set_monitor(gc, server.selected_monitor, 0, true);
-@@ -1134,6 +1135,23 @@ void pointer_end_grab_client(bool follow_pointer) {
+@@ -1133,6 +1134,23 @@ void pointer_end_grab_client(bool follow_pointer) {
  	if (gc->drag_to_tile && config.drag_tile_to_tile) {
  		pointer_place_drag_tile(gc);
  		gc->float_geom = gc->drag_tile_float_backup_geom;
@@ -55,3 +33,23 @@ index d5c03fb..bc15449 100644
  	} else if (!border_resize || moved) {
  		apply_window_snap(gc);
  	}
+diff --git a/src/manage/client.c b/src/manage/client.c
+--- a/src/manage/client.c
++++ b/src/manage/client.c
+@@ -3334,12 +3334,16 @@ bool client_set_monitor_adapted(Client *c, Monitor *m, uint32_t newtags,
+ 	}
+ 
+ 	Monitor *oldmon = c->mon;
++	/* client_set_monitor clamps float_geom against the new monitor before it
++	 * is scaled, so scale from the size the window had on the old one. */
++	struct wlr_box old_float_geom = c->float_geom;
+ 	client_set_monitor(c, m, newtags, focus);
+ 	if (c->mon != m) {
+ 		return false;
+ 	}
+ 
+ 	client_update_oldmonname_record(c, m);
++	c->float_geom = old_float_geom;
+ 	client_adapt_geometry_to_monitor(c, oldmon);
+ 	if (c->isfloating) {
+ 		c->geom = c->float_geom;

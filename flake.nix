@@ -25,6 +25,11 @@
       url = "github:myuwi/qmljsfmt";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # TODO: drop once NixOS/nixpkgs#584169 (vencord 1.15.16) reaches unstable
+    nixpkgs-vencord = {
+      url = "github:NixOS/nixpkgs/pull/584169/head";
+      flake = false;
+    };
     vencord-plugins = {
       url = "github:myuwi/vencord-plugins";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -24,11 +24,15 @@
     pkgs.qbittorrent
     (pkgs.vesktop.override {
       withSystemVencord = true;
-      vencord = pkgs.vencord.overrideAttrs (old: {
-        postPatch = (old.postPatch or "") + ''
-          cp -r ${inputs.vencord-plugins}/plugins src/userplugins
-        '';
-      });
+      # TODO: back to pkgs.vencord once NixOS/nixpkgs#584169 reaches unstable
+      vencord =
+        (pkgs.callPackage "${inputs.nixpkgs-vencord}/pkgs/by-name/ve/vencord/package.nix" { })
+        .overrideAttrs
+          (old: {
+            postPatch = (old.postPatch or "") + ''
+              cp -r ${inputs.vencord-plugins}/plugins src/userplugins
+            '';
+          });
     })
   ];
 }

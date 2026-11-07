@@ -11,6 +11,8 @@ let
       ../../patches/scenefx/fix-shadow-clip-inset.patch
       # NVIDIA falls back to mediump, misplacing rounded borders (mangowm/mango#1196)
       ../../patches/scenefx/force-highp-fragment-precision.patch
+      # NVIDIA rejects the gradient shader: its clamp(int) hides the float built-ins
+      ../../patches/scenefx/fix-gles2-clamp-shadowing.patch
     ];
   });
 in

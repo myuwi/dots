@@ -1,6 +1,5 @@
 { ... }:
 {
-  boot.initrd.systemd.enable = true;
   boot.tmp.cleanOnBoot = true;
   boot.blacklistedKernelModules = [
     "pcspkr"
