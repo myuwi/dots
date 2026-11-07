@@ -27,6 +27,11 @@ Scope {
         }
     }
 
+    function launch(item: var): void {
+        history.recordLaunch(item.key);
+        item.run();
+    }
+
     function rank(): void {
         const text = query.trim().toLowerCase();
         const ranked = [];
@@ -35,14 +40,21 @@ Scope {
             for (const item of items) {
                 const matchRank = rankMatch(item, text);
                 if (matchRank !== null) {
-                    ranked.push({ item, matchRank, title: item.title.toLowerCase() });
+                    ranked.push({
+                        item,
+                        matchRank,
+                        launchCount: history.launchCount(item.key),
+                        title: item.title.toLowerCase(),
+                    });
                 }
             }
         }
 
         ranked.sort(
             (a, b) =>
-                a.matchRank - b.matchRank || (a.title < b.title ? -1 : a.title > b.title ? 1 : 0),
+                a.matchRank - b.matchRank ||
+                b.launchCount - a.launchCount ||
+                (a.title < b.title ? -1 : a.title > b.title ? 1 : 0),
         );
         results = ranked.map((entry) => entry.item);
     }
@@ -53,11 +65,31 @@ Scope {
         if (title.startsWith(text)) {
             return 0;
         }
-        if (title.includes(text)) {
+        if (title.split(/[\s\-_.]+/).some((word) => word.startsWith(text))) {
             return 1;
+        }
+        if (title.includes(text)) {
+            return 2;
+        }
+        if (containsInOrder(title, text)) {
+            return 3;
         }
 
         const fields = [item.subtitle, ...item.keywords];
-        return fields.some((field) => field.toLowerCase().includes(text)) ? 2 : null;
+        return fields.some((field) => field.toLowerCase().includes(text)) ? 4 : null;
+    }
+
+    function containsInOrder(title: string, text: string): bool {
+        let matched = 0;
+        for (const character of title) {
+            if (character === text[matched] && ++matched === text.length) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    History {
+        id: history
     }
 }

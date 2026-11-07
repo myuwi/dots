@@ -33,7 +33,7 @@ Scope {
         const item = engine.results[index];
         if (item) {
             close();
-            item.run();
+            engine.launch(item);
         }
     }
 
