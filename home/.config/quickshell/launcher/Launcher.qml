@@ -50,6 +50,7 @@ Scope {
     }
 
     ClickOutside {
+        namespace: window.WlrLayershell.namespace
         active: launcher.shown
         onClicked: launcher.close()
     }
@@ -68,7 +69,7 @@ Scope {
 
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "launcher"
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
         screen: Config.mainScreen
         color: "transparent"

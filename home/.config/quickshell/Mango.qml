@@ -53,6 +53,8 @@ Singleton {
         return ordered;
     }
 
+    signal pointerPressed(press: var)
+
     function updateClients(clients): void {
         allClients = clients;
         focusHistory = focusHistory.filter(
@@ -133,5 +135,14 @@ Singleton {
     Watch {
         stream: "all-tags"
         onReceived: (payload) => (mango.allTags = payload.all_tags ?? [])
+    }
+
+    Watch {
+        stream: "pointer-press"
+        onReceived: (payload) => {
+            if (payload.monitor !== null) {
+                mango.pointerPressed(payload);
+            }
+        }
     }
 }
