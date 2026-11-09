@@ -26,6 +26,7 @@ in
           ../../patches/mango/keep-app-size-for-tiled-spawn.patch
           ../../patches/mango/keep-float-geom-across-monitors.patch
           ../../patches/mango/skip-mousebind-on-layersurface.patch
+          ../../patches/mango/watch-pointer-press.patch
         ];
         postInstall = (old.postInstall or "") + ''
           substituteInPlace $out/share/wayland-sessions/mango.desktop \

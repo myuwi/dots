@@ -1,0 +1,147 @@
+diff --git a/include/mango/ipc/ipc.h b/include/mango/ipc/ipc.h
+index 5098ab8..9ed65fb 100644
+--- a/include/mango/ipc/ipc.h
++++ b/include/mango/ipc/ipc.h
+@@ -20,6 +20,7 @@ enum ipc_watch_type {
+ 	IPC_WATCH_LAST_OPEN_SURFACE = 1 << 8,
+ 	IPC_WATCH_FOCUSING_CLIENT = 1 << 9,
+ 	IPC_WATCH_DEVICE = 1 << 10,
++	IPC_WATCH_POINTER_PRESS = 1 << 11,
+ };
+ 
+ #define IPC_WATCH_ARRANGGE                                                     \
+@@ -62,6 +63,7 @@ void ipc_notify_monitor(Monitor *m);
+ void ipc_notify_last_surface_ws_name(Monitor *m);
+ void ipc_notify_focusing_client(void);
+ void ipc_notify_device_event(struct wlr_input_device *dev);
++void ipc_notify_pointer_press(Monitor *m, Client *c, LayerSurface *l);
+ void ipc_notify_client(Client *c);
+ void ipc_notify_tags(Monitor *m);
+ void ipc_notify_all_monitors(void);
+diff --git a/mmsg/mmsg.c b/mmsg/mmsg.c
+index 5a45acc..7739c1d 100644
+--- a/mmsg/mmsg.c
++++ b/mmsg/mmsg.c
+@@ -66,6 +66,8 @@ static void usage(void) {
+ 		   "changes\n");
+ 	printf("  watch all-devices                        Stream the last input "
+ 		   "device that triggered an event\n");
++	printf("  watch pointer-press                      Stream the surface "
++		   "under each pointer button press\n");
+ 	printf(
+ 		"  watch keymode                            Stream keymode changes\n");
+ 	printf("  watch keyboardlayout                     Stream keyboard layout "
+diff --git a/src/input/pointer.c b/src/input/pointer.c
+index 0af9ad8..8b6f057 100644
+--- a/src/input/pointer.c
++++ b/src/input/pointer.c
+@@ -1781,6 +1781,7 @@ bool pointer_process_button_press(struct wlr_pointer_button_event *event) {
+ 				layer_focus(l);
+ 			}
+ 		}
++		ipc_notify_pointer_press(server.selected_monitor, c, l);
+ 
+ 		// In overview mode, left click jumps and right click closes windows.
+ 		if (server.selected_monitor && server.selected_monitor->isoverview &&
+diff --git a/src/ipc/ipc.c b/src/ipc/ipc.c
+index 593f31e..c51ec2a 100644
+--- a/src/ipc/ipc.c
++++ b/src/ipc/ipc.c
+@@ -30,6 +30,7 @@
+ 
+ static struct wl_list ipc_watch_clients;
+ static int ipc_device_watch_count;
++static int ipc_pointer_press_watch_count;
+ 
+ const char *ipc_device_type_str(struct wlr_input_device *dev) {
+ 	if (!dev)
+@@ -279,9 +280,60 @@ void ipc_notify_device_event(struct wlr_input_device *dev) {
+ 	cJSON_Delete(json);
+ }
+ 
++static cJSON *build_pointer_press_json(Monitor *m, Client *c,
++									   LayerSurface *l) {
++	cJSON *json = cJSON_CreateObject();
++
++	if (m)
++		cJSON_AddStringToObject(json, "monitor", m->wlr_output->name);
++	else
++		cJSON_AddNullToObject(json, "monitor");
++
++	if (c) {
++		cJSON *client = cJSON_CreateObject();
++		cJSON_AddNumberToObject(client, "id", c->id);
++		cJSON_AddStringToObject(client, "title", client_get_title(c));
++		cJSON_AddStringToObject(client, "appid", client_get_appid(c));
++		cJSON_AddItemToObject(json, "client", client);
++	} else {
++		cJSON_AddNullToObject(json, "client");
++	}
++
++	if (l) {
++		cJSON *layer = cJSON_CreateObject();
++		cJSON_AddStringToObject(
++			layer, "layer", layer_enum_str(l->layer_surface->current.layer));
++		cJSON_AddStringToObject(layer, "name",
++								l->layer_surface->namespace
++									? l->layer_surface->namespace
++									: "");
++		cJSON_AddItemToObject(json, "layer", layer);
++	} else {
++		cJSON_AddNullToObject(json, "layer");
++	}
++
++	return json;
++}
++
++void ipc_notify_pointer_press(Monitor *m, Client *c, LayerSurface *l) {
++	if (!ipc_pointer_press_watch_count)
++		return;
++
++	cJSON *json = build_pointer_press_json(m, c, l);
++
++	struct ipc_watch_client *wc, *tmp;
++	wl_list_for_each_safe(wc, tmp, &ipc_watch_clients, link) {
++		if (wc->type == IPC_WATCH_POINTER_PRESS)
++			ipc_notify_json_to_fd(wc->fd, json);
++	}
++	cJSON_Delete(json);
++}
++
+ void ipc_remove_watch_client(struct ipc_watch_client *wc) {
+ 	if (wc->type == IPC_WATCH_DEVICE)
+ 		ipc_device_watch_count--;
++	else if (wc->type == IPC_WATCH_POINTER_PRESS)
++		ipc_pointer_press_watch_count--;
+ 	wl_list_remove(&wc->link);
+ 	wl_event_source_remove(wc->source);
+ 	close(wc->fd);
+@@ -1025,6 +1077,8 @@ bool handle_watch_command(int fd, const char *cmd,
+ 		type = IPC_WATCH_ALL_CLIENTS;
+ 	} else if (strcmp(cmd, "watch all-devices") == 0) {
+ 		type = IPC_WATCH_DEVICE;
++	} else if (strcmp(cmd, "watch pointer-press") == 0) {
++		type = IPC_WATCH_POINTER_PRESS;
+ 	} else if (strcmp(cmd, "watch keymode") == 0) {
+ 		type = IPC_WATCH_KEYMODE;
+ 	} else if (strcmp(cmd, "watch keyboardlayout") == 0) {
+@@ -1063,6 +1117,8 @@ bool handle_watch_command(int fd, const char *cmd,
+ 	wl_list_insert(&ipc_watch_clients, &wc->link);
+ 	if (type == IPC_WATCH_DEVICE)
+ 		ipc_device_watch_count++;
++	else if (type == IPC_WATCH_POINTER_PRESS)
++		ipc_pointer_press_watch_count++;
+ 
+ 	/* Pushes the initial state. */
+ 	cJSON *json = NULL;
+@@ -1139,6 +1195,10 @@ bool handle_watch_command(int fd, const char *cmd,
+ 		cJSON_AddNullToObject(json, "type");
+ 		break;
+ 	}
++	case IPC_WATCH_POINTER_PRESS: {
++		json = build_pointer_press_json(NULL, NULL, NULL);
++		break;
++	}
+ 	case IPC_WATCH_KEYMODE: {
+ 		json = cJSON_CreateObject();
+ 		cJSON_AddStringToObject(json, "keymode", server.key_mode.mode);
