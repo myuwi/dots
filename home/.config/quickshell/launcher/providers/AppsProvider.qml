@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Io
 import QtQuick
 import qs
 import qs.launcher
@@ -20,12 +21,8 @@ Provider {
         }))
 
     function launch(entry: var): void {
-        const args = Array.from(entry.command)
-            .map((arg) => arg.replace(/%[fFuUdDnNickvm]/g, "").replace(/%%/g, "%"))
-            .filter((arg) => arg !== "");
-
         Quickshell.execDetached({
-            command: entry.runInTerminal ? [...Config.terminal, ...args] : args,
+            command: entry.runInTerminal ? [...Config.terminal, ...entry.command] : entry.command,
             workingDirectory: entry.workingDirectory,
         });
     }
