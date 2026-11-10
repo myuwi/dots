@@ -28,8 +28,8 @@ Rectangle {
         spacing: Tokens.spacing.lg
 
         IconImage {
-            Layout.preferredWidth: 24
-            Layout.preferredHeight: 24
+            Layout.preferredWidth: Tokens.icon.lg
+            Layout.preferredHeight: Tokens.icon.lg
             source: Quickshell.iconPath(
                 row.modelData.icon || "application-x-executable",
                 "application-x-executable",

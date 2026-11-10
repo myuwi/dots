@@ -36,6 +36,8 @@ Singleton {
         readonly property int xs: 12
         readonly property int sm: 16
         readonly property int md: 18
+        readonly property int lg: 24
+        readonly property int xl: 64
     }
 
     readonly property QtObject font: QtObject {

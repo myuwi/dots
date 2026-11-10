@@ -261,8 +261,8 @@ Scope {
                             readonly property string iconName:
                                 desktopEntry?.icon || modelData.appid || "application-x-executable"
 
-                            width: 108
-                            height: 126
+                            implicitWidth: content.implicitWidth + Tokens.spacing.lg * 2
+                            implicitHeight: content.implicitHeight + Tokens.spacing.lg * 2
                             radius: Tokens.rounding.md
                             color: mouseArea.containsMouse
                                 ? Theme.itemHovered
@@ -291,17 +291,23 @@ Scope {
                             }
 
                             Column {
+                                id: content
+
                                 anchors.centerIn: parent
                                 spacing: Tokens.spacing.sm
 
                                 Item {
-                                    width: 84
-                                    height: 84
+                                    id: iconBox
+
+                                    implicitWidth: icon.width + Tokens.spacing.lg * 2
+                                    implicitHeight: icon.height + Tokens.spacing.lg * 2
 
                                     IconImage {
+                                        id: icon
+
                                         anchors.centerIn: parent
-                                        width: 60
-                                        height: 60
+                                        width: Tokens.icon.xl
+                                        height: Tokens.icon.xl
                                         source: Quickshell.iconPath(
                                             card.iconName,
                                             "application-x-executable",
@@ -310,7 +316,7 @@ Scope {
                                 }
 
                                 Label {
-                                    width: 84
+                                    width: iconBox.width
                                     text: card.modelData.title
                                     horizontalAlignment: Text.AlignHCenter
                                 }
