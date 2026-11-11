@@ -17,6 +17,7 @@ Singleton {
     readonly property color itemHovered: withOpacity(muted, 0.25)
     readonly property color itemSelectedBorder: withOpacity(muted, 0.2)
     readonly property color itemHoveredBorder: withOpacity(muted, 0.3)
+    readonly property color scrollbar: withOpacity(muted, 0.3)
 
     readonly property string fontFamily: "Inter"
     readonly property string iconFamily: "Material Symbols Rounded"
