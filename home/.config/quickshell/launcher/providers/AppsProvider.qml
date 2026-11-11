@@ -14,7 +14,7 @@ Provider {
         .map((entry) => ({
             key: `apps:${entry.id}`,
             title: entry.name,
-            subtitle: entry.comment,
+            subtitle: entry.comment || entry.genericName,
             icon: entry.icon,
             keywords: [entry.genericName, ...entry.keywords].filter((keyword) => keyword !== ""),
             run: () => provider.launch(entry),
