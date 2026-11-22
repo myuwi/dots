@@ -10,12 +10,6 @@
     mangowm = {
       url = "github:mangowm/mango";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.scenefx.follows = "scenefx";
-    };
-    # Patched in nix/modules/desktop/mango.nix; tracks main ahead of mango's lock.
-    scenefx = {
-      url = "github:wlrfx/scenefx";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     helium = {
       url = "github:amaanq/helium-flake";

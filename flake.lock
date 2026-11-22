@@ -41,6 +41,7 @@
     "flake-utils": {
       "inputs": {
         "systems": [
+          "mangowm",
           "scenefx",
           "systems"
         ]
@@ -85,16 +86,14 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "scenefx": [
-          "scenefx"
-        ]
+        "scenefx": "scenefx"
       },
       "locked": {
-        "lastModified": 1793888034,
-        "narHash": "sha256-2RLkniNvhc9x0FravDTctqgCoaDzN8gMMyO1ZaTaxAU=",
+        "lastModified": 1795343211,
+        "narHash": "sha256-TkhrMGhTBBSAehYHI3FNLhMh6GPa+V8D0smpI8Tpdqk=",
         "owner": "mangowm",
         "repo": "mango",
-        "rev": "21f80a93bae634372c188ec3e50735e4c362e78e",
+        "rev": "5b079539433606a922619a8cb58f75dc6ee04dab",
         "type": "github"
       },
       "original": {
@@ -179,7 +178,6 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-osu": "nixpkgs-osu",
         "qmljsfmt": "qmljsfmt",
-        "scenefx": "scenefx",
         "vencord-plugins": "vencord-plugins"
       }
     },
@@ -187,16 +185,17 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": [
+          "mangowm",
           "nixpkgs"
         ],
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1793478752,
-        "narHash": "sha256-0YT2DYCEYmzhQqYRVr2JtkJwEhs8vsASFmBkNLfXVKk=",
+        "lastModified": 1782624992,
+        "narHash": "sha256-vUjLG6eubEhJJVa9LPygIcVmNoHwYbSUTJcWEcbxnU4=",
         "owner": "wlrfx",
         "repo": "scenefx",
-        "rev": "bef6e5e2566096cc0fd1b543c7830b4a1cd1d3b6",
+        "rev": "37ccd723bef49e6891156ffafce8f549f01446cc",
         "type": "github"
       },
       "original": {

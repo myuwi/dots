@@ -6,13 +6,11 @@
 }:
 let
   system = pkgs.stdenv.hostPlatform.system;
-  scenefx = inputs.scenefx.packages.${system}.default.overrideAttrs (old: {
+  scenefx = inputs.mangowm.inputs.scenefx.packages.${system}.default.overrideAttrs (old: {
     patches = (old.patches or [ ]) ++ [
       ../../patches/scenefx/fix-shadow-clip-inset.patch
       # NVIDIA falls back to mediump, misplacing rounded borders (mangowm/mango#1196)
       ../../patches/scenefx/force-highp-fragment-precision.patch
-      # NVIDIA rejects the gradient shader: its clamp(int) hides the float built-ins
-      ../../patches/scenefx/fix-gles2-clamp-shadowing.patch
     ];
   });
 in
@@ -23,7 +21,6 @@ in
       (old: {
         patches = (old.patches or [ ]) ++ [
           ../../patches/mango/allow-release-bind-after-other-keys.patch
-          ../../patches/mango/keep-app-size-for-tiled-spawn.patch
           ../../patches/mango/keep-float-geom-across-monitors.patch
           ../../patches/mango/skip-mousebind-on-layersurface.patch
           ../../patches/mango/watch-pointer-press.patch
