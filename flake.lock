@@ -134,6 +134,23 @@
         "type": "github"
       }
     },
+    "nixpkgs-osu": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795292849,
+        "narHash": "sha256-l9hrfRJqrUdFNUzzXv4EyRHMxRaa34eQBFpjw81RenA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "85a433c8ec9c72de4205110086a121de3b0071c5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "master",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "qmljsfmt": {
       "inputs": {
         "nixpkgs": [
@@ -160,6 +177,7 @@
         "helium": "helium",
         "mangowm": "mangowm",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-osu": "nixpkgs-osu",
         "qmljsfmt": "qmljsfmt",
         "scenefx": "scenefx",
         "vencord-plugins": "vencord-plugins"

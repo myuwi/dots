@@ -25,6 +25,10 @@
       url = "github:myuwi/qmljsfmt";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixpkgs-osu = {
+      url = "github:NixOS/nixpkgs/master";
+      flake = false;
+    };
     vencord-plugins = {
       url = "github:myuwi/vencord-plugins";
       inputs.nixpkgs.follows = "nixpkgs";
