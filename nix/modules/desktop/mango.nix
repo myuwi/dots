@@ -44,6 +44,7 @@ in
     pkgs.wayfreeze
     pkgs.wl-clip-persist
     pkgs.wl-clipboard
+    pkgs.xrandr
   ];
 
   # Ships mango-session.target, which mango starts on launch
